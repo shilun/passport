@@ -15,7 +15,7 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
     private String passKey;
 
     @Override
-    protected Class<AdminUserInfo> getEntityClass() {
+    protected Class getEntityClass() {
         return AdminUserInfo.class;
     }
 
@@ -38,7 +38,6 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         oldPass = MD5.MD5Str(oldPass, passKey);
         query.setPasswd(oldPass);
         query.setPin(pin);
-        query.setDelStatus(YesOrNoEnum.NO.getValue());
         AdminUserInfo info = findByOne(query);
         if (info == null) {
             throw new BizException("oldPass.error", "旧密码错误");

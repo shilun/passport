@@ -28,6 +28,16 @@ public class AdminUserInfo extends AbstractBaseEntity {
     private Integer sexType;
     /**入职时间*/
     private Date inCompanyDate;
+    /**角色*/
+    private Long[] roles;
+
+    public Long[] getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Long[] roles) {
+        this.roles = roles;
+    }
 
     public String getPin() {
         return pin;

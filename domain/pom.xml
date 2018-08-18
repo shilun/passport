@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.king</groupId>
+            <groupId>com.shilun</groupId>
             <artifactId>com.springboot</artifactId>
             <version>1.1.4</version>
         </dependency>

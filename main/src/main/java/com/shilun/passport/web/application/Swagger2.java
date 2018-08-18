@@ -19,7 +19,7 @@ public class Swagger2 {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.lunshi.matchmaking.web.application"))
+                .apis(RequestHandlerSelectors.basePackage("com.shilun.passport.web.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

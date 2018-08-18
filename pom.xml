@@ -13,7 +13,6 @@
         <module>service</module>
         <module>main</module>
     </modules>
-
     <build>
         <finalName>main</finalName>
         <plugins>
