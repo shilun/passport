@@ -1,9 +1,11 @@
 package com.shilun.passport.web.controller;
 
+import com.common.util.BeanCoper;
 import com.common.web.IExecute;
 import com.shilun.passport.domain.AdminUserInfo;
 import com.shilun.passport.service.AdminUserInfoService;
 import com.shilun.passport.web.AbstractClientController;
+import com.shilun.passport.web.controller.dto.AdminDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +28,15 @@ public class AdminUserInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "查询")
-    @RequestMapping("/admin/query")
+    @RequestMapping("/admin/list")
     @ResponseBody
-    public Map<String, Object> query(@RequestBody AdminUserInfo info) {
+    public Map<String, Object> list(@RequestBody AdminDto info) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return adminUserInfoService.query(info);
+                AdminUserInfo query=new AdminUserInfo();
+                BeanCoper.copyProperties(query,info);
+                return adminUserInfoService.queryByPage(query,info.getPageinfo().getPage());
             }
         });
     }
@@ -44,9 +48,9 @@ public class AdminUserInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "保存")
-    @RequestMapping("/admin/find")
+    @RequestMapping("/admin/view")
     @ResponseBody
-    public Map<String, Object> find(@RequestBody String content) {
+    public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -64,11 +68,13 @@ public class AdminUserInfoController extends AbstractClientController {
     @ApiOperation(value = "保存")
     @RequestMapping("/admin/save")
     @ResponseBody
-    public Map<String, Object> save(@RequestBody AdminUserInfo info) {
+    public Map<String, Object> save(@RequestBody AdminDto info) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                adminUserInfoService.save(info);
+                AdminUserInfo entity=new AdminUserInfo();
+                BeanCoper.copyProperties(entity,info);
+                adminUserInfoService.save(entity);
                 return null;
             }
         });

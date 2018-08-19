@@ -3,6 +3,7 @@ package com.shilun.passport.service.impl;
 import com.common.exception.BizException;
 import com.common.mongo.AbstractMongoService;
 import com.common.security.MD5;
+import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 import com.shilun.passport.domain.AdminUserInfo;
 import com.shilun.passport.service.AdminUserInfoService;
@@ -46,5 +47,11 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         entity.setId(info.getId());
         entity.setPasswd(MD5.MD5Str(newPass, passKey));
         up(entity);
+    }
+
+    @Override
+    public Long insert(AdminUserInfo entity) {
+        entity.setPin(StringUtils.getUUID());
+        return super.insert(entity);
     }
 }

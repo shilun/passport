@@ -25,4 +25,6 @@ public interface AdminUserInfoService extends MongoService<AdminUserInfo> {
      * @param newPass 新密码
      */
     void changePass(String pin, String oldPass, String newPass);
+
+
 }

@@ -1,11 +1,11 @@
-package com.shilun.passport.domain;
+package com.shilun.passport.web.controller.dto;
 
-import com.common.util.AbstractBaseEntity;
+import com.common.util.AbstractDTO;
 
 /**
- * 管理员角色信息
+ * 角色信息
  */
-public class RoleInfo extends AbstractBaseEntity {
+public class RoleDto extends AbstractDTO {
     /**
      * 名称
      */

@@ -1,9 +1,12 @@
 package com.shilun.passport.web.controller;
 
+import com.common.util.BeanCoper;
 import com.common.web.IExecute;
+import com.shilun.passport.domain.AdminUserInfo;
 import com.shilun.passport.domain.RoleInfo;
 import com.shilun.passport.service.RoleInfoService;
 import com.shilun.passport.web.AbstractClientController;
+import com.shilun.passport.web.controller.dto.RoleDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
@@ -26,13 +29,15 @@ public class RoleInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "查询")
-    @RequestMapping("/role/query")
+    @RequestMapping("/role/list")
     @ResponseBody
-    public Map<String, Object> query(@RequestBody RoleInfo info) {
+    public Map<String, Object> list(@RequestBody RoleDto info) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return roleInfoService.query(info);
+                RoleInfo entity=new RoleInfo();
+                BeanCoper.copyProperties(entity,info);
+                return roleInfoService.queryByPage(entity,info.getPageinfo().getPage());
             }
         });
     }
@@ -44,9 +49,9 @@ public class RoleInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "保存")
-    @RequestMapping("/role/find")
+    @RequestMapping("/role/view")
     @ResponseBody
-    public Map<String, Object> find(@RequestBody String content) {
+    public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -64,11 +69,13 @@ public class RoleInfoController extends AbstractClientController {
     @ApiOperation(value = "保存")
     @RequestMapping("/role/save")
     @ResponseBody
-    public Map<String, Object> save(@RequestBody RoleInfo info) {
+    public Map<String, Object> save(@RequestBody RoleDto info) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return roleInfoService.save(info);
+                RoleInfo entity=new RoleInfo();
+                BeanCoper.copyProperties(entity,info);
+                return roleInfoService.save(entity);
             }
         });
     }

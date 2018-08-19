@@ -1,13 +1,9 @@
-package com.shilun.passport.domain;
+package com.shilun.passport.web.controller.dto;
 
-import com.common.util.AbstractBaseEntity;
+import com.common.util.AbstractDTO;
 
-import java.util.Date;
 
-/**
- * 客户用户信息
- */
-public class ClientUserInfo extends AbstractBaseEntity {
+public class ClientUserDto extends AbstractDTO {
     /**
      * 用户pin
      */
@@ -82,7 +78,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
     public void setSexType(Integer sexType) {
         this.sexType = sexType;
     }
-
 
     public Integer getStatus() {
         return status;

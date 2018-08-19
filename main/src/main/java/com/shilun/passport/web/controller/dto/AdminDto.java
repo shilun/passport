@@ -1,13 +1,10 @@
-package com.shilun.passport.domain;
+package com.shilun.passport.web.controller.dto;
 
-import com.common.util.AbstractBaseEntity;
+import com.common.util.AbstractDTO;
 
-import java.util.Date;
+import java.io.Serializable;
 
-/**
- * 管理员用户信息
- */
-public class AdminUserInfo extends AbstractBaseEntity {
+public class AdminDto extends AbstractDTO implements Serializable {
     /**pin*/
     private String pin;
     /**妮称*/
@@ -25,9 +22,6 @@ public class AdminUserInfo extends AbstractBaseEntity {
     /**角色*/
     private Long[] roles;
 
-    public Long[] getRoles() {
-        return roles;
-    }
 
     public String getPin() {
         return pin;
@@ -83,6 +77,10 @@ public class AdminUserInfo extends AbstractBaseEntity {
 
     public void setSexType(Integer sexType) {
         this.sexType = sexType;
+    }
+
+    public Long[] getRoles() {
+        return roles;
     }
 
     public void setRoles(Long[] roles) {

@@ -30,8 +30,8 @@ public class MailInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "查询")
-    @RequestMapping("/mail/query")
-    public Map<String, Object> query(@RequestBody MailInfo info) {
+    @RequestMapping("/mail/list")
+    public Map<String, Object> list(@RequestBody MailInfo info) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -47,8 +47,8 @@ public class MailInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "保存")
-    @RequestMapping("/mail/find")
-    public Map<String, Object> find(@RequestBody String content) {
+    @RequestMapping("/mail/view")
+    public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
