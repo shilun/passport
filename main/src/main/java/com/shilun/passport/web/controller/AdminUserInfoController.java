@@ -6,6 +6,7 @@ import com.shilun.passport.domain.AdminUserInfo;
 import com.shilun.passport.service.AdminUserInfoService;
 import com.shilun.passport.web.AbstractClientController;
 import com.shilun.passport.web.controller.dto.AdminDto;
+import com.shilun.passport.web.controller.dto.PassDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,24 @@ public class AdminUserInfoController extends AbstractClientController {
             @Override
             public Object getData() {
                 return adminUserInfoService.findById(getIdByJson(content));
+            }
+        });
+    }
+
+    /**
+     * 初始化密码
+     * @param dto
+     * @return
+     */
+    @ApiOperation(value = "修改密码")
+    @RequestMapping("/admin/view")
+    @ResponseBody
+    public Map<String, Object> initPass(@RequestBody PassDto dto) {
+        return buildMessage(new IExecute() {
+            @Override
+            public Object getData() {
+                 adminUserInfoService.initPass(dto.getPin(),dto.getPass());
+                 return null;
             }
         });
     }

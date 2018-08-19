@@ -9,8 +9,6 @@ public class AdminDto extends AbstractDTO implements Serializable {
     private String pin;
     /**妮称*/
     private String name;
-    /**密码*/
-    private String passwd;
     /**状态*/
     private Integer status;
     /**电话*/
@@ -37,14 +35,6 @@ public class AdminDto extends AbstractDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPasswd() {
-        return passwd;
-    }
-
-    public void setPasswd(String passwd) {
-        this.passwd = passwd;
     }
 
     public Integer getStatus() {

@@ -50,6 +50,21 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
     }
 
     @Override
+    public void initPass(String pin, String pass) {
+        AdminUserInfo query = new AdminUserInfo();
+        query.setStatus(YesOrNoEnum.YES.getValue());
+        query.setPin(pin);
+        AdminUserInfo info = findByOne(query);
+        if (info == null) {
+            throw new BizException("oldPass.error", "旧密码错误");
+        }
+        AdminUserInfo entity = new AdminUserInfo();
+        entity.setId(info.getId());
+        entity.setPasswd(MD5.MD5Str(pass, passKey));
+        up(entity);
+    }
+
+    @Override
     public Long insert(AdminUserInfo entity) {
         entity.setPin(StringUtils.getUUID());
         return super.insert(entity);
