@@ -50,7 +50,6 @@ public class AdminUserInfoController extends AbstractClientController {
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/admin/view")
-    @ResponseBody
     public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(new IExecute() {
             @Override
@@ -66,8 +65,7 @@ public class AdminUserInfoController extends AbstractClientController {
      * @return
      */
     @ApiOperation(value = "修改密码")
-    @RequestMapping("/admin/view")
-    @ResponseBody
+    @RequestMapping("/admin/initPass")
     public Map<String, Object> initPass(@RequestBody PassDto dto) {
         return buildMessage(new IExecute() {
             @Override

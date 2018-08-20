@@ -1,5 +1,6 @@
 package com.shilun.passport.web.application;
 
+import com.alibaba.dubbo.spring.boot.annotation.EnableDubboConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -9,6 +10,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,MongoAutoConfiguration.class})
 @EnableRedisHttpSession
+@EnableDubboConfiguration
 @ComponentScan(basePackages = {"com.shilun", "com.common.config"})
 public class WebApplication {
     public static void main(String[] args) {

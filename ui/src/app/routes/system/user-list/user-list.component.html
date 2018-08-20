@@ -1,0 +1,47 @@
+<div class="content-heading">
+  客户管理列表
+</div>
+<div class="panel">
+  <div class="panel-body">
+    <form class="form-inline" role="form">
+      <div class="form-group">
+        <input class="form-control" name="name" type="text" [(ngModel)]="entity.name" placeholder="名称" />
+      </div>
+      <button class="btn btn-default btn-primary" type="button" (click)="list(entity)">查询</button>
+      <a class="btn btn-default" routerLink="/system/user/view">
+        <strong>添加</strong>
+      </a>
+    </form>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>pin</th>
+      <th>妮称</th>
+      <th>邮箱</th>
+      <th>手机</th>
+      <th>状态</th>
+      <th>创建时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let item of listData.list">
+      <tr>
+        <td>{{item.pin}}</td>
+        <td>{{item.nickName}}</td>
+        <td>{{item.email}}</td>
+        <td>{{item.phone}}</td>
+        <td>{{item.status}}</td>
+        <td>{{item.createTime}}</td>
+      </tr>
+    </ng-container>
+    </tbody>
+  </table>
+</div>
+
+<div class="text-right">
+  <pagination  class="pagination-sm"   [(ngModel)]="entity.page" [totalItems]="listData.totalCount" (pageChanged)="onPageChange($event)" ></pagination>
+</div>
