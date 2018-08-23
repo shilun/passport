@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 
 @Service
+@com.alibaba.dubbo.config.annotation.Service(version = "1.0.0")
 public class ClientUserInfoServiceImpl extends AbstractMongoService<com.shilun.passport.domain.ClientUserInfo> implements ClientUserInfoService {
     private static Logger logger = Logger.getLogger(ClientUserInfoServiceImpl.class);
     private final static String CLIENT_USER_CACHE = "passport.cache.{0}";
