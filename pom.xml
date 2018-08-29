@@ -4,17 +4,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.shilun</groupId>
+    <groupId>com.jiahou</groupId>
     <artifactId>passport</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>domain</module>
-        <module>service</module>
-        <module>main</module>
+        <module>com.passport.domain</module>
+        <module>com.passport.service</module>
+        <module>com.passport.main</module>
+        <module>com.passport.rpc</module>
     </modules>
+
+    <repositories>
+        <repository>
+            <id>releases</id>
+            <name>releases</name>
+            <url>http://192.168.31.150:8081/repository/maven-releases/</url>
+        </repository>
+    </repositories>
     <build>
-        <finalName>main</finalName>
+        <finalName>passport</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
