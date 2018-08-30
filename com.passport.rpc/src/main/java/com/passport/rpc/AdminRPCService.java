@@ -26,4 +26,11 @@ public interface AdminRPCService {
      * @return
      */
     RPCResult<List<String>> queryAdminRoles(String pin);
+
+    /**
+     * 验证用户token
+     * @param token
+     * @return
+     */
+    RPCResult<UserDTO> verificationToken(String token);
 }
