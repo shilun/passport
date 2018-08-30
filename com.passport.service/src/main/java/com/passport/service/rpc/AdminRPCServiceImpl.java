@@ -106,4 +106,21 @@ public class AdminRPCServiceImpl implements AdminRPCService {
         result.setCode("verificationToken.error");
         return result;
     }
+
+    @Override
+    public RPCResult<UserDTO> loginOut(String token) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        try {
+            String key = MessageFormat.format(ADMIN_LOGIN, token);
+            redisTemplate.delete(key);
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            logger.error("登出失败",e);
+        }
+        result.setSuccess(false);
+        result.setCode("passport.login.out.error");
+        result.setMessage("登出失败");
+        return result;
+    }
 }

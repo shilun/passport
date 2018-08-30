@@ -11,7 +11,7 @@
     <artifactId>com.passport.main</artifactId>
     <dependencies>
         <dependency>
-            <groupId>com.jiahou</groupId>
+            <groupId>passport</groupId>
             <artifactId>com.passport.service</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

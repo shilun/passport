@@ -33,4 +33,11 @@ public interface AdminRPCService {
      * @return
      */
     RPCResult<UserDTO> verificationToken(String token);
+
+    /**
+     * 登出
+     * @param token
+     * @return
+     */
+    RPCResult<UserDTO> loginOut(String token);
 }
