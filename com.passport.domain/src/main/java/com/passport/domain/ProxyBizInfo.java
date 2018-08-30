@@ -12,7 +12,7 @@ public class ProxyBizInfo extends AbstractBaseEntity {
      * 代理商id
      */
     private Long proxyId;
-    /**
+    /** 1 棋牌 2 彩票 3 小游戏
      * 申请业务
      */
     private Integer bizType;
@@ -24,6 +24,19 @@ public class ProxyBizInfo extends AbstractBaseEntity {
      * 结束时间
      */
     private Date endTime;
+
+    /**
+     * 1 启用 2 停用
+     */
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getProxyId() {
         return proxyId;

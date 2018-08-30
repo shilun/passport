@@ -10,6 +10,11 @@ public class ClientUserInfo extends AbstractBaseEntity {
      * 用户pin
      */
     private String pin;
+
+    /**
+     * 代理商id
+     */
+    private Long proxyId;
     /**
      * 昵称
      */
@@ -32,6 +37,14 @@ public class ClientUserInfo extends AbstractBaseEntity {
      * 用户状态
      */
     private Integer status;
+
+    public Long getProxyId() {
+        return proxyId;
+    }
+
+    public void setProxyId(Long proxyId) {
+        this.proxyId = proxyId;
+    }
 
     public String getPin() {
         return pin;
