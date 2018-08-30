@@ -14,7 +14,7 @@ public interface UserRPCService {
      * @param account 手机或邮箱
      * @return
      */
-    RPCResult<String> regist(String account);
+    RPCResult<Boolean> regist(String account);
 
     /**
      * 验证注册
@@ -23,7 +23,7 @@ public interface UserRPCService {
      * @param vcode   验证码
      * @return
      */
-    RPCResult<UserDTO> registVerification(String account, String vcode);
+    RPCResult<UserDTO> registVerification(String account, String vcode,String pass);
 
     /**
      * 根据pin查询用户
@@ -73,7 +73,7 @@ public interface UserRPCService {
      * @param passwd
      * @return
      */
-    RPCResult<Boolean> initPass(String account, String passwd);
+    RPCResult<Boolean> initPass(String pin, String passwd);
 
     /**
      * 修改手机号码发送验证码

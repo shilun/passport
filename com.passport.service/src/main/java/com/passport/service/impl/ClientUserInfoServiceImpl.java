@@ -80,7 +80,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public ClientUserInfo findByPhone(String phone) {
         ClientUserInfo clientUserInfo = new ClientUserInfo();
         clientUserInfo.setPhone(phone);
-        clientUserInfo.setDelStatus(YesOrNoEnum.NO.getValue());
         return this.findByOne(clientUserInfo);
     }
 
