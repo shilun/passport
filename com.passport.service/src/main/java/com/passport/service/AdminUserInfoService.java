@@ -19,6 +19,13 @@ public interface AdminUserInfoService extends MongoService<AdminUserInfo> {
 
 
     /**
+     * @param pin
+     * @return
+     */
+    AdminUserInfo findByPin(String pin);
+
+
+    /**
      * 修改密码
      *
      * @param oldPass 旧密码

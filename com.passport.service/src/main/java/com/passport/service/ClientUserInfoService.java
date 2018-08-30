@@ -9,12 +9,12 @@ import com.passport.domain.ClientUserInfo;
 public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /**
      * 登录
-     *
+     *@param proxyId 代理iD
      * @param loginName
      * @param passwd
      * @return
      */
-    ClientUserInfo login(String loginName, String passwd);
+    ClientUserInfo login(Long proxyId,String loginName, String passwd);
 
     /**
      * @param pin
@@ -23,10 +23,11 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     ClientUserInfo findByPin(String pin);
 
     /**
+     *  *@param proxyId 代理iD
      * @param phone
      * @return
      */
-    ClientUserInfo findByPhone(String phone);
+    ClientUserInfo findByPhone(Long proxyId,String phone);
 
     /**
      * 修改用户密码

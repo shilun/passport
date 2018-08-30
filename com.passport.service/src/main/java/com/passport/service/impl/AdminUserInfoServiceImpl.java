@@ -31,6 +31,13 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         return info;
     }
 
+    public AdminUserInfo findByPin(String pin) {
+        AdminUserInfo query = new AdminUserInfo();
+        query.setPin(pin);
+        query.setDelStatus(YesOrNoEnum.NO.getValue());
+        return findByOne(query);
+    }
+
 
     @Override
     public void changePass(String pin, String oldPass, String newPass) {

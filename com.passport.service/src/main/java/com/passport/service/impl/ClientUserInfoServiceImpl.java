@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserInfo> implements ClientUserInfoService {
@@ -33,13 +34,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return ClientUserInfo.class;
     }
 
-    public ClientUserInfo login(String loginName, String passwd) {
-        if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd)) {
+    public ClientUserInfo login(Long proxyId,String loginName, String passwd) {
+        if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd)||proxyId==null) {
             return null;
         }
         ClientUserInfo query = new ClientUserInfo();
         query.setPasswd(MD5.MD5Str(passwd, passKey));
         query.setStatus(UserStatusEnum.Normal.getValue());
+        query.setProxyId(proxyId);
         query.setDelStatus(YesOrNoEnum.NO.getValue());
         boolean account = false;
         if (StringUtils.isMobileNO(loginName)) {
@@ -69,7 +71,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             query.setDelStatus(YesOrNoEnum.NO.getValue());
             user = findByOne(query);
             if (user != null) {
-                redisTemplate.opsForValue().set(userKey, user, USER_SESSION_TIME);
+                redisTemplate.opsForValue().set(userKey, user, USER_SESSION_TIME, TimeUnit.MINUTES);
             }
             return user;
         } else {
@@ -77,8 +79,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
     }
 
-    public ClientUserInfo findByPhone(String phone) {
+    public ClientUserInfo findByPhone(Long proxyId,String phone) {
         ClientUserInfo clientUserInfo = new ClientUserInfo();
+        clientUserInfo.setProxyId(proxyId);
         clientUserInfo.setPhone(phone);
         return this.findByOne(clientUserInfo);
     }
