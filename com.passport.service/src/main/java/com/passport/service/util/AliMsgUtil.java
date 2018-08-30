@@ -10,6 +10,8 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
@@ -17,6 +19,8 @@ import java.util.Random;
  * 阿里云短信接口工具类
  */
 public class AliMsgUtil {
+
+    private static Logger logger= LoggerFactory.getLogger(AliMsgUtil.class);
 
     //初始化ascClient需要的几个参数
     private final static String product = "Dysmsapi";//短信API产品名称（短信产品名固定，无需修改）
@@ -31,7 +35,7 @@ public class AliMsgUtil {
     /*
      * 将短信发送频率限制在正常的业务流控范围内，默认流控：短信验证码 ：使用同一个签名，对同一个手机号码发送短信验证码，支持1条/分钟，5条/小时 ，累计10条/天。
      */
-    public static SendSmsResponse sendMsgSingle(String mobile, String code) {
+    public static Boolean sendMsgSingle(String mobile, String code) {
         //设置超时时间-可自行调整
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -59,15 +63,18 @@ public class AliMsgUtil {
         param.put("product", "dsh");
         param.put("code", code);
         request.setTemplateParam(param.toString());
-        SendSmsResponse sendSmsResponse = null;
+        SendSmsResponse sendSmsResponse;
         try {
             sendSmsResponse = acsClient.getAcsResponse(request);
-        } catch (ServerException e) {
-            e.printStackTrace();
-        } catch (ClientException e) {
+            Boolean isSuccess="OK".equals(sendSmsResponse.getCode());
+            if(!isSuccess){
+                logger.error(sendSmsResponse.getCode()+";"+sendSmsResponse.getMessage());
+            }
+            return isSuccess;
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return sendSmsResponse;
+        return false;
     }
 
     /**
