@@ -15,13 +15,6 @@
         <module>com.passport.rpc</module>
     </modules>
 
-    <repositories>
-        <repository>
-            <id>releases</id>
-            <name>releases</name>
-            <url>http://192.168.31.150:8081/repository/maven-releases/</url>
-        </repository>
-    </repositories>
     <build>
         <finalName>passport</finalName>
         <plugins>

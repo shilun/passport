@@ -5,7 +5,6 @@ import com.common.util.IGlossary;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
-import com.common.web.IExecute;
 import com.passport.web.AbstractClientController;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +30,7 @@ public class GlobalController extends AbstractClientController {
     @RequestMapping(value = "/global/type/{type}")
     @ResponseBody
     public Map<String, Object> buildGlossery(@PathVariable("type") String type) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
+        return buildMessage(()->{
                 List<Map<String, Object>> keyValues = new ArrayList<Map<String, Object>>();
                 if (StringUtils.isBlank(type)) {
                     throw new ApplicationException("buildGlossery Error unKnow type");
@@ -47,7 +44,6 @@ public class GlobalController extends AbstractClientController {
                     keyValues.add(item);
                 }
                 return keyValues;
-            }
         });
     }
 }

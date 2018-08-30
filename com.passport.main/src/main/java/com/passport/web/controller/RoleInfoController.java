@@ -1,7 +1,6 @@
 package com.passport.web.controller;
 
 import com.common.util.BeanCoper;
-import com.common.web.IExecute;
 import com.passport.domain.RoleInfo;
 import com.passport.service.RoleInfoService;
 import com.passport.web.AbstractClientController;
@@ -30,13 +29,10 @@ public class RoleInfoController extends AbstractClientController {
     @RequestMapping("/role/list")
     @ResponseBody
     public Map<String, Object> list(@RequestBody RoleDto info) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                RoleInfo entity=new RoleInfo();
-                BeanCoper.copyProperties(entity,info);
-                return roleInfoService.queryByPage(entity,info.getPageinfo().getPage());
-            }
+        return buildMessage(() -> {
+            RoleInfo entity = new RoleInfo();
+            BeanCoper.copyProperties(entity, info);
+            return roleInfoService.queryByPage(entity, info.getPageinfo().getPage());
         });
     }
 
@@ -50,12 +46,7 @@ public class RoleInfoController extends AbstractClientController {
     @RequestMapping("/role/view")
     @ResponseBody
     public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                return roleInfoService.findById(getIdByJson(content));
-            }
-        });
+        return buildMessage(() -> roleInfoService.findById(getIdByJson(content)));
     }
 
     /**
@@ -68,13 +59,10 @@ public class RoleInfoController extends AbstractClientController {
     @RequestMapping("/role/save")
     @ResponseBody
     public Map<String, Object> save(@RequestBody RoleDto info) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                RoleInfo entity=new RoleInfo();
-                BeanCoper.copyProperties(entity,info);
-                return roleInfoService.save(entity);
-            }
-        });
-    }
+        return buildMessage(() -> {
+            RoleInfo entity = new RoleInfo();
+            BeanCoper.copyProperties(entity, info);
+            return roleInfoService.save(entity);
+    });
+}
 }

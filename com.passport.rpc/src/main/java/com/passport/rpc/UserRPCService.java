@@ -69,7 +69,7 @@ public interface UserRPCService {
     /**
      * 初始化密码
      *
-     * @param account
+     * @param pin
      * @param passwd
      * @return
      */

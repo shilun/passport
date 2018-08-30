@@ -11,5 +11,5 @@ public interface SMSInfoRPCService {
      *
      * @param mobile 手机号码
      */
-    public RPCResult<Boolean> buildSMSCode( String mobile,String content, String source);
+     RPCResult<Boolean> buildSMSCode( String mobile,String content, String source);
 }
