@@ -10,6 +10,7 @@ import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.text.MessageFormat;
 @com.alibaba.dubbo.config.annotation.Service(version = "1.0.0")
 public class UserRPCServiceImpl implements UserRPCService {
 
+    private final Logger logger = Logger.getLogger(UserRPCServiceImpl.class);
 
     @Value("${app.passKey}")
     private String passKey;
@@ -68,23 +70,28 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Override
     public RPCResult<UserDTO> registVerification(String account, String vcode, String pass) {
         RPCResult<UserDTO> result = new RPCResult<>();
-        String key = MessageFormat.format(PASS_USER_REG, account);
-        String o = (String) redisTemplate.opsForValue().get(key);
-        if (o.equalsIgnoreCase(vcode)) {
-            result.setSuccess(true);
-            ClientUserInfo entity = new ClientUserInfo();
-            entity.setPin(StringUtils.getUUID());
-            entity.setPhone(account);
-            entity.setNickName(account);
-            entity.setSexType(SexEnum.MALE.getValue());
-            entity.setStatus(YesOrNoEnum.YES.getValue());
-            entity.setPasswd(MD5.MD5Str(pass, passKey));
-            clientUserInfoService.save(entity);
-            UserDTO dto = new UserDTO();
-            BeanCoper.copyProperties(dto, entity);
-            result.setData(dto);
-            result.setSuccess(true);
-            return result;
+        try {
+            String key = MessageFormat.format(PASS_USER_REG, account);
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if (o.equalsIgnoreCase(vcode)) {
+                result.setSuccess(true);
+                ClientUserInfo entity = new ClientUserInfo();
+                entity.setPin(StringUtils.getUUID());
+                entity.setPhone(account);
+                entity.setNickName(account);
+                entity.setSexType(SexEnum.MALE.getValue());
+                entity.setStatus(YesOrNoEnum.YES.getValue());
+                entity.setPasswd(MD5.MD5Str(pass, passKey));
+                clientUserInfoService.save(entity);
+                UserDTO dto = new UserDTO();
+                BeanCoper.copyProperties(dto, entity);
+                result.setData(dto);
+                result.setSuccess(true);
+                return result;
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            logger.error("验证注册失败", e);
         }
         result.setSuccess(false);
         result.setCode("registVerification.error");
