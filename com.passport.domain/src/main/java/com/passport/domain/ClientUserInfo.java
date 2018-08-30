@@ -2,6 +2,8 @@ package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
 
+import java.util.Date;
+
 /**
  * 客户用户信息
  */
@@ -38,6 +40,7 @@ public class ClientUserInfo extends AbstractBaseEntity {
      */
     private Integer status;
 
+    private Date birthDay;
     public Long getProxyId() {
         return proxyId;
     }
@@ -101,5 +104,13 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
     }
 }

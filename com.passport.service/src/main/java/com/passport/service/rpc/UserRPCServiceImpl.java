@@ -1,5 +1,6 @@
 package com.passport.service.rpc;
 
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
@@ -10,6 +11,7 @@ import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.util.AliMsgUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 @com.alibaba.dubbo.config.annotation.Service(version = "1.0.0")
@@ -30,6 +34,8 @@ public class UserRPCServiceImpl implements UserRPCService {
      * 用户注册redis key
      */
     private final String PASS_USER_REG = "pass.user.reg.{0}";
+    private final String PASS_USER_CHANGE_BY_MOBILE = "pass.user.change.by.mobile.{0}";
+    private final String MOBILE_USER_CHANGE = "mobile.user.change.{0}";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -145,22 +151,194 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<Boolean> changeMobile(String pin, String mobile, String msg) {
-        return null;
+        RPCResult result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(mobile) || StringUtils.isBlank(msg)) {
+                result.setCode("changeMobile.error.param.blank");
+                result.setMessage("param不能为空");
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                result.setSuccess(false);
+                return result;
+            }
+
+            String key = MessageFormat.format(MOBILE_USER_CHANGE, pin);
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if(o == null){
+                result.setCode("get code error");
+                result.setMessage("验证码过期");
+                result.setSuccess(false);
+                return result;
+            }
+
+            userInfo.setPhone(mobile);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changeMobile.fail");
+                result.setMessage("修改手机号失败");
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("changePass.error");
+            result.setMessage("修改手机号异常");
+            logger.error("修改手机号异常",e);
+        }
+        return result;
     }
 
     @Override
     public RPCResult<Boolean> changePass(String pin, String oldPass, String newPass) {
-        return null;
+        RPCResult result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin)) {
+                result.setCode("changePass.error.pin.blank");
+                result.setMessage("pin不能为空");
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                result.setSuccess(false);
+                return result;
+            }
+
+            oldPass = MD5.MD5Str(oldPass);
+            if(!oldPass.equals(userInfo.getPasswd())){
+                result.setCode("pass error");
+                result.setMessage("密码错误");
+                result.setSuccess(false);
+                return result;
+            }
+
+            userInfo.setPasswd(MD5.MD5Str(newPass));
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changePass.fail");
+                result.setMessage("修改密码失败");
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("changePass.error");
+            result.setMessage("修改密码异常");
+            logger.error("修改密码异常",e);
+        }
+        return result;
     }
 
     @Override
     public RPCResult<Boolean> changePassByMobile(String pin, String mobile, String msg, String password) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin) || StringUtils.isMobileNO(mobile)) {
+                result.setCode("forgetPass.error.param.blank");
+                result.setMessage("参数不能为空");
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                result.setSuccess(false);
+                return result;
+            }
+            if(!mobile.equals(userInfo.getPhone())){
+                result.setCode("mobile error");
+                result.setMessage("pin 与 mobile 不匹配");
+                result.setSuccess(false);
+                return result;
+            }
+
+            String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, pin);
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if(o == null){
+                result.setCode("get code error");
+                result.setMessage("验证码过期");
+                result.setSuccess(false);
+                return result;
+            }
+            if(!o.equals(msg)){
+                result.setCode("code error");
+                result.setMessage("验证码错误");
+                result.setSuccess(false);
+                return result;
+            }
+
+            password = MD5.MD5Str(password);
+            if(!password.equals(userInfo.getPasswd())){
+                result.setCode("pass error");
+                result.setMessage("密码错误");
+                result.setSuccess(false);
+                return result;
+            }
+            userInfo.setPasswd(password);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changePassByMobile.fail");
+                result.setMessage("修改密码失败");
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("changePassByMobile.error");
+            result.setMessage("修改密码异常");
+            logger.error("修改密码异常",e);
+        }
+        return result;
     }
 
     @Override
     public RPCResult<Boolean> changePassByMobileBuildMsg(String pin, String mobile) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin) || StringUtils.isMobileNO(mobile)) {
+                result.setCode("forgetPass.error.param.blank");
+                result.setMessage("参数不能为空");
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                result.setSuccess(false);
+                return result;
+            }
+            if(!mobile.equals(userInfo.getPhone())){
+                result.setCode("mobile error");
+                result.setMessage("pin 与 mobile 不匹配");
+                result.setSuccess(false);
+                return result;
+            }
+
+            //TODO  生成短信验证码
+            boolean res = AliMsgUtil.sendMsgSingle(mobile, AliMsgUtil.randomSixCode());
+            if(res){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changePassByMobileBuildMsg.error");
+                result.setMessage("发送验证码失败");
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("changePassByMobileBuildMsg.error");
+            result.setMessage("发送验证码异常");
+            logger.error("发送验证码异常",e);
+        }
+        return result;
     }
 
     @Override
@@ -175,16 +353,111 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<Boolean> changeNickName(String pin, String nickName) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            if(StringUtils.isBlank(pin) || StringUtils.isBlank(nickName)){
+                result.setSuccess(false);
+                result.setCode("param.error");
+                result.setMessage("参数错误");
+                return result;
+            }
+
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if(userInfo == null){
+                result.setSuccess(false);
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                return result;
+            }
+
+            userInfo.setNickName(nickName);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changeNickName.fail");
+                result.setMessage("修改昵称失败");
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("changeNickName.error");
+            result.setMessage("修改昵称错误");
+            logger.error("修改昵称异常",e);
+        }
+        return result;
     }
 
     @Override
     public RPCResult<Boolean> changeSex(String pin, Integer sexType) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            if(StringUtils.isBlank(pin) || (sexType != SexEnum.MALE.getValue() && sexType != SexEnum.FEMALE.getValue())){
+                result.setSuccess(false);
+                result.setCode("param.error");
+                result.setMessage("参数错误");
+                return result;
+            }
+
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if(userInfo == null){
+                result.setSuccess(false);
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                return result;
+            }
+
+            userInfo.setSexType(sexType);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changeSex.fail");
+                result.setMessage("修改性别失败");
+
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("changeSex.error");
+            result.setMessage("修改性别错误");
+            logger.error("修改性别异常",e);
+        }
+        return result;
     }
 
     @Override
     public RPCResult<Boolean> changeBirthday(String pin, String date) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            if(StringUtils.isBlank(pin) || StringUtils.isBlank(date)){
+                result.setSuccess(false);
+                result.setCode("param.error");
+                result.setMessage("参数错误");
+                return result;
+            }
+
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if(userInfo == null){
+                result.setSuccess(false);
+                result.setCode("user is null");
+                result.setMessage("用户不存在");
+                return result;
+            }
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date d = sdf.parse(date);
+            userInfo.setBirthDay(d);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("changeBirthday.fail");
+                result.setMessage("修改生日失败");
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("changeBirthday.error");
+            result.setMessage("修改生日错误");
+            logger.error("修改生日异常",e);
+        }
+        return result;
     }
 }
