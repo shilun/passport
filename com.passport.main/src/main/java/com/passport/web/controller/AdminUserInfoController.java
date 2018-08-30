@@ -1,7 +1,6 @@
 package com.passport.web.controller;
 
 import com.common.util.BeanCoper;
-import com.common.web.IExecute;
 import com.passport.domain.AdminUserInfo;
 import com.passport.web.controller.dto.AdminDto;
 import com.passport.service.AdminUserInfoService;
@@ -32,14 +31,11 @@ public class AdminUserInfoController extends AbstractClientController {
     @RequestMapping("/admin/list")
     @ResponseBody
     public Map<String, Object> list(@RequestBody AdminDto info) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
+        return buildMessage(()->{
                 AdminUserInfo query=new AdminUserInfo();
                 BeanCoper.copyProperties(query,info);
                 return adminUserInfoService.queryByPage(query,info.getPageinfo().getPage());
-            }
-        });
+            });
     }
 
     /**
@@ -51,12 +47,8 @@ public class AdminUserInfoController extends AbstractClientController {
     @ApiOperation(value = "保存")
     @RequestMapping("/admin/view")
     public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                return adminUserInfoService.findById(getIdByJson(content));
-            }
-        });
+        return buildMessage(()->
+                 adminUserInfoService.findById(getIdByJson(content)));
     }
 
     /**
@@ -67,12 +59,9 @@ public class AdminUserInfoController extends AbstractClientController {
     @ApiOperation(value = "修改密码")
     @RequestMapping("/admin/initPass")
     public Map<String, Object> initPass(@RequestBody PassDto dto) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
+        return buildMessage(()->{
                  adminUserInfoService.initPass(dto.getPin(),dto.getPass());
                  return null;
-            }
         });
     }
 
@@ -86,14 +75,11 @@ public class AdminUserInfoController extends AbstractClientController {
     @RequestMapping("/admin/save")
     @ResponseBody
     public Map<String, Object> save(@RequestBody AdminDto info) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
+        return buildMessage(()->{
                 AdminUserInfo entity=new AdminUserInfo();
                 BeanCoper.copyProperties(entity,info);
                 adminUserInfoService.save(entity);
                 return null;
-            }
         });
     }
 

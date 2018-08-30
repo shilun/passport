@@ -1,10 +1,6 @@
 package com.passport.domain;
 
-import com.common.annotation.QueryField;
-import com.common.mongo.QueryType;
 import com.common.util.AbstractBaseEntity;
-
-import java.util.Date;
 
 /**
  * 管理员用户信息

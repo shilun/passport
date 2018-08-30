@@ -1,6 +1,5 @@
 package com.passport.web.controller;
 
-import com.common.web.IExecute;
 import com.passport.domain.MailInfo;
 import com.passport.service.MailInfoService;
 import com.passport.web.AbstractClientController;
@@ -30,12 +29,7 @@ public class MailInfoController extends AbstractClientController {
     @ApiOperation(value = "查询")
     @RequestMapping("/mail/list")
     public Map<String, Object> list(@RequestBody MailInfo info) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                return mailInfoService.query(info);
-            }
-        });
+        return buildMessage(() -> mailInfoService.query(info));
     }
 
     /**
@@ -47,12 +41,7 @@ public class MailInfoController extends AbstractClientController {
     @ApiOperation(value = "保存")
     @RequestMapping("/mail/view")
     public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                return mailInfoService.findById(getIdByJson(content));
-            }
-        });
+        return buildMessage(() -> mailInfoService.findById(getIdByJson(content)));
     }
 
     /**
@@ -64,11 +53,6 @@ public class MailInfoController extends AbstractClientController {
     @ApiOperation(value = "保存")
     @RequestMapping("/mail/save")
     public Map<String, Object> save(@RequestBody MailInfo info) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                return mailInfoService.save(info);
-            }
-        });
+        return buildMessage(() -> mailInfoService.save(info));
     }
 }
