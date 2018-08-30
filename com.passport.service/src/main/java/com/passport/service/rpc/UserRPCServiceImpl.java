@@ -100,11 +100,10 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
         } catch (Exception e) {
             result.setSuccess(false);
+            result.setCode("registVerification.error");
+            result.setMessage("注册验证失败");
             logger.error("验证注册失败", e);
         }
-        result.setSuccess(false);
-        result.setCode("registVerification.error");
-        result.setMessage("注册验证失败");
         return result;
     }
 
@@ -239,19 +238,25 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
+            if(!o.equals(msg)){
+                result.setCode(CodeConstant.VERIFICATION_FAIL);
+                result.setMessage(MessageConstant.VERIFICATION_FAIL);
+                result.setSuccess(false);
+                return result;
+            }
             userInfo.setPhone(mobile);
             if(clientUserInfoService.save(userInfo) > 0){
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("bindMobile.fail");
-                result.setMessage("绑定手机号失败");
+                result.setCode(CodeConstant.BIND_MOBILE_FAIL);
+                result.setMessage(MessageConstant.BIND_MOBILE_FAIL);
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setCode("changePass.error");
-            result.setMessage("绑定手机号异常");
-            logger.error("绑定手机号异常",e);
+            result.setCode(CodeConstant.BIND_MOBILE_FAIL);
+            result.setMessage(MessageConstant.BIND_MOBILE_FAIL);
+            logger.error(MessageConstant.BIND_MOBILE_FAIL,e);
         }
         return result;
     }
@@ -283,19 +288,26 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
+            if(!o.equals(msg)){
+                result.setCode(CodeConstant.VERIFICATION_FAIL);
+                result.setMessage(MessageConstant.VERIFICATION_FAIL);
+                result.setSuccess(false);
+                return result;
+            }
+
             userInfo.setPhone(mobile);
             if(clientUserInfoService.save(userInfo) > 0){
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changeMobile.fail");
-                result.setMessage("修改手机号失败");
+                result.setCode(CodeConstant.CHANGE_MOBILE_FAIL);
+                result.setMessage(MessageConstant.CHANGE_MOBILE_FAIL);
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setCode("changePass.error");
-            result.setMessage("修改手机号异常");
-            logger.error("修改手机号异常",e);
+            result.setCode(CodeConstant.CHANGE_MOBILE_FAIL);
+            result.setMessage(MessageConstant.CHANGE_MOBILE_FAIL);
+            logger.error(MessageConstant.CHANGE_MOBILE_FAIL,e);
         }
         return result;
     }
@@ -320,8 +332,8 @@ public class UserRPCServiceImpl implements UserRPCService {
 
             oldPass = MD5.MD5Str(oldPass);
             if(!oldPass.equals(userInfo.getPasswd())){
-                result.setCode("pass error");
-                result.setMessage("密码错误");
+                result.setCode(CodeConstant.PASS_ERROR);
+                result.setMessage(MessageConstant.PASS_ERROR);
                 result.setSuccess(false);
                 return result;
             }
@@ -331,14 +343,14 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changePass.fail");
-                result.setMessage("修改密码失败");
+                result.setCode(CodeConstant.CHANGE_PASS_FAIL);
+                result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setCode("changePass.error");
-            result.setMessage("修改密码异常");
-            logger.error("修改密码异常",e);
+            result.setCode(CodeConstant.CHANGE_PASS_FAIL);
+            result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
+            logger.error(MessageConstant.CHANGE_PASS_FAIL,e);
         }
         return result;
     }
@@ -361,8 +373,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
             if(!mobile.equals(userInfo.getPhone())){
-                result.setCode("mobile error");
-                result.setMessage("pin 与 mobile 不匹配");
+                result.setCode(CodeConstant.MOBILE_NOT_BELONG_USER);
+                result.setMessage(MessageConstant.MOBILE_NOT_BELONG_USER);
                 result.setSuccess(false);
                 return result;
             }
@@ -370,22 +382,22 @@ public class UserRPCServiceImpl implements UserRPCService {
             String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, pin);
             String o = (String) redisTemplate.opsForValue().get(key);
             if(o == null){
-                result.setCode("get code error");
-                result.setMessage("验证码过期");
+                result.setCode(CodeConstant.CODE_TIMEOUT);
+                result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
             if(!o.equals(msg)){
-                result.setCode("code error");
-                result.setMessage("验证码错误");
+                result.setCode(CodeConstant.VERIFICATION_FAIL);
+                result.setMessage(MessageConstant.VERIFICATION_FAIL);
                 result.setSuccess(false);
                 return result;
             }
 
             password = MD5.MD5Str(password);
             if(!password.equals(userInfo.getPasswd())){
-                result.setCode("pass error");
-                result.setMessage("密码错误");
+                result.setCode(CodeConstant.PASS_ERROR);
+                result.setMessage(MessageConstant.PASS_ERROR);
                 result.setSuccess(false);
                 return result;
             }
@@ -394,14 +406,14 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changePassByMobile.fail");
-                result.setMessage("修改密码失败");
+                result.setCode(CodeConstant.CHANGE_PASS_FAIL);
+                result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setCode("changePassByMobile.error");
-            result.setMessage("修改密码异常");
-            logger.error("修改密码异常",e);
+            result.setCode(CodeConstant.CHANGE_PASS_FAIL);
+            result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
+            logger.error(MessageConstant.CHANGE_PASS_FAIL,e);
         }
         return result;
     }
@@ -424,8 +436,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
             if(!mobile.equals(userInfo.getPhone())){
-                result.setCode("mobile error");
-                result.setMessage("pin 与 mobile 不匹配");
+                result.setCode(CodeConstant.MOBILE_NOT_BELONG_USER);
+                result.setMessage(MessageConstant.MOBILE_NOT_BELONG_USER);
                 result.setSuccess(false);
                 return result;
             }
@@ -483,14 +495,14 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changeNickName.fail");
-                result.setMessage("修改昵称失败");
+                result.setCode(CodeConstant.CHANGE_NICK_FAIL);
+                result.setMessage(MessageConstant.CHANGE_NICK_FAIL);
             }
         }catch (Exception e){
             result.setSuccess(false);
-            result.setCode("changeNickName.error");
-            result.setMessage("修改昵称错误");
-            logger.error("修改昵称异常",e);
+            result.setCode(CodeConstant.CHANGE_NICK_FAIL);
+            result.setMessage(MessageConstant.CHANGE_NICK_FAIL);
+            logger.error(MessageConstant.CHANGE_NICK_FAIL,e);
         }
         return result;
     }
@@ -519,15 +531,15 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changeSex.fail");
-                result.setMessage("修改性别失败");
+                result.setCode(CodeConstant.CHANGE_SEX_FAIL);
+                result.setMessage(MessageConstant.CHANGE_SEX_FAIL);
 
             }
         }catch (Exception e){
             result.setSuccess(false);
-            result.setCode("changeSex.error");
-            result.setMessage("修改性别错误");
-            logger.error("修改性别异常",e);
+            result.setCode(CodeConstant.CHANGE_SEX_FAIL);
+            result.setMessage(MessageConstant.CHANGE_SEX_FAIL);
+            logger.error(MessageConstant.CHANGE_SEX_FAIL,e);
         }
         return result;
     }
@@ -557,14 +569,14 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changeBirthday.fail");
-                result.setMessage("修改生日失败");
+                result.setCode(CodeConstant.CHANGE_BIRTHDAY_FAIL);
+                result.setMessage(MessageConstant.CHANGE_BIRTHDAY_FAIL);
             }
         }catch (Exception e){
             result.setSuccess(false);
-            result.setCode("changeBirthday.error");
-            result.setMessage("修改生日错误");
-            logger.error("修改生日异常",e);
+            result.setCode(CodeConstant.CHANGE_BIRTHDAY_FAIL);
+            result.setMessage(MessageConstant.CHANGE_BIRTHDAY_FAIL);
+            logger.error(MessageConstant.CHANGE_BIRTHDAY_FAIL,e);
         }
         return result;
     }
