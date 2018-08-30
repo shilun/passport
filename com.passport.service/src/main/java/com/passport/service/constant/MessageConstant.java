@@ -7,6 +7,7 @@ package com.passport.service.constant;
 public class MessageConstant {
     public static final String USER_NULL = "用户为空";
     public static final String PARAM_NULL = "参数为空";
+    public static final String PARAM_FORMAT_ERROR = "参数格式化错误";
     public static final String SEND_CODE_FAIL = "发送验证码失败";
     public static final String VERIFICATION_FAIL = "验证码校验失败";
     public static final String CODE_TIMEOUT = "验证码过期";
@@ -19,4 +20,7 @@ public class MessageConstant {
     public static final String CHANGE_NICK_FAIL = "修改昵称失败";
     public static final String CHANGE_SEX_FAIL = "修改性别失败";
     public static final String CHANGE_BIRTHDAY_FAIL = "修改生日失败";
+    public static final String FIND_USER_FAIL = "查找用户失败";
+    public static final String MOBILE_EXIST = "手机号已存在";
+    public static final String REG_FAIL = "注册失败";
 }

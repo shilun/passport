@@ -14,7 +14,7 @@ public interface UserRPCService {
      * @param account 手机或邮箱
      * @return
      */
-    RPCResult<Boolean> regist(String account);
+    RPCResult<Boolean> regist(Long proxyId,String account);
 
     /**
      * 验证注册
@@ -23,7 +23,7 @@ public interface UserRPCService {
      * @param vcode   验证码
      * @return
      */
-    RPCResult<UserDTO> registVerification(String account, String vcode,String pass);
+    RPCResult<UserDTO> registVerification(Long proxyId,String account, String vcode,String pass);
 
     /**
      * 根据pin查询用户
@@ -38,7 +38,7 @@ public interface UserRPCService {
      * @param account 手机或邮箱
      * @return
      */
-    RPCResult<UserDTO> findByAccount(String account);
+    RPCResult<UserDTO> findByAccount(Long proxyId,String account);
 
 
     /**
@@ -56,7 +56,7 @@ public interface UserRPCService {
      * @param vcode
      * @return
      */
-    RPCResult<UserDTO> loginCodeBuildVerification(String account, String vcode);
+    RPCResult<UserDTO> loginCodeBuildVerification(Long proxyId,String account, String vcode);
 
     /***
      *密码登录
@@ -64,7 +64,7 @@ public interface UserRPCService {
      * @param passwrd
      * @return
      */
-    RPCResult<UserDTO> login(String account, String passwrd);
+    RPCResult<UserDTO> login(Long proxyId,String account, String passwrd);
 
     /**
      * 初始化密码
