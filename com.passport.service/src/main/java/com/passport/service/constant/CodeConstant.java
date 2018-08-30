@@ -7,6 +7,8 @@ package com.passport.service.constant;
 public class CodeConstant {
     public static final String USER_NULL = "user is null";
     public static final String PARAM_NULL = "param is null";
+    public static final String SEND_CODE_FAIL = "send code fail";
     public static final String VERIFICATION_FAIL = "verification fail";
+    public static final String CODE_TIMEOUT = "code timeout";
     public static final String REG_VERIFICATION_FAIL = "reg verification fail";
 }

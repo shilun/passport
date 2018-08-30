@@ -11,6 +11,9 @@ import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.constant.CodeConstant;
+import com.passport.service.constant.MessageConstant;
+import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliMsgUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +39,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     private final String PASS_USER_REG = "pass.user.reg.{0}";
     private final String PASS_USER_CHANGE_BY_MOBILE = "pass.user.change.by.mobile.{0}";
     private final String MOBILE_USER_CHANGE = "mobile.user.change.{0}";
+    private final String MOBILE_USER_BIND = "mobile.user.bind.{0}";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -136,33 +140,136 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<Boolean> changeMobileBuildMsg(String pin, String mobile) {
-        return null;
-    }
-
-    @Override
-    public RPCResult<Boolean> bindMobileBuildMsg(String pin, String mobile) {
-        return null;
-    }
-
-    @Override
-    public RPCResult<Boolean> bindMobile(String pin, String mobile, String msg) {
-        return null;
-    }
-
-    @Override
-    public RPCResult<Boolean> changeMobile(String pin, String mobile, String msg) {
-        RPCResult result = new RPCResult();
+        RPCResult<Boolean> result = new RPCResult();
         try {
-            if (StringUtils.isBlank(pin) || StringUtils.isBlank(mobile) || StringUtils.isBlank(msg)) {
-                result.setCode("changeMobile.error.param.blank");
-                result.setMessage("param不能为空");
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(mobile)) {
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 result.setSuccess(false);
                 return result;
             }
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if (userInfo == null) {
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+
+            String code = AliMsgUtil.randomSixCode();
+            boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
+            if(res){
+                redisTemplate.opsForValue().set(MessageFormat.format(MOBILE_USER_CHANGE,pin),code,SysContant.MSGCODE_TIMEOUT);
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode(CodeConstant.SEND_CODE_FAIL);
+                result.setMessage(MessageConstant.SEND_CODE_FAIL);
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode(CodeConstant.SEND_CODE_FAIL);
+            result.setMessage(MessageConstant.SEND_CODE_FAIL);
+            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> bindMobileBuildMsg(String pin, String mobile) {
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(mobile)) {
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+
+            String code = AliMsgUtil.randomSixCode();
+            boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
+            if(res){
+                redisTemplate.opsForValue().set(MessageFormat.format(MOBILE_USER_BIND,pin),code,SysContant.MSGCODE_TIMEOUT);
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode(CodeConstant.SEND_CODE_FAIL);
+                result.setMessage(MessageConstant.SEND_CODE_FAIL);
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode(CodeConstant.SEND_CODE_FAIL);
+            result.setMessage(MessageConstant.SEND_CODE_FAIL);
+            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> bindMobile(String pin, String mobile, String msg) {
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(mobile) || StringUtils.isBlank(msg)) {
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+
+            String key = MessageFormat.format(MOBILE_USER_BIND, pin);
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if(o == null){
+                result.setCode(CodeConstant.CODE_TIMEOUT);
+                result.setMessage(MessageConstant.CODE_TIMEOUT);
+                result.setSuccess(false);
+                return result;
+            }
+
+            userInfo.setPhone(mobile);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode("bindMobile.fail");
+                result.setMessage("绑定手机号失败");
+            }
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("changePass.error");
+            result.setMessage("绑定手机号异常");
+            logger.error("绑定手机号异常",e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> changeMobile(String pin, String mobile, String msg) {
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(mobile) || StringUtils.isBlank(msg)) {
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if (userInfo == null) {
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 result.setSuccess(false);
                 return result;
             }
@@ -170,8 +277,8 @@ public class UserRPCServiceImpl implements UserRPCService {
             String key = MessageFormat.format(MOBILE_USER_CHANGE, pin);
             String o = (String) redisTemplate.opsForValue().get(key);
             if(o == null){
-                result.setCode("get code error");
-                result.setMessage("验证码过期");
+                result.setCode(CodeConstant.CODE_TIMEOUT);
+                result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
@@ -195,18 +302,18 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<Boolean> changePass(String pin, String oldPass, String newPass) {
-        RPCResult result = new RPCResult();
+        RPCResult<Boolean> result = new RPCResult();
         try {
             if (StringUtils.isBlank(pin)) {
-                result.setCode("changePass.error.pin.blank");
-                result.setMessage("pin不能为空");
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 result.setSuccess(false);
                 return result;
             }
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if (userInfo == null) {
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 result.setSuccess(false);
                 return result;
             }
@@ -241,15 +348,15 @@ public class UserRPCServiceImpl implements UserRPCService {
         RPCResult<Boolean> result = new RPCResult();
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isMobileNO(mobile)) {
-                result.setCode("forgetPass.error.param.blank");
-                result.setMessage("参数不能为空");
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 result.setSuccess(false);
                 return result;
             }
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if (userInfo == null) {
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 result.setSuccess(false);
                 return result;
             }
@@ -304,15 +411,15 @@ public class UserRPCServiceImpl implements UserRPCService {
         RPCResult<Boolean> result = new RPCResult();
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isMobileNO(mobile)) {
-                result.setCode("forgetPass.error.param.blank");
-                result.setMessage("参数不能为空");
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 result.setSuccess(false);
                 return result;
             }
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if (userInfo == null) {
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 result.setSuccess(false);
                 return result;
             }
@@ -323,20 +430,21 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            //TODO  生成短信验证码
-            boolean res = AliMsgUtil.sendMsgSingle(mobile, AliMsgUtil.randomSixCode());
+            String code = AliMsgUtil.randomSixCode();
+            boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
             if(res){
+                redisTemplate.opsForValue().set(MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE,pin),code,SysContant.MSGCODE_TIMEOUT);
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
-                result.setCode("changePassByMobileBuildMsg.error");
-                result.setMessage("发送验证码失败");
+                result.setCode(CodeConstant.SEND_CODE_FAIL);
+                result.setMessage(MessageConstant.SEND_CODE_FAIL);
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setCode("changePassByMobileBuildMsg.error");
-            result.setMessage("发送验证码异常");
-            logger.error("发送验证码异常",e);
+            result.setCode(CodeConstant.SEND_CODE_FAIL);
+            result.setMessage(MessageConstant.SEND_CODE_FAIL);
+            logger.error(MessageConstant.SEND_CODE_FAIL,e);
         }
         return result;
     }
@@ -357,16 +465,16 @@ public class UserRPCServiceImpl implements UserRPCService {
         try {
             if(StringUtils.isBlank(pin) || StringUtils.isBlank(nickName)){
                 result.setSuccess(false);
-                result.setCode("param.error");
-                result.setMessage("参数错误");
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 return result;
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if(userInfo == null){
                 result.setSuccess(false);
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 return result;
             }
 
@@ -393,16 +501,16 @@ public class UserRPCServiceImpl implements UserRPCService {
         try {
             if(StringUtils.isBlank(pin) || (sexType != SexEnum.MALE.getValue() && sexType != SexEnum.FEMALE.getValue())){
                 result.setSuccess(false);
-                result.setCode("param.error");
-                result.setMessage("参数错误");
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 return result;
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if(userInfo == null){
                 result.setSuccess(false);
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 return result;
             }
 
@@ -430,16 +538,16 @@ public class UserRPCServiceImpl implements UserRPCService {
         try {
             if(StringUtils.isBlank(pin) || StringUtils.isBlank(date)){
                 result.setSuccess(false);
-                result.setCode("param.error");
-                result.setMessage("参数错误");
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
                 return result;
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if(userInfo == null){
                 result.setSuccess(false);
-                result.setCode("user is null");
-                result.setMessage("用户不存在");
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
                 return result;
             }
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
