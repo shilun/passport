@@ -1,0 +1,54 @@
+<div class="content-heading">
+  配置管理--{{actionType}}
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="valForm" class="form-validate form-horizontal" (submit)="submitForm($event, valForm.value)" novalidate="">
+        <!-- START panel-->
+        <div class="panel panel-default" >
+          <div class="panel-body">
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">名称</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="name" formControlName="name" [formControl]="valForm.controls['name']"  [(ngModel)]="entity.name"/>
+                  <span class="text-danger" *ngIf="valForm.controls['name'].hasError('required') && (valForm.controls['name'].dirty || valForm.controls['name'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">键</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="keyName" formControlName="keyName" [formControl]="valForm.controls['keyName']" [(ngModel)]="entity.keyName"/>
+                  <span class="text-danger" *ngIf="valForm.controls['keyName'].hasError('required') && (valForm.controls['keyName'].dirty || valForm.controls['keyName'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">值</label>
+                <div class="col-sm-6">
+                  <textarea class="form-control" id="value" formControlName="value" [formControl]="valForm.controls['value']" [(ngModel)]="entity.value">
+
+                  </textarea>
+                  <span class="text-danger" *ngIf="valForm.controls['value'].hasError('required') && (valForm.controls['value'].dirty || valForm.controls['value'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="panel-footer text-center">
+            <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
+            <a class="btn btn-default" routerLink="/system/config/list">取消</a>
+          </div>
+        </div>
+        <!-- END panel-->
+      </form>
+    </div>
+  </div>
+  <!-- END row-->
+
+</div>
