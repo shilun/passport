@@ -2,8 +2,6 @@ package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
 
-import java.util.Date;
-
 /**
  * 客户用户信息
  */
