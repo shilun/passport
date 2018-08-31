@@ -3,6 +3,7 @@ package com.passport.web.controller.dto;
 import com.common.util.AbstractDTO;
 
 
+
 public class ClientUserDto extends AbstractDTO {
     /**
      * 用户pin
@@ -28,6 +29,16 @@ public class ClientUserDto extends AbstractDTO {
      * 用户状态
      */
     private Integer status;
+
+    /**
+     * 生日
+     */
+    private String birthday;
+
+    /**
+     * 代理id
+     */
+    private Long proxyId;
 
     public String getPin() {
         return pin;
@@ -75,5 +86,21 @@ public class ClientUserDto extends AbstractDTO {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public Long getProxyId() {
+        return proxyId;
+    }
+
+    public void setProxyId(Long proxyId) {
+        this.proxyId = proxyId;
     }
 }

@@ -25,7 +25,8 @@
         "assets/weather-icons/css/weather-icons.css",
         "assets/weather-icons/css/weather-icons-wind.css",
         "assets/css/jquery-jvectormap-1.2.2.css",
-        "styles.scss"
+        "styles.scss",
+        "assets/js/theme/default/laydate.css"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.js",
@@ -38,6 +39,7 @@
         "assets/flot/jquery.flot.time.js",
         "assets/flot/jquery.flot.categories.js",
         "assets/flot/jquery.sparkline.js",
+        "assets/js/laydate.js",
         "../node_modules/easy-pie-chart/dist/easypiechart.js",
         "../node_modules/chart.js/dist/Chart.bundle.js",
         "../node_modules/jqcloud2/dist/jqcloud.js",

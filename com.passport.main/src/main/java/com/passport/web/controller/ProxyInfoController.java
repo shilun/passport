@@ -7,7 +7,6 @@ import com.passport.domain.ProxyInfo;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.constant.CodeConstant;
-import com.passport.service.constant.MessageConstant;
 import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.ProxyDto;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +63,7 @@ public class ProxyInfoController extends AbstractClientController {
             String pin=info.getPin();
             ClientUserInfo userInfo=userInfoService.findByPin(pin);
             if(userInfo==null){
-                throw new BizException(CodeConstant.USER_NULL, MessageConstant.USER_NULL);
+                throw new BizException(CodeConstant.USER_NULL, "pin对应的用户不存在");
             }
             ProxyInfo entity = new ProxyInfo();
             BeanCoper.copyProperties(entity, info);
