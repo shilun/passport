@@ -4,16 +4,19 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
-      <form [formGroup]="valForm" class="form-validate form-horizontal" (submit)="submitForm($event, valForm.value)" novalidate="">
+      <form [formGroup]="valForm" class="form-validate form-horizontal" (submit)="submitForm($event, valForm.value)"
+            novalidate="">
         <!-- START panel-->
-        <div class="panel panel-default" >
+        <div class="panel panel-default">
           <div class="panel-body">
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">pin</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="pin" formControlName="pin" [formControl]="valForm.controls['pin']"  [(ngModel)]="entity.pin"/>
-                  <span class="text-danger" *ngIf="valForm.controls['pin'].hasError('required') && (valForm.controls['pin'].dirty || valForm.controls['pin'].touched)">必选项</span>
+                  <input class="form-control" type="text" id="pin" formControlName="pin"
+                         [formControl]="valForm.controls['pin']" [(ngModel)]="entity.pin"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['pin'].hasError('required') && (valForm.controls['pin'].dirty || valForm.controls['pin'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>
@@ -21,8 +24,10 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">名称</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="name" formControlName="name" [formControl]="valForm.controls['name']"  [(ngModel)]="entity.name"/>
-                  <span class="text-danger" *ngIf="valForm.controls['name'].hasError('required') && (valForm.controls['name'].dirty || valForm.controls['name'].touched)">必选项</span>
+                  <input class="form-control" type="text" id="name" formControlName="name"
+                         [formControl]="valForm.controls['name']" [(ngModel)]="entity.name"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['name'].hasError('required') && (valForm.controls['name'].dirty || valForm.controls['name'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>
@@ -30,8 +35,10 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">电话</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="phone" formControlName="phone" [formControl]="valForm.controls['phone']" [(ngModel)]="entity.phone"/>
-                  <span class="text-danger" *ngIf="valForm.controls['phone'].hasError('required') && (valForm.controls['phone'].dirty || valForm.controls['phone'].touched)">必选项</span>
+                  <input class="form-control" type="text" id="phone" formControlName="phone"
+                         [formControl]="valForm.controls['phone']" [(ngModel)]="entity.phone"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['phone'].hasError('required') && (valForm.controls['phone'].dirty || valForm.controls['phone'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>
@@ -40,16 +47,19 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">联系人</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="email" formControlName="email" [formControl]="valForm.controls['linkMan']" [(ngModel)]="entity.linkMan"/>
-                  <span class="text-danger" *ngIf="valForm.controls['linkMan'].hasError('required') && (valForm.controls['linkMan'].dirty || valForm.controls['linkMan'].touched)">必选项</span>
+                  <input class="form-control" type="text" id="linkMan" formControlName="linkMan"
+                         [formControl]="valForm.controls['linkMan']" [(ngModel)]="entity.linkMan"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['linkMan'].hasError('required') && (valForm.controls['linkMan'].dirty || valForm.controls['linkMan'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>
             <fieldset>
               <div class="form-group">
-                <label class="col-sm-2 control-label">url</label>
+                <label class="col-sm-2 control-label">域名</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="url" formControlName="url" [formControl]="valForm.controls['url']" [(ngModel)]="entity.url"/>
+                  <input class="form-control" type="text" id="domain" formControlName="domain"
+                         [formControl]="valForm.controls['domain']" [(ngModel)]="entity.domain"/>
                 </div>
               </div>
             </fieldset>
@@ -57,18 +67,22 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">备注</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="remark" formControlName="remark" [formControl]="valForm.controls['remark']" [(ngModel)]="entity.remark"/>
+                  <input class="form-control" type="text" id="remark" formControlName="remark"
+                         [formControl]="valForm.controls['remark']" [(ngModel)]="entity.remark"/>
                 </div>
               </div>
             </fieldset>
+
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">状态</label>
                 <div class="col-sm-6">
-                  <select id="status" name="status"  [(ngModel)]='entity.status' [formControl]="valForm.controls['status']" formControlName="status" >
-                    <option *ngFor="let item of statuses"  [value]="item.value">{{item.name}}</option>
+                  <select id="status" name="status" [(ngModel)]='entity.status'
+                          [formControl]="valForm.controls['status']" formControlName="status">
+                    <option *ngFor="let item of statuses" [value]="item.value">{{item.name}}</option>
                   </select>
-                  <span class="text-danger" *ngIf="valForm.controls['status'].hasError('required') && (valForm.controls['status'].dirty || valForm.controls['status'].touched)">必选项</span>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['status'].hasError('required') && (valForm.controls['status'].dirty || valForm.controls['status'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>

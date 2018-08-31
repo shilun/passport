@@ -23,18 +23,18 @@
       <th>名称</th>
       <th>电话</th>
       <th>联系人</th>
-      <th>url</th>
+      <th>域名</th>
       <th>创建时间</th>
     </tr>
     </thead>
     <tbody>
     <ng-container *ngFor="let item of listData.list">
       <tr>
-        <td><a routerLink="/system/admin/view" [queryParams]="{id:item.id}">{{item.pin}}</a></td>
+        <td><a routerLink="/system/proxy/view" [queryParams]="{id:item.id}">{{item.pin}}</a></td>
         <td>{{item.name}}</td>
         <td>{{item.phone}}</td>
         <td>{{item.linkMan}}</td>
-        <!--<td>{{valuePare(item.status,statuses)}}</td>-->
+        <th>{{item.domain}}</th>
         <td>{{item.createTime}}</td>
       </tr>
     </ng-container>
