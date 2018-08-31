@@ -35,6 +35,10 @@ public class AliMsgUtil {
      * 将短信发送频率限制在正常的业务流控范围内，默认流控：短信验证码 ：使用同一个签名，对同一个手机号码发送短信验证码，支持1条/分钟，5条/小时 ，累计10条/天。
      */
     public static Boolean sendMsgSingle(String mobile, String code) {
+        if(true){
+            testSendMsg(mobile,code);
+            return true;
+        }
         //设置超时时间-可自行调整
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -77,6 +81,9 @@ public class AliMsgUtil {
         return false;
     }
 
+    private static void testSendMsg(String mobile, String code){
+        System.out.println("手机号: " + mobile + "  的验证码为: " + code);
+    }
     /**
      * 生成6位随机验证码
      * @return
