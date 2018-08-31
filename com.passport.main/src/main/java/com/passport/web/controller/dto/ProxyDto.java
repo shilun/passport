@@ -1,12 +1,11 @@
-package com.passport.domain;
+package com.passport.web.controller.dto;
 
-import com.common.util.AbstractBaseEntity;
+import com.common.util.AbstractDTO;
 
 /**
  * 代理商信息
  */
-public class ProxyInfo extends AbstractBaseEntity {
-
+public class ProxyDto  extends AbstractDTO {
     /**
      * 用户pin
      */
@@ -47,23 +46,6 @@ public class ProxyInfo extends AbstractBaseEntity {
      * 状态
      */
     private Integer status;
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getEncodingKey() {
-        return encodingKey;
-    }
-
-    public void setEncodingKey(String encodingKey) {
-        this.encodingKey = encodingKey;
-    }
-
     public String getPin() {
         return pin;
     }
@@ -94,6 +76,22 @@ public class ProxyInfo extends AbstractBaseEntity {
 
     public void setLinkMan(String linkMan) {
         this.linkMan = linkMan;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getEncodingKey() {
+        return encodingKey;
+    }
+
+    public void setEncodingKey(String encodingKey) {
+        this.encodingKey = encodingKey;
     }
 
     public String getUrl() {

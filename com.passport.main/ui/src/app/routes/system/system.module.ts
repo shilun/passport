@@ -12,6 +12,8 @@ import { AdminListComponent } from './admin-list/admin-list.component';
 import { AdminViewComponent } from './admin-view/admin-view.component';
 import { RoleListComponent } from './role-list/role-list.component';
 import { RoleViewComponent } from './role-view/role-view.component';
+import { ProxyListComponent } from './proxy-list/proxy-list.component';
+import { ProxyViewComponent } from './proxy-view/proxy-view.component';
 
 const routes: Routes = [
   {path: 'config/list', component: ConfigListComponent},
@@ -22,6 +24,8 @@ const routes: Routes = [
   {path: 'admin/view', component: AdminViewComponent},
   {path: 'role/list', component: RoleListComponent},
   {path: 'role/view', component: RoleViewComponent},
+  {path: 'proxy/list', component: ProxyListComponent},
+  {path: 'proxy/view', component: ProxyViewComponent},
   ];
 
 @NgModule({
@@ -33,7 +37,7 @@ const routes: Routes = [
     NgxDatatableModule
   ],
   declarations: [
-    ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent, RoleListComponent, RoleViewComponent]
+    ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent]
 })
 
 

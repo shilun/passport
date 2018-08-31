@@ -17,6 +17,7 @@ import {LoginService} from './services/login.service';
 import {AdminService} from './services/admin.service';
 import {RoleService} from './services/role.service';
 import {GlobalService} from './services/global.service';
+import {ProxyService} from './services/proxy.service';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -48,6 +49,7 @@ export function createTranslateLoader(http: HttpClient) {
     AdminService,
     RoleService,
     GlobalService,
+    ProxyService,
     {
       provide: LocationStrategy
       , useClass: HashLocationStrategy
