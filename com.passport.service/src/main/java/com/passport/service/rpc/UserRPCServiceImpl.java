@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@com.alibaba.dubbo.config.annotation.Service(version = "1.0.0")
+@com.alibaba.dubbo.config.annotation.Service
 public class UserRPCServiceImpl implements UserRPCService {
 
     private final Logger logger = Logger.getLogger(UserRPCServiceImpl.class);
