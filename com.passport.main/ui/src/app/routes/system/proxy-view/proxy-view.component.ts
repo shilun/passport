@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GlobalService} from '../../../services/global.service';
 import {AbstractController} from '../../../common/abstract.controller';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {RoleService} from '../../../services/role.service';
-import {AdminService} from '../../../services/admin.service';
+import {ProxyService} from "../../../services/proxy.service";
 
 @Component({
   selector: 'app-proxy-view',
@@ -15,16 +14,16 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
 
   statuses: Array<any>;
 
-  constructor(fm: FormBuilder, baseService: AdminService, protected roleService: RoleService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
+  constructor(fm: FormBuilder, baseService: ProxyService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
     this.entity = {pin:'',name: '', status: '', phone: '', id: '',url:'',linkMan:'',remark:''};
     this.valForm = this.buildFormGroup(fm);
-
   }
 
 
   public buildFormGroup(fb: FormBuilder): FormGroup {
     return fb.group({
+      'id': [null, Validators.required],
       'name': [null, Validators.required],
       'status': [null, Validators.required],
       'phone': [null, Validators.required],

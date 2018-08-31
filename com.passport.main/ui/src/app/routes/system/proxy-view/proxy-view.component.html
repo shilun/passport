@@ -8,16 +8,15 @@
         <!-- START panel-->
         <div class="panel panel-default" >
           <div class="panel-body">
-            <ng-container *ngIf="entity.pin!=''">
-              <fieldset>
-                <div class="form-group">
-                  <label class="col-sm-2 control-label">pin</label>
-                  <div class="col-sm-6">
-                    <span class="form-control">{{entity.pin}}</span>
-                  </div>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">pin</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="pin" formControlName="pin" [formControl]="valForm.controls['pin']"  [(ngModel)]="entity.pin"/>
+                  <span class="text-danger" *ngIf="valForm.controls['pin'].hasError('required') && (valForm.controls['pin'].dirty || valForm.controls['pin'].touched)">必选项</span>
                 </div>
-              </fieldset>
-            </ng-container>
+              </div>
+            </fieldset>
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">名称</label>
