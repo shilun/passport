@@ -225,7 +225,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String key = MessageFormat.format(MOBILE_USER_BIND, account);
+            String key = MessageFormat.format(LOGIN_MOBILE_CODE, account,proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
             if(o == null){
                 result.setCode(CodeConstant.CODE_TIMEOUT);
@@ -249,6 +249,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
+            redisTemplate.delete(key);
             UserDTO dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
             result.setData(dto);
