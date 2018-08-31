@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <groupId>com.jiahou</groupId>
+    <groupId>passport</groupId>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <artifactId>com.passport.rpc</artifactId>
     <dependencies>
         <dependency>
@@ -14,6 +14,12 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>releases</name>
+            <url>http://192.168.31.150:8081/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
 
 </project>

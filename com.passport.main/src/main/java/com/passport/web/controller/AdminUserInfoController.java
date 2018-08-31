@@ -5,7 +5,6 @@ import com.passport.domain.AdminUserInfo;
 import com.passport.web.controller.dto.AdminDto;
 import com.passport.service.AdminUserInfoService;
 import com.passport.web.AbstractClientController;
-import com.passport.web.controller.dto.PassDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -51,19 +50,6 @@ public class AdminUserInfoController extends AbstractClientController {
                  adminUserInfoService.findById(getIdByJson(content)));
     }
 
-    /**
-     * 初始化密码
-     * @param dto
-     * @return
-     */
-    @ApiOperation(value = "修改密码")
-    @RequestMapping("/admin/initPass")
-    public Map<String, Object> initPass(@RequestBody PassDto dto) {
-        return buildMessage(()->{
-                 adminUserInfoService.initPass(dto.getPin(),dto.getPass());
-                 return null;
-        });
-    }
 
     /**
      * 保存

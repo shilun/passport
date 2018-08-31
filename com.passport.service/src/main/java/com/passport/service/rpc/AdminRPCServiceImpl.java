@@ -1,18 +1,22 @@
 package com.passport.service.rpc;
 
-import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
+import com.common.util.StringUtils;
 import com.passport.domain.AdminUserInfo;
+import com.passport.domain.RoleInfo;
 import com.passport.rpc.AdminRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.AdminUserInfoService;
-import com.passport.service.constant.CodeConstant;
-import com.passport.service.constant.MessageConstant;
+import com.passport.service.RoleInfoService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -20,52 +24,103 @@ import java.util.List;
 @com.alibaba.dubbo.config.annotation.Service(version = "1.0.0")
 public class AdminRPCServiceImpl implements AdminRPCService {
 
+
+    private Logger logger = Logger.getLogger(AdminRPCServiceImpl.class);
+
     @Value("${app.passKey}")
     private String passKey;
-
     @Resource
     private AdminUserInfoService adminUserInfoService;
 
+    @Resource
+    private RoleInfoService roleInfoService;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private final String ADMIN_LOGIN = "pass.admin.login.{0}";
+    private final Integer ADMIN_LOGIN_TIME = 60 * 60 * 30;
+
     @Override
     public RPCResult<UserDTO> login(String loginName, String password) {
-        AdminUserInfo adminInfo = adminUserInfoService.login(loginName, password);
-        RPCResult<UserDTO> rpcResult = new RPCResult<>();
-        if (adminInfo == null) {
-            rpcResult.setCode(CodeConstant.USER_NULL);
-            rpcResult.setMessage(MessageConstant.USER_NULL);
-            rpcResult.setSuccess(false);
-        } else {
-            UserDTO userDTO = new UserDTO();
-            BeanCoper.copyProperties(userDTO, adminInfo);
-            rpcResult.setSuccess(true);
-            rpcResult.setData(userDTO);
+        RPCResult<UserDTO> result = new RPCResult<>();
+        try {
+            AdminUserInfo login = adminUserInfoService.login(loginName, password);
+            UserDTO dto = new UserDTO();
+            dto.setToken(StringUtils.getUUID());
+            dto.setPin(login.getPin());
+            dto.setEmail(login.getEmail());
+            dto.setNickName(login.getName());
+            String key = MessageFormat.format(ADMIN_LOGIN, dto.getToken());
+            redisTemplate.opsForValue().set(key, dto, ADMIN_LOGIN_TIME);
+            result.setData(dto);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            logger.error("管理员登录失败", e);
+            result.setSuccess(false);
+            result.setCode("admin.login.error");
         }
-        return rpcResult;
+        return result;
     }
 
     @Override
     public RPCResult<List<String>> queryAdminRoles(String pin) {
-        AdminUserInfo adminInfo = adminUserInfoService.findByPin(pin);
-        RPCResult<List<String>> rpcResult = new RPCResult<>();
-        if (adminInfo == null) {
-            rpcResult.setCode(CodeConstant.USER_NULL);
-            rpcResult.setMessage(MessageConstant.USER_NULL);
-            rpcResult.setSuccess(false);
-        } else {
-            Long[] roles = adminInfo.getRoles();
-            List<String>stringList=null;
-            if(roles!=null&&roles.length!=0){
-                stringList=new ArrayList<>();
-                for(Long role:roles){
-                    String roleId=String.valueOf(role);
-                    if(!stringList.contains(roleId)){
-                        stringList.add(roleId);
-                    }
-                }
+        RPCResult<List<String>> result = new RPCResult<>();
+        try {
+            AdminUserInfo info = adminUserInfoService.findByPin(pin);
+            Long[] roles = info.getRoles();
+            List<String> list = new ArrayList<>();
+            for (Long roleId : roles) {
+                RoleInfo roleInfo = roleInfoService.findById(roleId);
+                Collections.addAll(list, roleInfo.getResources().split(";"));
             }
-            rpcResult.setSuccess(true);
-            rpcResult.setData(stringList);
+            result.setSuccess(true);
+            result.setData(list);
+            return result;
+        } catch (Exception e) {
+            logger.error("查询角色失败", e);
+            result.setSuccess(false);
+            result.setCode("queryAdminRoles.error");
+            result.setMessage("查询角色失败");
         }
-        return rpcResult;
+        return result;
+    }
+
+    @Override
+    public RPCResult<UserDTO> verificationToken(String token) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        String key = MessageFormat.format(ADMIN_LOGIN, token);
+        try {
+            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
+            if (o != null) {
+                redisTemplate.opsForValue().increment(key, ADMIN_LOGIN_TIME);
+                result.setData(o);
+                result.setSuccess(true);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("验证管理员用户失败", e);
+        }
+        result.setSuccess(false);
+        result.setMessage("验证管理员失败");
+        result.setCode("verificationToken.error");
+        return result;
+    }
+
+    @Override
+    public RPCResult<UserDTO> loginOut(String token) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        try {
+            String key = MessageFormat.format(ADMIN_LOGIN, token);
+            redisTemplate.delete(key);
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            logger.error("登出失败",e);
+        }
+        result.setSuccess(false);
+        result.setCode("passport.login.out.error");
+        result.setMessage("登出失败");
+        return result;
     }
 }

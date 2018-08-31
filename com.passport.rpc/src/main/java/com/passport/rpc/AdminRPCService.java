@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface AdminRPCService {
     /**
-     * 管理员登录
+     * 管理员登录1
      *
      * @param loginName 登录名
      * @param password  密码
@@ -26,4 +26,18 @@ public interface AdminRPCService {
      * @return
      */
     RPCResult<List<String>> queryAdminRoles(String pin);
+
+    /**
+     * 验证用户token
+     * @param token
+     * @return
+     */
+    RPCResult<UserDTO> verificationToken(String token);
+
+    /**
+     * 登出
+     * @param token
+     * @return
+     */
+    RPCResult<UserDTO> loginOut(String token);
 }
