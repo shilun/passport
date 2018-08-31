@@ -38,9 +38,9 @@ public class UserRPCServiceImpl implements UserRPCService {
      */
     private final String PASS_USER_REG = "pass.user.reg.{0}.{1}";
     private final String PASS_USER_CHANGE_BY_MOBILE = "pass.user.change.by.mobile.{0}";
-    private final String MOBILE_USER_CHANGE = "mobile.user.change.{0}";
-    private final String MOBILE_USER_BIND = "mobile.user.bind.{0}";
-    private final String LOGIN_MOBILE_CODE = "login.mobile.code.{0}";
+    private final String MOBILE_USER_CHANGE = "mobile.user.change.mobile.{0}";
+    private final String MOBILE_USER_BIND = "mobile.user.bind.mobile.{0}";
+    private final String LOGIN_MOBILE_CODE = "login.mobile.code.account.{0}.proxyid.{1}";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -180,7 +180,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<Boolean> loginCodeBuild(String account) {
+    public RPCResult<Boolean> loginCodeBuild(Long proxyId,String account) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             if (!StringUtils.isMobileNO(account)) {
@@ -192,7 +192,7 @@ public class UserRPCServiceImpl implements UserRPCService {
 
             String code = AliMsgUtil.randomSixCode();
             if(AliMsgUtil.sendMsgSingle(account,code)){
-                redisTemplate.opsForValue().set(MessageFormat.format(LOGIN_MOBILE_CODE,account),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(MessageFormat.format(LOGIN_MOBILE_CODE,account,proxyId),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
@@ -340,7 +340,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             String code = AliMsgUtil.randomSixCode();
             boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
             if(res){
-                redisTemplate.opsForValue().set(MessageFormat.format(LOGIN_MOBILE_CODE,pin),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(MessageFormat.format(MOBILE_USER_CHANGE,mobile),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
@@ -383,7 +383,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             String code = AliMsgUtil.randomSixCode();
             boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
             if(res){
-                redisTemplate.opsForValue().set(MessageFormat.format(LOGIN_MOBILE_CODE,pin),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(MessageFormat.format(MOBILE_USER_BIND,mobile),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
                 result.setSuccess(true);
             }else{
                 result.setSuccess(false);
@@ -423,7 +423,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String key = MessageFormat.format(MOBILE_USER_BIND, pin);
+            String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if(o == null){
                 result.setCode(CodeConstant.CODE_TIMEOUT);
@@ -479,7 +479,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String key = MessageFormat.format(MOBILE_USER_CHANGE, pin);
+            String key = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if(o == null){
                 result.setCode(CodeConstant.CODE_TIMEOUT);

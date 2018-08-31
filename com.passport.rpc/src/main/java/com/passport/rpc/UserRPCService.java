@@ -47,7 +47,7 @@ public interface UserRPCService {
      * @param account 邮箱或手机
      * @return
      */
-    RPCResult<Boolean> loginCodeBuild(String account);
+    RPCResult<Boolean> loginCodeBuild(Long proxyId,String account);
 
     /**
      * 验证码登录验证
