@@ -37,7 +37,7 @@ public class ProxyInfo extends AbstractBaseEntity {
     /**
      * 网站
      */
-    private String url;
+    private String domain;
     /**
      * 备注
      */
@@ -96,12 +96,12 @@ public class ProxyInfo extends AbstractBaseEntity {
         this.linkMan = linkMan;
     }
 
-    public String getUrl() {
-        return url;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public String getRemark() {
