@@ -21,7 +21,7 @@ import java.util.List;
 
 
 @Service
-@com.alibaba.dubbo.config.annotation.Service(version = "1.0.0")
+@com.alibaba.dubbo.config.annotation.Service
 public class AdminRPCServiceImpl implements AdminRPCService {
 
 
