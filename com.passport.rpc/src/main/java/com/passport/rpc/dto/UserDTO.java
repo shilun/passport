@@ -1,6 +1,7 @@
 package com.passport.rpc.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by shilun on 16-12-5.
@@ -16,6 +17,8 @@ public class UserDTO implements Serializable {
     private Boolean initPass;
 
     private String token;
+    private String proxyId;
+    private Date birthDay;
 
     public String getToken() {
         return token;
@@ -87,5 +90,21 @@ public class UserDTO implements Serializable {
 
     public void setInitPass(Boolean initPass) {
         this.initPass = initPass;
+    }
+
+    public String getProxyId() {
+        return proxyId;
+    }
+
+    public void setProxyId(String proxyId) {
+        this.proxyId = proxyId;
+    }
+
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
     }
 }

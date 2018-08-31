@@ -41,6 +41,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     private final String MOBILE_USER_CHANGE = "mobile.user.change.mobile.{0}";
     private final String MOBILE_USER_BIND = "mobile.user.bind.mobile.{0}";
     private final String LOGIN_MOBILE_CODE = "login.mobile.code.account.{0}.proxyid.{1}";
+    private final String FORGET_PASS = "forget.pass.pin.{0}";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -677,12 +678,87 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<Boolean> forgetPass(String pin) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin)) {
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if(userInfo == null){
+                result.setSuccess(false);
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
+                return result;
+            }
+            String code = AliMsgUtil.randomSixCode();
+            boolean res = AliMsgUtil.sendMsgSingle(userInfo.getPhone(), code);
+            if(res){
+                redisTemplate.opsForValue().set(MessageFormat.format(FORGET_PASS,pin),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode(CodeConstant.SEND_CODE_FAIL);
+                result.setMessage(MessageConstant.SEND_CODE_FAIL);
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+        }
+        return result;
     }
 
     @Override
     public RPCResult<Boolean> forgetPassCodeVerification(String pin, String code, String pass) {
-        return null;
+        RPCResult<Boolean> result = new RPCResult();
+        try {
+            if (StringUtils.isBlank(pin)) {
+                result.setCode(CodeConstant.PARAM_NULL);
+                result.setMessage(MessageConstant.PARAM_NULL);
+                result.setSuccess(false);
+                return result;
+            }
+
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
+            if(userInfo == null){
+                result.setSuccess(false);
+                result.setCode(CodeConstant.USER_NULL);
+                result.setMessage(MessageConstant.USER_NULL);
+                return result;
+            }
+
+            String key = MessageFormat.format(FORGET_PASS, pin);
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if(o == null){
+                result.setCode(CodeConstant.CODE_TIMEOUT);
+                result.setMessage(MessageConstant.CODE_TIMEOUT);
+                result.setSuccess(false);
+                return result;
+            }
+            if(!o.equals(code)){
+                result.setCode(CodeConstant.VERIFICATION_FAIL);
+                result.setMessage(MessageConstant.VERIFICATION_FAIL);
+                result.setSuccess(false);
+                return result;
+            }
+
+            pass = MD5.MD5Str(pass,passKey);
+            userInfo.setPasswd(pass);
+            if(clientUserInfoService.save(userInfo) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setCode(CodeConstant.CHANGE_PASS_FAIL);
+                result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+        }
+        return result;
     }
 
     @Override

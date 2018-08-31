@@ -82,7 +82,7 @@ public class AliMsgUtil {
     }
 
     private static void testSendMsg(String mobile, String code){
-        logger.info("手机号: " + mobile + "  的验证码为: " + code);
+        logger.warn(("手机号: " + mobile + "  的验证码为: " + code));
     }
     /**
      * 生成6位随机验证码
