@@ -67,9 +67,10 @@ public class AliMsgUtil {
             sendSmsResponse = acsClient.getAcsResponse(request);
             Boolean isSuccess="OK".equals(sendSmsResponse.getCode());
             if(!isSuccess){
+
                 logger.error(sendSmsResponse.getCode()+";"+sendSmsResponse.getMessage());
             }
-            return isSuccess;
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
