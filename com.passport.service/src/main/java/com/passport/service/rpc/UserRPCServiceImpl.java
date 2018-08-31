@@ -81,7 +81,6 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setCode(CodeConstant.SEND_CODE_FAIL);
             result.setMessage(MessageConstant.SEND_CODE_FAIL);
         }
-        result.setSuccess(true);
         return result;
     }
 
@@ -153,7 +152,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<UserDTO> findByAccount(Long proxyId,String account) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
-            if (StringUtils.isMobileNO(account)) {
+            if (!StringUtils.isMobileNO(account)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -184,7 +183,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<Boolean> loginCodeBuild(String account) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            if (StringUtils.isMobileNO(account)) {
+            if (!StringUtils.isMobileNO(account)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -219,7 +218,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(account)) {
+            if (!StringUtils.isMobileNO(account)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -273,7 +272,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(account)) {
+            if (!StringUtils.isMobileNO(account)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -324,7 +323,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(mobile)) {
+            if (!StringUtils.isMobileNO(mobile)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -367,7 +366,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(mobile)) {
+            if (!StringUtils.isMobileNO(mobile)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -410,7 +409,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(mobile)) {
+            if (!StringUtils.isMobileNO(mobile)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -466,7 +465,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(mobile)) {
+            if (!StringUtils.isMobileNO(mobile)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -567,7 +566,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            if (StringUtils.isMobileNO(mobile)) {
+            if (!StringUtils.isMobileNO(mobile)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);
@@ -636,7 +635,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if (StringUtils.isMobileNO(mobile)) {
+            if (!StringUtils.isMobileNO(mobile)) {
                 result.setCode(CodeConstant.PARAM_FORMAT_ERROR);
                 result.setMessage(MessageConstant.PARAM_FORMAT_ERROR);
                 result.setSuccess(false);

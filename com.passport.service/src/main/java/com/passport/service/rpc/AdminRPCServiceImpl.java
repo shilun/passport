@@ -18,6 +18,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -52,7 +53,7 @@ public class AdminRPCServiceImpl implements AdminRPCService {
             dto.setEmail(login.getEmail());
             dto.setNickName(login.getName());
             String key = MessageFormat.format(ADMIN_LOGIN, dto.getToken());
-            redisTemplate.opsForValue().set(key, dto, ADMIN_LOGIN_TIME);
+            redisTemplate.opsForValue().set(key, dto, ADMIN_LOGIN_TIME,TimeUnit.MINUTES);
             result.setData(dto);
             result.setSuccess(true);
         } catch (Exception e) {
