@@ -17,7 +17,7 @@ public class UserDTO implements Serializable {
     private Boolean initPass;
 
     private String token;
-    private String proxyId;
+    private Long proxyId;
     private Date birthDay;
 
     public String getToken() {
@@ -92,11 +92,11 @@ public class UserDTO implements Serializable {
         this.initPass = initPass;
     }
 
-    public String getProxyId() {
+    public Long getProxyId() {
         return proxyId;
     }
 
-    public void setProxyId(String proxyId) {
+    public void setProxyId(Long proxyId) {
         this.proxyId = proxyId;
     }
 
