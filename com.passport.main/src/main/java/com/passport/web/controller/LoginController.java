@@ -3,30 +3,24 @@ package com.passport.web.controller;
 import com.common.exception.BizException;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
-import com.common.util.model.YesOrNoEnum;
 import com.common.web.IExecute;
 import com.passport.rpc.AdminRPCService;
 import com.passport.rpc.dto.UserDTO;
+import com.passport.service.AdminUserInfoService;
 import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.LoginDto;
-import io.swagger.annotations.Api;
+import com.passport.web.controller.dto.PasswordChangeDto;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Map;
 
 
@@ -34,15 +28,16 @@ import java.util.Map;
 @RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.OPTIONS})
 public class LoginController extends AbstractClientController {
 
-    private static final Logger LOGGER = Logger.getLogger(LoginController.class);
 
+    @Resource
+    private AdminUserInfoService adminUserInfoService;
     @Resource
     private AdminRPCService adminRPCService;
 
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginDto dto, HttpServletResponse response) {
+    public Map<String, Object> login(@RequestBody LoginDto dto, HttpServletRequest request, HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -50,6 +45,7 @@ public class LoginController extends AbstractClientController {
                 if (!login.getSuccess()) {
                     throw new BizException("loginError", "登录失败，登录账户或密码错误");
                 }
+                putCookie("token", login.getData().getToken());
                 return login.getData();
             }
         });
@@ -68,7 +64,6 @@ public class LoginController extends AbstractClientController {
         });
     }
 
-
     @RequestMapping("check")
     @ResponseBody
     @ApiOperation(value = "检查token是否有效")
@@ -82,6 +77,19 @@ public class LoginController extends AbstractClientController {
                 }
                 RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
                 return userDTOResult.getSuccess();
+            }
+        });
+    }
+
+    @RequestMapping("changePass")
+    @ResponseBody
+    @ApiOperation(value = "修改密码")
+    public Map<String, Object> changePass(@RequestBody PasswordChangeDto dto) {
+        return buildMessage(new IExecute() {
+            @Override
+            public Object getData() {
+                adminUserInfoService.changePass(getPin(), dto.getOldPassword(), dto.getNewPassword());
+                return null;
             }
         });
     }

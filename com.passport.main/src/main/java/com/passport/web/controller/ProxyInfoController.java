@@ -1,5 +1,6 @@
 package com.passport.web.controller;
 
+import com.common.annotation.RoleResource;
 import com.common.exception.BizException;
 import com.common.util.BeanCoper;
 import com.passport.domain.ClientUserInfo;
@@ -28,8 +29,8 @@ public class ProxyInfoController extends AbstractClientController {
      * @param info
      * @return
      */
+    @RoleResource(resource = "admin")
     @RequestMapping("/proxy/list")
-    @ResponseBody
     public Map<String, Object> list(@RequestBody ProxyDto info) {
         return buildMessage(() -> {
             ProxyInfo entity = new ProxyInfo();
@@ -44,8 +45,8 @@ public class ProxyInfoController extends AbstractClientController {
      * @param content
      * @return
      */
+    @RoleResource(resource = "admin")
     @RequestMapping("/proxy/view")
-    @ResponseBody
     public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(() -> proxyInfoService.findById(getIdByJson(content)));
     }
@@ -57,7 +58,7 @@ public class ProxyInfoController extends AbstractClientController {
      * @return
      */
     @RequestMapping("/proxy/save")
-    @ResponseBody
+    @RoleResource(resource = "admin")
     public Map<String, Object> save(@RequestBody ProxyDto info) {
         return buildMessage(() -> {
             String pin=info.getPin();

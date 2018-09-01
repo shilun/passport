@@ -1,5 +1,6 @@
 package com.passport.web.controller;
 
+import com.common.annotation.RoleResource;
 import com.passport.domain.MailInfo;
 import com.passport.service.MailInfoService;
 import com.passport.web.AbstractClientController;
@@ -26,6 +27,7 @@ public class MailInfoController extends AbstractClientController {
      * @param info
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "查询")
     @RequestMapping("/mail/list")
     public Map<String, Object> list(@RequestBody MailInfo info) {
@@ -38,6 +40,7 @@ public class MailInfoController extends AbstractClientController {
      * @param content
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "保存")
     @RequestMapping("/mail/view")
     public Map<String, Object> view(@RequestBody String content) {
@@ -50,6 +53,7 @@ public class MailInfoController extends AbstractClientController {
      * @param info
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "保存")
     @RequestMapping("/mail/save")
     public Map<String, Object> save(@RequestBody MailInfo info) {

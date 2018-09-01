@@ -1,5 +1,6 @@
 package com.passport.web.controller;
 
+import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
 import com.passport.domain.RoleInfo;
 import com.passport.service.RoleInfoService;
@@ -25,9 +26,9 @@ public class RoleInfoController extends AbstractClientController {
      * @param info
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "查询")
     @RequestMapping("/role/list")
-    @ResponseBody
     public Map<String, Object> list(@RequestBody RoleDto info) {
         return buildMessage(() -> {
             RoleInfo entity = new RoleInfo();
@@ -44,7 +45,7 @@ public class RoleInfoController extends AbstractClientController {
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/role/view")
-    @ResponseBody
+    @RoleResource(resource = "admin")
     public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(() -> roleInfoService.findById(getIdByJson(content)));
     }
@@ -57,7 +58,7 @@ public class RoleInfoController extends AbstractClientController {
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/role/save")
-    @ResponseBody
+    @RoleResource(resource = "admin")
     public Map<String, Object> save(@RequestBody RoleDto info) {
         return buildMessage(() -> {
             RoleInfo entity = new RoleInfo();

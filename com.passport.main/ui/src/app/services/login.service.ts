@@ -6,7 +6,7 @@ import {AbstractBaseService} from '../common/abstract-base.service';
 export class LoginService extends AbstractBaseService {
 
   constructor(http: HttpClient) {
-    super(http, '/api');
+    super(http, '/login');
   }
 
   /**
@@ -14,7 +14,7 @@ export class LoginService extends AbstractBaseService {
    * @returns {Promise<any>}
    */
   public check(): Promise<any> {
-    return this.doExec('/login/check', '');
+    return this.doExec('/check', '');
   }
 
 
@@ -25,11 +25,7 @@ export class LoginService extends AbstractBaseService {
    * @returns {Promise<any>}
    */
   public login(name: string, pass: string): Promise<any> {
-    return this.doExec('/login', {loginName: name, password: pass, loginType: 1});
-  }
-
-  public view(pin: string): Promise<any> {
-    return this.doExec('/user/view', {pin: pin});
+    return this.doExec('/in', {account: name, code: pass});
   }
 
   /**
@@ -37,7 +33,7 @@ export class LoginService extends AbstractBaseService {
    * @returns {Promise<any>}
    */
   public loginOut(): Promise<any> {
-    return this.doExec('/login/out', '');
+    return this.doExec('/out', '');
   }
 
 }

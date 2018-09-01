@@ -1,5 +1,6 @@
 package com.passport.web.controller;
 
+import com.common.annotation.RoleResource;
 import com.common.exception.BizException;
 import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
@@ -30,6 +31,7 @@ public class ClientUserInfoController extends AbstractClientController {
      * @param info
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "查询")
     @RequestMapping("/user/list")
     @ResponseBody
@@ -47,6 +49,7 @@ public class ClientUserInfoController extends AbstractClientController {
      * @param content
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "保存")
     @RequestMapping("/user/view")
     @ResponseBody
@@ -60,6 +63,7 @@ public class ClientUserInfoController extends AbstractClientController {
      * @param info
      * @return
      */
+    @RoleResource(resource = "admin")
     @ApiOperation(value = "保存")
     @RequestMapping("/user/save")
     @ResponseBody
