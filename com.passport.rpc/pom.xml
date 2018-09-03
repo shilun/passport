@@ -10,8 +10,7 @@
         <dependency>
             <groupId>springboot</groupId>
             <artifactId>common</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
+            <version>1.0</version>
         </dependency>
     </dependencies>
     <distributionManagement>
