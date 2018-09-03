@@ -14,7 +14,9 @@ export class ProxyBizListComponent extends AbstractController implements OnInit 
   statuses: Array<any>;
   gametypes: Array<any>;
   proxys: Array<any>;
-  constructor(protected proxyBizService: ProxyBizService,protected proxyService: ProxyService, protected globalService: GlobalService, protected route: ActivatedRoute, protected router: Router) {
+  proxyId: any;
+
+  constructor(protected proxyBizService: ProxyBizService, protected proxyService: ProxyService, protected globalService: GlobalService, protected route: ActivatedRoute, protected router: Router) {
     super(proxyBizService, route, router);
     this.entity = {};
   }
@@ -41,6 +43,8 @@ export class ProxyBizListComponent extends AbstractController implements OnInit 
   }
 
   async ngOnInit() {
+    this.proxyId = this.getRequest('proxyId');
+    this.entity.proxyId = this.proxyId;
     this.list(this.entity);
     let result = await this.globalService.list('yesorno');
     if (result.success) {
@@ -52,11 +56,11 @@ export class ProxyBizListComponent extends AbstractController implements OnInit 
     }
     result = await this.proxyService.all();
     if (result.success) {
-      let arr=[{id:null,name:'全部'}];
-      for(let i=0;i<result.data.list.length;i++){
+      let arr = [{id: null, name: '全部'}];
+      for (let i = 0; i < result.data.list.length; i++) {
         arr.push(result.data.list[i]);
       }
-      this.proxys=arr;
+      this.proxys = arr;
     }
   }
 

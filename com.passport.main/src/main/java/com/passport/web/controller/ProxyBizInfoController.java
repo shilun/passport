@@ -63,7 +63,7 @@ public class ProxyBizInfoController extends AbstractClientController {
      */
     @RequestMapping("/proxyBiz/save")
     @RoleResource(resource = "passport")
-    public Map<String, Object> save(@RequestBody ProxyBizInfo info) {
+    public Map<String, Object> save(@RequestBody ProxyBizInfoDto info) {
         return buildMessage(() -> {
             Long proxyId = info.getProxyId();
             if (proxyId == null || proxyId == 0) {
@@ -85,7 +85,9 @@ public class ProxyBizInfoController extends AbstractClientController {
                         }
                     }
                     if (!contains) {
-                        bizInfoService.save(info);
+                        ProxyBizInfo bizInfo=new ProxyBizInfo();
+                        BeanCoper.copyProperties(bizInfo,info);
+                        bizInfoService.save(bizInfo);
                         Integer[] newGames = new Integer[games.length + 1];
                         System.arraycopy(games, 0, newGames, 0, games.length);
                         newGames[games.length] = bizType;

@@ -1,6 +1,8 @@
 package com.passport.web.controller.dto;
 
 import com.common.util.AbstractDTO;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.passport.domain.serializer.DateJsonDeserializer;
 
 import java.util.Date;
 
@@ -8,6 +10,8 @@ import java.util.Date;
  * 业务信息
  */
 public class ProxyBizInfoDto extends AbstractDTO {
+
+    private String pin;
     /**
      * 代理商id
      */
@@ -19,16 +23,26 @@ public class ProxyBizInfoDto extends AbstractDTO {
     /**
      * 开始时间
      */
+    @JsonDeserialize(using = DateJsonDeserializer.class)
     private Date startTime;
     /**
      * 结束时间
      */
+    @JsonDeserialize(using = DateJsonDeserializer.class)
     private Date endTime;
 
     /**
      * 1 启用 2 停用
      */
     private Integer status;
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
 
     public Integer getStatus() {
         return status;

@@ -8,6 +8,8 @@ import java.util.Date;
  * 业务信息
  */
 public class ProxyBizInfo extends AbstractBaseEntity {
+
+    private String pin;
     /**
      * 代理商id
      */
@@ -29,6 +31,14 @@ public class ProxyBizInfo extends AbstractBaseEntity {
      * 1 启用 2 停用
      */
     private Integer status;
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
 
     public Integer getStatus() {
         return status;

@@ -5,7 +5,7 @@
   <div class="panel-body">
     <form class="form-inline" role="form">
       <button class="btn btn-default btn-primary" type="button" (click)="list(entity)">查询</button>
-      <a class="btn btn-default" routerLink="/system/proxyBiz/view">
+      <a class="btn btn-default" routerLink="/system/proxyBiz/view" [queryParams]="{proxyId:proxyId}">
         <strong>添加</strong>
       </a>
       <a class="btn btn-default" routerLink="/system/proxy/list">返回</a>

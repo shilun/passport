@@ -5,6 +5,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProxyBizService} from '../../../services/proxy.biz.service';
 
+declare let laydate;
+
 @Component({
   selector: 'app-proxy-biz-view',
   templateUrl: './proxy-biz-view.component.html'
@@ -12,11 +14,12 @@ import {ProxyBizService} from '../../../services/proxy.biz.service';
 export class ProxyBizViewComponent extends AbstractController implements OnInit {
 
   statuses: Array<any>;
-  bizTypes:Array<any>;
+  bizTypes: Array<any>;
+  proxyId: any;
 
   constructor(fm: FormBuilder, baseService: ProxyBizService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
-    this.entity = {pin: '', bizType: '', status: '', id: '', startTime: '', endTime: '', proxyId: ''};
+    this.entity = {pin: '', bizType: '', status: '', id: '', startTime: '', endTime: '', proxyId: this.proxyId};
     this.valForm = this.buildFormGroup(fm);
   }
 
@@ -24,24 +27,53 @@ export class ProxyBizViewComponent extends AbstractController implements OnInit 
   public buildFormGroup(fb: FormBuilder): FormGroup {
     return fb.group({
       'bizType': [null, Validators.required],
-      'domain': [null],
-      'remark': [null],
       'status': [null, Validators.required],
+      'proxyId': [this.proxyId],
       'startTime': [null, Validators.required],
       'endTime': [null, Validators.required]
     });
   }
 
   async ngOnInit() {
+    var _proxyId = this.getRequest('proxyId');
+    if (_proxyId) {
+      this.proxyId = _proxyId;
+    }
     let result = await this.globalService.list('yesorno');
     if (result.success) {
       this.statuses = result.data.list;
     }
-    result = await this.globalService.list('yesorno');
+    result = await this.globalService.list('proxygame');
     if (result.success) {
-      this.statuses = result.data.list;
+      this.bizTypes = result.data.list;
     }
     await this.viewById();
+    let start = laydate.render({
+      elem: '#startTime', // s为页面日期选择输入框的id
+      theme: '#0c6acf',
+      isInitValue: false,
+      done: (value, date, endDate) => {
+        this.entity.startTime = value;
+        end.config.min = {
+          year: date.year,
+          month: date.month - 1, //关键
+          date: date.date,
+        };
+      }
+    });
+    let end = laydate.render({
+      elem: '#endTime', // s为页面日期选择输入框的id
+      theme: '#0c6acf',
+      isInitValue: false,
+      done: (value, date, endDate) => {
+        this.entity.endTime = value;
+        start.config.max = {
+          year: date.year,
+          month: date.month - 1, //关键
+          date: date.date,
+        };
+      }
+    });
   }
 
   public save() {
