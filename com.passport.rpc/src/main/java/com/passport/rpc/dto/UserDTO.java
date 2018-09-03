@@ -19,6 +19,7 @@ public class UserDTO implements Serializable {
     private String token;
     private Long proxyId;
     private Date birthDay;
+    private Long id;
 
     public String getToken() {
         return token;
@@ -106,5 +107,13 @@ public class UserDTO implements Serializable {
 
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

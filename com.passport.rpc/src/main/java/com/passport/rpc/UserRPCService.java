@@ -2,6 +2,7 @@ package com.passport.rpc;
 
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.UserDTO;
+import com.passport.rpc.dto.UserExtendDTO;
 
 /**
  * 客户webservice接口
@@ -188,5 +189,7 @@ public interface UserRPCService {
      */
     RPCResult<Boolean> changeBirthday(String pin, String date);
 
+    RPCResult<UserExtendDTO> findByUserCode(Integer userCode);
 
+    RPCResult<Boolean> saveUserExtendInfo(UserExtendDTO userExtendDTO);
 }

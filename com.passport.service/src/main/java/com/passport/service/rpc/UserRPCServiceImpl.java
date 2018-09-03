@@ -6,9 +6,12 @@ import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
+import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
+import com.passport.rpc.dto.UserExtendDTO;
+import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.constant.CodeConstant;
 import com.passport.service.constant.MessageConstant;
@@ -49,6 +52,8 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Resource
     private ClientUserInfoService clientUserInfoService;
+    @Resource
+    private ClientUserExtendInfoService clientUserExtendInfoService;
 
     @Override
     public RPCResult<Boolean> regist(Long proxyId,String account) {
@@ -867,6 +872,47 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setCode(CodeConstant.CHANGE_BIRTHDAY_FAIL);
             result.setMessage(MessageConstant.CHANGE_BIRTHDAY_FAIL);
             logger.error(MessageConstant.CHANGE_BIRTHDAY_FAIL,e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<UserExtendDTO> findByUserCode(Integer userCode) {
+        RPCResult<UserExtendDTO> result = new RPCResult<>();
+        try{
+            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userCode);
+            if(clientUserExtendInfo == null){
+                result.setSuccess(false);
+                result.setMessage(MessageConstant.NOT_FIND_EXTEND_INFO);
+                return result;
+            }
+            UserExtendDTO dto = new UserExtendDTO();
+            BeanCoper.copyProperties(dto, clientUserExtendInfo);
+            result.setData(dto);
+            result.setSuccess(true);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
+            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL,e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> saveUserExtendInfo(UserExtendDTO userExtendDTO) {
+        RPCResult<Boolean> result = null;
+        try{
+            result = new RPCResult<>();
+            ClientUserExtendInfo entity = new ClientUserExtendInfo();
+            BeanCoper.copyProperties(entity, userExtendDTO);
+            if(clientUserExtendInfoService.save(entity) > 0){
+                result.setSuccess(true);
+            }else{
+                result.setSuccess(false);
+                result.setMessage(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL);
+            }
+        }catch (Exception e){
+            logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL,e);
         }
         return result;
     }

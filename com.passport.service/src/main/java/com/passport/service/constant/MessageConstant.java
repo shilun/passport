@@ -23,4 +23,7 @@ public class MessageConstant {
     public static final String FIND_USER_FAIL = "查找用户失败";
     public static final String MOBILE_EXIST = "手机号已存在";
     public static final String REG_FAIL = "注册失败";
+    public static final String FIND_USER_EXTEND_INFO_FAIL = "获取信息失败";
+    public static final String NOT_FIND_EXTEND_INFO = "未找到该用户的扩展信息";
+    public static final String SAVE_USER_EXTEND_INFO_FAIL = "保存用户扩展信息失败";
 }

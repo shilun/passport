@@ -5,9 +5,10 @@ import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.domain.MailInfo;
 import com.passport.domain.module.MailInfoStatusEnum;
+import com.passport.rpc.dto.MailInfoDto;
 import com.passport.service.worker.MailWork;
 import com.passport.service.MailInfoService;
-import com.passport.service.dto.MailInfoDto;
+import com.passport.rpc.dto.MailInfoDto;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
