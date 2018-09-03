@@ -11,20 +11,14 @@ import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.LoginDto;
 import com.passport.web.controller.dto.PasswordChangeDto;
 import io.swagger.annotations.ApiOperation;
-import net.sf.json.JSONObject;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(value = "/login", method = {RequestMethod.POST, RequestMethod.OPTIONS})
 public class LoginController extends AbstractClientController {
 
@@ -35,7 +29,6 @@ public class LoginController extends AbstractClientController {
     private AdminRPCService adminRPCService;
 
     @RequestMapping("in")
-    @ResponseBody
     @ApiOperation(value = "密码登录")
     public Map<String, Object> login(@RequestBody LoginDto dto, HttpServletResponse response) {
         return buildMessage(new IExecute() {
@@ -53,7 +46,6 @@ public class LoginController extends AbstractClientController {
 
 
     @RequestMapping("out")
-    @ResponseBody
     @ApiOperation(value = "登出")
     public RPCResult<Boolean> loginOut() {
         return buildRPCMessage(new IExecute() {
@@ -65,7 +57,6 @@ public class LoginController extends AbstractClientController {
     }
 
     @RequestMapping("check")
-    @ResponseBody
     @ApiOperation(value = "检查token是否有效")
     public Map<String, Object> check() {
         return buildMessage(new IExecute() {
@@ -82,7 +73,6 @@ public class LoginController extends AbstractClientController {
     }
 
     @RequestMapping("changePass")
-    @ResponseBody
     @ApiOperation(value = "修改密码")
     public Map<String, Object> changePass(@RequestBody PasswordChangeDto dto) {
         return buildMessage(new IExecute() {
