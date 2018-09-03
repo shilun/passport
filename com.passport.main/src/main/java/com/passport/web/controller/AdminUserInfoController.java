@@ -58,7 +58,10 @@ public class AdminUserInfoController extends AbstractClientController {
     @RoleResource(resource = "admin")
     @RequestMapping("/admin/changePass")
     public Map<String, Object> changePass(@RequestBody IdChangePassDto dto) {
-        return null;
+        return buildMessage(() -> {
+            adminUserInfoService.changePass(dto.getId(), dto.getPassword());
+            return null;
+        });
     }
 
     /**

@@ -9,4 +9,7 @@ export class AdminService extends AbstractBaseService {
     super(http, '/admin');
   }
 
+  public async changePass(id: string,password:string): Promise<any> {
+    return await this.doExec('/changePass', {id: id,password:password});
+  }
 }
