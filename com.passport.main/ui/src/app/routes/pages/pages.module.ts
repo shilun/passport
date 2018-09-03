@@ -9,6 +9,7 @@ import { LockComponent } from './lock/lock.component';
 import { MaintenanceComponent } from './maintenance/maintenance.component';
 import { Error404Component } from './error404/error404.component';
 import { Error500Component } from './error500/error500.component';
+import {PasschangeComponent} from "./passchange/passchange.component";
 
 /* Use this routes definition in case you want to make them lazy-loaded */
 /*const routes: Routes = [
@@ -31,6 +32,7 @@ import { Error500Component } from './error500/error500.component';
         RegisterComponent,
         RecoverComponent,
         LockComponent,
+        PasschangeComponent,
         MaintenanceComponent,
         Error404Component,
         Error500Component
@@ -41,6 +43,7 @@ import { Error500Component } from './error500/error500.component';
         RegisterComponent,
         RecoverComponent,
         LockComponent,
+        PasschangeComponent,
         MaintenanceComponent,
         Error404Component,
         Error500Component

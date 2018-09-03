@@ -36,4 +36,12 @@ export class LoginService extends AbstractBaseService {
     return this.doExec('/out', '');
   }
 
+  /**
+   * 修改密码
+   * @returns {Promise<any>}
+   */
+  public changePass(oldPass:string,newPass): Promise<any> {
+    return this.doExec('/changePass', {oldPassword:oldPass,newPassword:newPass});
+  }
+
 }

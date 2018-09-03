@@ -1,5 +1,6 @@
 package com.passport.service.rpc;
 
+import com.common.security.MD5;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.domain.AdminUserInfo;
@@ -53,7 +54,7 @@ public class AdminRPCServiceImpl implements AdminRPCService {
             dto.setEmail(login.getEmail());
             dto.setNickName(login.getName());
             String key = MessageFormat.format(ADMIN_LOGIN, dto.getToken());
-            redisTemplate.opsForValue().set(key, dto, ADMIN_LOGIN_TIME,TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(key, dto, ADMIN_LOGIN_TIME, TimeUnit.MINUTES);
             result.setData(dto);
             result.setSuccess(true);
         } catch (Exception e) {
@@ -88,13 +89,46 @@ public class AdminRPCServiceImpl implements AdminRPCService {
     }
 
     @Override
+    public RPCResult<Boolean> changePass(String token, String oldPass, String newPass) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        result.setSuccess(false);
+        String key = MessageFormat.format(ADMIN_LOGIN, token);
+        try {
+            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
+            if (o == null) {
+                result.setCode("passport.changePass.token.error");
+                result.setMessage("token失效，修改用户密码失败");
+                return result;
+            }
+            AdminUserInfo admin = adminUserInfoService.findByPin(o.getPin());
+            oldPass = MD5.MD5Str(oldPass, passKey);
+            if (!admin.getPasswd().equals(oldPass)) {
+                result.setCode("passport.changePass.password.error");
+                result.setMessage("旧密码错误，修改用户密码失败");
+                return result;
+            }
+            AdminUserInfo upEntity = new AdminUserInfo();
+            upEntity.setId(admin.getId());
+            upEntity.setPasswd(MD5.MD5Str(newPass, passKey));
+            adminUserInfoService.save(upEntity);
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            logger.error("修改密码失败", e);
+        }
+        result.setCode("passport.changePass.error");
+        result.setMessage("修改用户密码失败");
+        return result;
+    }
+
+    @Override
     public RPCResult<UserDTO> verificationToken(String token) {
         RPCResult<UserDTO> result = new RPCResult<>();
         String key = MessageFormat.format(ADMIN_LOGIN, token);
         try {
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o != null) {
-                redisTemplate.opsForValue().set(key,  o,ADMIN_LOGIN_TIME);
+                redisTemplate.opsForValue().set(key, o, ADMIN_LOGIN_TIME);
                 result.setData(o);
                 result.setSuccess(true);
                 return result;
@@ -117,7 +151,7 @@ public class AdminRPCServiceImpl implements AdminRPCService {
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
-            logger.error("登出失败",e);
+            logger.error("登出失败", e);
         }
         result.setSuccess(false);
         result.setCode("passport.login.out.error");

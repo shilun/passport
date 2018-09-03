@@ -20,6 +20,15 @@ public interface AdminRPCService {
     RPCResult<UserDTO> login(String loginName, String password);
 
     /**
+     * 修改密码
+     * @param token
+     * @param oldPass
+     * @param newPass
+     * @return
+     */
+    RPCResult<Boolean> changePass(String token,String oldPass, String newPass);
+
+    /**
      * 获取管理员角色
      *
      * @param pin
