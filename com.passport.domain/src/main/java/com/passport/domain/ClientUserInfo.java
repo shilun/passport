@@ -1,6 +1,8 @@
 package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.passport.domain.serializer.DateJsonSerializer;
 
 import java.util.Date;
 
@@ -40,6 +42,7 @@ public class ClientUserInfo extends AbstractBaseEntity {
      */
     private Integer status;
 
+    @JsonSerialize(using = DateJsonSerializer.class)
     private Date birthDay;
     public Long getProxyId() {
         return proxyId;

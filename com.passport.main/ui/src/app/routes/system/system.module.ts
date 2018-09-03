@@ -8,13 +8,15 @@ import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {Ng2TableModule} from 'ng2-table';
 import {UserListComponent} from './user-list/user-list.component';
 import {UserViewComponent} from './user-view/user-view.component';
-import { AdminListComponent } from './admin-list/admin-list.component';
-import { AdminViewComponent } from './admin-view/admin-view.component';
-import { RoleListComponent } from './role-list/role-list.component';
-import { RoleViewComponent } from './role-view/role-view.component';
-import { ProxyListComponent } from './proxy-list/proxy-list.component';
-import { ProxyViewComponent } from './proxy-view/proxy-view.component';
-import {AdminPassComponent} from "./admin-pass/admin-pass.component";
+import {AdminListComponent} from './admin-list/admin-list.component';
+import {AdminViewComponent} from './admin-view/admin-view.component';
+import {RoleListComponent} from './role-list/role-list.component';
+import {RoleViewComponent} from './role-view/role-view.component';
+import {ProxyListComponent} from './proxy-list/proxy-list.component';
+import {ProxyViewComponent} from './proxy-view/proxy-view.component';
+import {ProxyBizListComponent} from './proxy-biz-list/proxy-biz-list.component';
+import {ProxyBizViewComponent} from './proxy-biz-view/proxy-biz-view.component';
+import {AdminPassComponent} from './admin-pass/admin-pass.component';
 
 const routes: Routes = [
   {path: 'config/list', component: ConfigListComponent},
@@ -28,7 +30,9 @@ const routes: Routes = [
   {path: 'role/view', component: RoleViewComponent},
   {path: 'proxy/list', component: ProxyListComponent},
   {path: 'proxy/view', component: ProxyViewComponent},
-  ];
+  {path: 'proxyBiz/list', component: ProxyBizListComponent},
+  {path: 'proxyBiz/view', component: ProxyBizViewComponent},
+];
 
 @NgModule({
   imports: [
@@ -39,7 +43,9 @@ const routes: Routes = [
     NgxDatatableModule
   ],
   declarations: [
-    ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent]
+    ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,
+    AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent, ProxyBizListComponent,
+    ProxyBizViewComponent]
 })
 
 

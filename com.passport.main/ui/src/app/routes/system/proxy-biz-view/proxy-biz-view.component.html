@@ -1,0 +1,73 @@
+<div class="content-heading">
+  代理商代理管理--{{actionType}}
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="valForm" class="form-validate form-horizontal" (submit)="submitForm($event, valForm.value)"
+            novalidate="">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <ng-container *ngIf="entity.pin!=''">
+              <fieldset>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">pin</label>
+                  <div class="col-sm-6">
+                    <span class="form-control">{{entity.pin}}</span>
+                  </div>
+                </div>
+              </fieldset>
+            </ng-container>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">游戏</label>
+                <div class="col-sm-6">
+                  <select id="bizType" name="bizType" [(ngModel)]='entity.bizType' class="form-control"
+                          [formControl]="valForm.controls['bizType']" formControlName="bizType">
+                    <option *ngFor="let item of bizTypes" [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['bizType'].hasError('required') && (valForm.controls['bizType'].dirty || valForm.controls['bizType'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">有效时间</label>
+                <div class="col-sm-3">
+                  <input class="form-control" type="text" id="startTime" formControlName="startTime" [formControl]="valForm.controls['startTime']" [(ngModel)]="entity.startTime" placeholder="开始时间"/>
+                  <span class="text-danger" *ngIf="valForm.controls['startTime'].hasError('required') && (valForm.controls['startTime'].dirty || valForm.controls['startTime'].touched)">必选项</span>
+                </div>
+                <div class="col-sm-3">
+                  <input class="form-control" type="text" id="endTime" formControlName="endTime" [formControl]="valForm.controls['endTime']" [(ngModel)]="entity.endTime" placeholder="结束时间"/>
+                  <span class="text-danger" *ngIf="valForm.controls['endTime'].hasError('required') && (valForm.controls['endTime'].dirty || valForm.controls['endTime'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">状态</label>
+                <div class="col-sm-6">
+                  <select id="status" name="status" [(ngModel)]='entity.status' class="form-control"
+                          [formControl]="valForm.controls['status']" formControlName="status">
+                    <option *ngFor="let item of statuses" [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['status'].hasError('required') && (valForm.controls['status'].dirty || valForm.controls['status'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="panel-footer text-center">
+            <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
+            <a class="btn btn-default" routerLink="/system/proxyBiz/list">取消</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

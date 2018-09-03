@@ -33,6 +33,15 @@ export abstract class AbstractBaseService {
     return await this.doExec('/list', query);
   }
 
+  /**
+   * 查询
+   * @param query
+   * @returns {Promise<any>}
+   */
+  public async all(): Promise<any> {
+    return await this.doExec('/all', null);
+  }
+
   protected doExec(url: string, data: any): Promise<any> {
     return this.http.post(this.buildUrl(url), data, this.buildHeader()).toPromise();
   }

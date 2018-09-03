@@ -1,7 +1,10 @@
 package com.passport.web.controller.dto;
 
 import com.common.util.AbstractDTO;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.passport.domain.serializer.DateJsonDeserializer;
 
+import java.util.Date;
 
 
 public class ClientUserDto extends AbstractDTO {
@@ -33,7 +36,8 @@ public class ClientUserDto extends AbstractDTO {
     /**
      * 生日
      */
-    private String birthday;
+    @JsonDeserialize(using = DateJsonDeserializer.class)
+    private Date birthDay;
 
     /**
      * 代理id
@@ -88,19 +92,19 @@ public class ClientUserDto extends AbstractDTO {
         this.status = status;
     }
 
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
     public Long getProxyId() {
         return proxyId;
     }
 
     public void setProxyId(Long proxyId) {
         this.proxyId = proxyId;
+    }
+
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
     }
 }

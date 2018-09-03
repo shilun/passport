@@ -5,6 +5,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from '../../../services/user.service';
 import {ProxyService} from '../../../services/proxy.service';
+
 declare let laydate;
 
 @Component({
@@ -19,7 +20,7 @@ export class UserViewComponent extends AbstractController implements OnInit {
 
   constructor(fm: FormBuilder, baseService: UserService, protected proxyService: ProxyService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
-    this.entity = {pin: '', proxyId: '', nickName: '',  sexType: '', status: '', phone: '', id: '', birthday: '',email: ''};
+    this.entity = {pin: '', proxyId: '', nickName: '', sexType: '', status: '', phone: '', id: '', birthDay: '', email: ''};
     this.valForm = this.buildFormGroup(fm);
   }
 
@@ -33,7 +34,7 @@ export class UserViewComponent extends AbstractController implements OnInit {
       'sexType': [null, Validators.required],
       'phone': [null, Validators.required],
       'email': [null],
-      'birthday': [null]
+      'birthDay': [null]
     });
   }
 
@@ -46,29 +47,20 @@ export class UserViewComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.sexTypes = result.data.list;
     }
-    result = await this.proxyService.list({pageinfo: {page: 0, size: 1000}});
+    result = await this.proxyService.all();
     if (result.success) {
       this.proxys = result.data.list;
     }
     await this.viewById();
 
-    for (let proxyItem of this.proxys) {
-      proxyItem.selected = '';
-      let proxyId = this.entity.proxyId;
-      if (proxyItem.id = proxyId) {
-        proxyItem.checked = 'selected';
-        break;
-      }
-    }
-
     laydate.render({
-      elem:'#birthday', // s为页面日期选择输入框的id
-      theme:'#0c6acf',
+      elem: '#birthDay', // s为页面日期选择输入框的id
+      theme: '#0c6acf',
       isInitValue: false,
-    done:(value, date, endDate)=>{
-        this.entity.birthday = value;
+      done: (value, date, endDate) => {
+        this.entity.birthDay = value;
       }
-    })
+    });
 
 
   }

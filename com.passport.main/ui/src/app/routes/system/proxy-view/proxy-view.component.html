@@ -77,7 +77,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">状态</label>
                 <div class="col-sm-6">
-                  <select id="status" name="status" [(ngModel)]='entity.status'
+                  <select id="status" name="status" [(ngModel)]='entity.status' class="form-control"
                           [formControl]="valForm.controls['status']" formControlName="status">
                     <option *ngFor="let item of statuses" [value]="item.value">{{item.name}}</option>
                   </select>

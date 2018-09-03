@@ -21,7 +21,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">状态</label>
                 <div class="col-sm-6">
-                  <select id="status" name="status"  [(ngModel)]='entity.status' [formControl]="valForm.controls['status']" formControlName="status" >
+                  <select id="status" name="status" class="form-control"  [(ngModel)]='entity.status' [formControl]="valForm.controls['status']" formControlName="status" >
                     <option *ngFor="let item of statuses"  [value]="item.value">{{item.name}}</option>
                   </select>
                   <span class="text-danger" *ngIf="valForm.controls['status'].hasError('required') && (valForm.controls['status'].dirty || valForm.controls['status'].touched)">必选项</span>

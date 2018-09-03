@@ -13,6 +13,11 @@ public class ProxyInfo extends AbstractBaseEntity {
     private String pin;
 
     /**
+     * 代理的游戏
+     * 1 棋牌 2 彩票 3 小游戏
+     */
+    private Integer[] games;
+    /**
      * 公司名称
      */
     private String name;
@@ -118,5 +123,13 @@ public class ProxyInfo extends AbstractBaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer[] getGames() {
+        return games;
+    }
+
+    public void setGames(Integer[] games) {
+        this.games = games;
     }
 }

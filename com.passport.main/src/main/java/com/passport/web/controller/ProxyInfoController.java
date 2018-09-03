@@ -23,6 +23,17 @@ public class ProxyInfoController extends AbstractClientController {
     @Resource
     private ClientUserInfoService userInfoService;
 
+
+    /**
+     * 所有代理商
+     *
+     * @return
+     */
+    @RoleResource(resource = "passport")
+    @RequestMapping("/proxy/all")
+    public Map<String, Object> all() {
+        return buildMessage(() ->proxyInfoService.query(null));
+    }
     /**
      * 查询
      *

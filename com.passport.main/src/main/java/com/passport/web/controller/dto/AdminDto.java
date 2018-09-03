@@ -20,7 +20,6 @@ public class AdminDto extends AbstractDTO implements Serializable {
     /**角色*/
     private Long[] roles;
 
-
     public String getPin() {
         return pin;
     }

@@ -5,7 +5,8 @@ import com.common.util.IGlossary;
 public enum BizTypeEnum implements IGlossary {
 
     QIPAI("棋牌", 1),
-    CAIPIAO("彩票", 2);
+    CAIPIAO("彩票", 2),
+    SMALLGAME("小游戏", 3);
 
     BizTypeEnum(String name, Integer value) {
         this.name = name;

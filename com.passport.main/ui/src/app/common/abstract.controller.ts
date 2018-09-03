@@ -139,6 +139,28 @@ export abstract class AbstractController {
   }
 
   /**
+   * 值名称
+   * @param value
+   * @param list
+   * @returns {any}
+   */
+  proxyParse(value: any, list) {
+    try {
+      if (value == null || value == 0) {
+        return '';
+      }
+      for (let item of list) {
+        if (item.id == value) {
+          return item.name;
+        }
+      }
+    }
+    catch (e) {
+    }
+    return '未知';
+  }
+
+  /**
    * 验证最小字符
    * @param checkValue
    * @returns {ValidatorFn}

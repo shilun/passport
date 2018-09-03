@@ -8,8 +8,7 @@ import {CustomValidators} from 'ng2-validation';
 
 @Component({
   selector: 'app-config-view',
-  templateUrl: './config-view.component.html',
-  styleUrls: ['./config-view.component.scss']
+  templateUrl: './config-view.component.html'
 })
 export class ConfigViewComponent extends AbstractController implements OnInit {
 

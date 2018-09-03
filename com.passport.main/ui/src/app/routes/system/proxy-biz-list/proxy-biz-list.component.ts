@@ -3,18 +3,19 @@ import {GlobalService} from '../../../services/global.service';
 import {AbstractController} from '../../../common/abstract.controller';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProxyService} from '../../../services/proxy.service';
+import {ProxyBizService} from '../../../services/proxy.biz.service';
 
 @Component({
-  selector: 'app-proxy-list',
-  templateUrl: './proxy-list.component.html'
+  selector: 'app-proxy-biz-list',
+  templateUrl: './proxy-biz-list.component.html'
 })
-export class ProxyListComponent extends AbstractController implements OnInit {
+export class ProxyBizListComponent extends AbstractController implements OnInit {
 
   statuses: Array<any>;
   gametypes: Array<any>;
-
-  constructor(protected proxyService: ProxyService, protected globalService: GlobalService, protected route: ActivatedRoute, protected router: Router) {
-    super(proxyService, route, router);
+  proxys: Array<any>;
+  constructor(protected proxyBizService: ProxyBizService,protected proxyService: ProxyService, protected globalService: GlobalService, protected route: ActivatedRoute, protected router: Router) {
+    super(proxyBizService, route, router);
     this.entity = {};
   }
 
@@ -25,21 +26,13 @@ export class ProxyListComponent extends AbstractController implements OnInit {
    */
   gametypeParse(value: any, list) {
     try {
-      if (value == null || value.length == 0) {
+      if (value == null) {
         return '无';
       }
-      let games = [];
       for (let item of list) {
-        for (let game of value) {
-          if (game == item.value) {
-            games.push(game);
-          }
+        if (item.value = value) {
+          return item.name;
         }
-      }
-      if (games.length != 0) {
-        return games.join(',');
-      } else {
-        return '无';
       }
     }
     catch (e) {
@@ -56,6 +49,14 @@ export class ProxyListComponent extends AbstractController implements OnInit {
     result = await this.globalService.list('proxygame');
     if (result.success) {
       this.gametypes = result.data.list;
+    }
+    result = await this.proxyService.all();
+    if (result.success) {
+      let arr=[{id:null,name:'全部'}];
+      for(let i=0;i<result.data.list.length;i++){
+        arr.push(result.data.list[i]);
+      }
+      this.proxys=arr;
     }
   }
 

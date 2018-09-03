@@ -5,6 +5,7 @@ import com.common.util.IGlossary;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
+import com.passport.domain.module.BizTypeEnum;
 import com.passport.web.AbstractClientController;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class GlobalController extends AbstractClientController {
         glosseryItems = new HashMap<>();
         glosseryItems.put("yesorno", YesOrNoEnum.class);
         glosseryItems.put("sextype", SexEnum.class);
+        glosseryItems.put("proxygame", BizTypeEnum.class);
     }
 
     @RequestMapping(value = "/global/type/{type}")

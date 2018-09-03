@@ -32,7 +32,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">性别</label>
                 <div class="col-sm-6">
-                  <select id="sexType" name="sexType"  [(ngModel)]='entity.sexType' [formControl]="valForm.controls['sexType']" formControlName="sexType" >
+                  <select id="sexType" name="sexType" class="form-control"  [(ngModel)]='entity.sexType' [formControl]="valForm.controls['sexType']" formControlName="sexType" >
                     <option *ngFor="let item of sexTypes"  [value]="item.value">{{item.name}}</option>
                   </select>
                   <span class="text-danger" *ngIf="valForm.controls['sexType'].hasError('required') && (valForm.controls['sexType'].dirty || valForm.controls['sexType'].touched)">必选项</span>
@@ -54,7 +54,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">生日</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="birthday" formControlName="birthday" [formControl]="valForm.controls['birthday']" [(ngModel)]="entity.birthday"/>
+                  <input class="form-control" type="text" id="birthDay" formControlName="birthDay" [formControl]="valForm.controls['birthDay']" [(ngModel)]="entity.birthDay"/>
                 </div>
               </div>
             </fieldset>
@@ -72,7 +72,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">代理商</label>
                 <div class="col-sm-6">
-                    <select id="proxyId" name="proxyId"  [(ngModel)]='entity.proxyId' [formControl]="valForm.controls['proxyId']" formControlName="proxyId" >
+                    <select id="proxyId" name="proxyId" class="form-control" formControlName="proxyId"  [(ngModel)]='entity.proxyId' [formControl]="valForm.controls['proxyId']"  >
                       <option *ngFor="let item of proxys"  [value]="item.id">{{item.name}}</option>
                     </select>
                 </div>
@@ -83,7 +83,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">状态</label>
                 <div class="col-sm-6">
-                  <select id="status" name="status"  [(ngModel)]='entity.status' [formControl]="valForm.controls['status']" formControlName="status" >
+                  <select id="status" name="status" class="form-control"  [(ngModel)]='entity.status' [formControl]="valForm.controls['status']" formControlName="status" >
                     <option *ngFor="let item of statuses"  [value]="item.value">{{item.name}}</option>
                   </select>
                   <span class="text-danger" *ngIf="valForm.controls['status'].hasError('required') && (valForm.controls['status'].dirty || valForm.controls['status'].touched)">必选项</span>
@@ -94,7 +94,7 @@
           </div>
           <div class="panel-footer text-center">
             <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
-            <a class="btn btn-default" routerLink="/system/admin/list">取消</a>
+            <a class="btn btn-default" routerLink="/system/user/list">取消</a>
           </div>
         </div>
         <!-- END panel-->

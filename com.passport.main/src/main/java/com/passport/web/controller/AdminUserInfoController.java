@@ -2,7 +2,6 @@ package com.passport.web.controller;
 
 import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
-import com.common.util.model.SexEnum;
 import com.passport.domain.AdminUserInfo;
 import com.passport.web.controller.dto.AdminDto;
 import com.passport.service.AdminUserInfoService;
