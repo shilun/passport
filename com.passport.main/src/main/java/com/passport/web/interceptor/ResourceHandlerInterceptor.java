@@ -49,6 +49,9 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
                     return false;
                 }
             }
+            else {
+                return true;
+            }
         }
         return false;
     }

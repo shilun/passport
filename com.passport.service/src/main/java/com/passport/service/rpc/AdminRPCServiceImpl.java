@@ -94,7 +94,7 @@ public class AdminRPCServiceImpl implements AdminRPCService {
         try {
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o != null) {
-                redisTemplate.opsForValue().increment(key, ADMIN_LOGIN_TIME);
+                redisTemplate.opsForValue().set(key,  o,ADMIN_LOGIN_TIME);
                 result.setData(o);
                 result.setSuccess(true);
                 return result;

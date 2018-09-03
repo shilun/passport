@@ -29,7 +29,7 @@ public class AdminUserInfoController extends AbstractClientController {
      * @param info
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "查询")
     @RequestMapping("/admin/list")
     @ResponseBody
@@ -47,7 +47,7 @@ public class AdminUserInfoController extends AbstractClientController {
      * @param content
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "保存")
     @RequestMapping("/admin/view")
     public Map<String, Object> view(@RequestBody String content) {
@@ -55,7 +55,7 @@ public class AdminUserInfoController extends AbstractClientController {
                 adminUserInfoService.findById(getIdByJson(content)));
     }
 
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @RequestMapping("/admin/changePass")
     public Map<String, Object> changePass(@RequestBody IdChangePassDto dto) {
         return buildMessage(() -> {
@@ -70,7 +70,7 @@ public class AdminUserInfoController extends AbstractClientController {
      * @param info
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "保存")
     @RequestMapping("/admin/save")
     @ResponseBody

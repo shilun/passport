@@ -31,7 +31,7 @@ public class ClientUserInfoController extends AbstractClientController {
      * @param info
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "查询")
     @RequestMapping("/user/list")
     @ResponseBody
@@ -49,7 +49,7 @@ public class ClientUserInfoController extends AbstractClientController {
      * @param content
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "保存")
     @RequestMapping("/user/view")
     @ResponseBody
@@ -63,7 +63,7 @@ public class ClientUserInfoController extends AbstractClientController {
      * @param info
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "保存")
     @RequestMapping("/user/save")
     @ResponseBody

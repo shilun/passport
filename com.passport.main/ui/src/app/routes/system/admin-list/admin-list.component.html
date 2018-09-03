@@ -25,6 +25,7 @@
       <th>手机</th>
       <th>启动状态</th>
       <th>创建时间</th>
+      <th>操作</th>
     </tr>
     </thead>
     <tbody>
@@ -36,6 +37,7 @@
         <td>{{item.phone}}</td>
         <td>{{valuePare(item.status,statuses)}}</td>
         <td>{{item.createTime}}</td>
+        <td><a routerLink="/system/admin/changePass" [queryParams]="{id:item.id}">修改密码</a></td>
       </tr>
     </ng-container>
     </tbody>

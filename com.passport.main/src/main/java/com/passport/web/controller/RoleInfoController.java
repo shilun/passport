@@ -26,7 +26,7 @@ public class RoleInfoController extends AbstractClientController {
      * @param info
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @ApiOperation(value = "查询")
     @RequestMapping("/role/list")
     public Map<String, Object> list(@RequestBody RoleDto info) {
@@ -45,7 +45,7 @@ public class RoleInfoController extends AbstractClientController {
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/role/view")
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(() -> roleInfoService.findById(getIdByJson(content)));
     }
@@ -58,7 +58,7 @@ public class RoleInfoController extends AbstractClientController {
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/role/save")
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     public Map<String, Object> save(@RequestBody RoleDto info) {
         return buildMessage(() -> {
             RoleInfo entity = new RoleInfo();

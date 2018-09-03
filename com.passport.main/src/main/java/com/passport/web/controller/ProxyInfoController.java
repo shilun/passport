@@ -29,7 +29,7 @@ public class ProxyInfoController extends AbstractClientController {
      * @param info
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @RequestMapping("/proxy/list")
     public Map<String, Object> list(@RequestBody ProxyDto info) {
         return buildMessage(() -> {
@@ -45,7 +45,7 @@ public class ProxyInfoController extends AbstractClientController {
      * @param content
      * @return
      */
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     @RequestMapping("/proxy/view")
     public Map<String, Object> view(@RequestBody String content) {
         return buildMessage(() -> proxyInfoService.findById(getIdByJson(content)));
@@ -58,7 +58,7 @@ public class ProxyInfoController extends AbstractClientController {
      * @return
      */
     @RequestMapping("/proxy/save")
-    @RoleResource(resource = "admin")
+    @RoleResource(resource = "passport")
     public Map<String, Object> save(@RequestBody ProxyDto info) {
         return buildMessage(() -> {
             String pin=info.getPin();

@@ -37,7 +37,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginDto dto, HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> login(@RequestBody LoginDto dto, HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -45,7 +45,7 @@ public class LoginController extends AbstractClientController {
                 if (!login.getSuccess()) {
                     throw new BizException("loginError", "登录失败，登录账户或密码错误");
                 }
-                putCookie("token", login.getData().getToken());
+                putCookie("token", login.getData().getToken(), response);
                 return login.getData();
             }
         });

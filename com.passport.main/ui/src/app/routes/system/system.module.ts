@@ -14,6 +14,7 @@ import { RoleListComponent } from './role-list/role-list.component';
 import { RoleViewComponent } from './role-view/role-view.component';
 import { ProxyListComponent } from './proxy-list/proxy-list.component';
 import { ProxyViewComponent } from './proxy-view/proxy-view.component';
+import {AdminPassComponent} from "./admin-pass/admin-pass.component";
 
 const routes: Routes = [
   {path: 'config/list', component: ConfigListComponent},
@@ -22,6 +23,7 @@ const routes: Routes = [
   {path: 'user/view', component: UserViewComponent},
   {path: 'admin/list', component: AdminListComponent},
   {path: 'admin/view', component: AdminViewComponent},
+  {path: 'admin/changePass', component: AdminPassComponent},
   {path: 'role/list', component: RoleListComponent},
   {path: 'role/view', component: RoleViewComponent},
   {path: 'proxy/list', component: ProxyListComponent},
@@ -37,7 +39,7 @@ const routes: Routes = [
     NgxDatatableModule
   ],
   declarations: [
-    ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent]
+    ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent]
 })
 
 

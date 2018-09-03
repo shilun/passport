@@ -26,7 +26,19 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         query.setStatus(YesOrNoEnum.YES.getValue());
         passport = MD5.MD5Str(passport, passKey);
         query.setPasswd(passport);
-        query.setPin(loginName);
+        boolean setLoginName=false;
+        if(StringUtils.isEmail(loginName)){
+            query.setEmail(loginName);
+            setLoginName=true;
+        }
+        if(StringUtils.isMobileNO(loginName)){
+            setLoginName=true;
+            query.setPhone(loginName);
+        }
+        if(setLoginName==false){
+            query.setName(loginName);
+        }
+        query.setName(loginName);
         AdminUserInfo info = findByOne(query);
         return info;
     }
