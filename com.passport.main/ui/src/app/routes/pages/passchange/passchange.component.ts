@@ -39,7 +39,9 @@ export class PasschangeComponent implements OnInit {
       }
     }
   }
-
+  homeNave(){
+    this.router.navigate(['home']);
+  }
   ngOnInit() {
     this.router = this.injector.get(Router);
   }
