@@ -45,8 +45,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
     @JsonSerialize(using = DateJsonSerializer.class)
     private Date birthDay;
 
-    private Long userCode;
-
     public Long getProxyId() {
         return proxyId;
     }
@@ -118,13 +116,5 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
-    }
-
-    public Long getUserCode() {
-        return userCode;
-    }
-
-    public void setUserCode(Long userCode) {
-        this.userCode = userCode;
     }
 }
