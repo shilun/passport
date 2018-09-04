@@ -8,16 +8,6 @@
             novalidate="">
         <div class="panel panel-default">
           <div class="panel-body">
-            <ng-container *ngIf="entity.pin!=''">
-              <fieldset>
-                <div class="form-group">
-                  <label class="col-sm-2 control-label">pin</label>
-                  <div class="col-sm-6">
-                    <span class="form-control">{{entity.pin}}</span>
-                  </div>
-                </div>
-              </fieldset>
-            </ng-container>
 
             <fieldset>
               <div class="form-group">
@@ -63,7 +53,7 @@
           </div>
           <div class="panel-footer text-center">
             <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
-            <a class="btn btn-default" routerLink="/system/proxyBiz/list" [queryParams]="{proxyId:proxyId}">取消</a>
+            <a class="btn btn-default" routerLink="/system/proxyBiz/list" [queryParams]="{proxyId:entity.proxyId}">取消</a>
           </div>
         </div>
       </form>

@@ -15,11 +15,10 @@ export class ProxyBizViewComponent extends AbstractController implements OnInit 
 
   statuses: Array<any>;
   bizTypes: Array<any>;
-  proxyId: any;
 
   constructor(fm: FormBuilder, baseService: ProxyBizService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
-    this.entity = {pin: '', bizType: '', status: '', id: '', startTime: '', endTime: '', proxyId: this.proxyId};
+    this.entity = {bizType: '', status: '', id: '', startTime: '', endTime: '', proxyId: ''};
     this.valForm = this.buildFormGroup(fm);
   }
 
@@ -28,7 +27,6 @@ export class ProxyBizViewComponent extends AbstractController implements OnInit 
     return fb.group({
       'bizType': [null, Validators.required],
       'status': [null, Validators.required],
-      'proxyId': [this.proxyId],
       'startTime': [null, Validators.required],
       'endTime': [null, Validators.required]
     });
@@ -37,7 +35,7 @@ export class ProxyBizViewComponent extends AbstractController implements OnInit 
   async ngOnInit() {
     var _proxyId = this.getRequest('proxyId');
     if (_proxyId) {
-      this.proxyId = _proxyId;
+      this.entity.proxyId = _proxyId;
     }
     let result = await this.globalService.list('yesorno');
     if (result.success) {
@@ -78,6 +76,16 @@ export class ProxyBizViewComponent extends AbstractController implements OnInit 
 
   public save() {
     this.saveData('/system/proxyBiz/list');
+  }
+
+  public async saveData(successUrl: string): Promise<void> {
+    let result = await this.baseService.save(this.entity);
+    if (result.success) {
+      this.router.navigate([successUrl], {queryParams: {proxyId: this.entity.proxyId}});
+    }
+    else {
+      alert(result.message);
+    }
   }
 
   submitForm($ev, value: any) {

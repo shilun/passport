@@ -32,7 +32,7 @@ export class ProxyListComponent extends AbstractController implements OnInit {
       for (let item of list) {
         for (let game of value) {
           if (game == item.value) {
-            games.push(game);
+            games.push(item.name);
           }
         }
       }
