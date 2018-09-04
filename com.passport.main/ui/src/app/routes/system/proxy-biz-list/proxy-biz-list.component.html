@@ -17,7 +17,7 @@
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>pin</th>
+      <th>id</th>
       <th>代理</th>
       <th>游戏</th>
       <th>开始时间</th>
@@ -28,7 +28,7 @@
     <tbody>
     <ng-container *ngFor="let item of listData.list">
       <tr>
-        <td><a routerLink="/system/proxyBiz/view" [queryParams]="{id:item.id}">{{item.pin}}</a></td>
+        <td><a routerLink="/system/proxyBiz/view" [queryParams]="{id:item.id}">{{item.id}}</a></td>
         <td>{{proxyParse(item.proxyId,proxys)}}</td>
         <td>{{gametypeParse(item.bizType,gametypes)}}</td>
         <td>{{item.startTime}}</td>

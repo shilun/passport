@@ -85,9 +85,6 @@ public class ProxyBizInfoController extends AbstractClientController {
                         }
                     }
                     if (!contains) {
-                        ProxyBizInfo bizInfo=new ProxyBizInfo();
-                        BeanCoper.copyProperties(bizInfo,info);
-                        bizInfoService.save(bizInfo);
                         Integer[] newGames = new Integer[games.length + 1];
                         System.arraycopy(games, 0, newGames, 0, games.length);
                         newGames[games.length] = bizType;
@@ -101,6 +98,9 @@ public class ProxyBizInfoController extends AbstractClientController {
                 proxyInfo.setGames(games);
                 proxyInfoService.save(proxyInfo);
             }
+            ProxyBizInfo bizInfo=new ProxyBizInfo();
+            BeanCoper.copyProperties(bizInfo,info);
+            bizInfoService.save(bizInfo);
             return null;
         });
     }

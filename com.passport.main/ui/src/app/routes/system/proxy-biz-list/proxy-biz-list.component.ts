@@ -32,7 +32,7 @@ export class ProxyBizListComponent extends AbstractController implements OnInit 
         return '无';
       }
       for (let item of list) {
-        if (item.value = value) {
+        if (item.value == value) {
           return item.name;
         }
       }
