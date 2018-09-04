@@ -1,4 +1,4 @@
-package com.passport.domain.module;
+package com.passport.rpc.dto;
 
 import com.common.util.IGlossary;
 

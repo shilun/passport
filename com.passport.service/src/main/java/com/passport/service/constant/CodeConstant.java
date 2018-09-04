@@ -5,7 +5,7 @@ package com.passport.service.constant;
  * @date 2018/8/30 15:02
  */
 public class CodeConstant {
-    public static final String USER_NULL = "user is null";
+    public static final String USER_NULL = "user.pin.null";
     public static final String PARAM_NULL = "param is null";
     public static final String PARAM_FORMAT_ERROR = "param format error";
     public static final String SEND_CODE_FAIL = "send code fail";

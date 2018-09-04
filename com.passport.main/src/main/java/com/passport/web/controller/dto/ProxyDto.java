@@ -1,6 +1,9 @@
 package com.passport.web.controller.dto;
 
 import com.common.util.AbstractDTO;
+import com.passport.rpc.dto.ProxyBizInfo;
+
+import java.util.Date;
 
 /**
  * 代理商信息
@@ -10,6 +13,11 @@ public class ProxyDto  extends AbstractDTO {
      * 用户pin
      */
     private String pin;
+
+    /**
+     *
+     */
+    private Integer[] games;
 
     /**
      * 公司名称
@@ -30,6 +38,11 @@ public class ProxyDto  extends AbstractDTO {
     private String token;
 
     /**
+     * 结整时间
+     */
+    private Date endTime;
+
+    /**
      * 接入加密key uuid生成
      */
     private String encodingKey;
@@ -42,10 +55,28 @@ public class ProxyDto  extends AbstractDTO {
      */
     private String remark;
 
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
     /**
      * 状态
      */
     private Integer status;
+
+    public Integer[] getGames() {
+        return games;
+    }
+
+    public void setGames(Integer[] games) {
+        this.games = games;
+    }
+
     public String getPin() {
         return pin;
     }

@@ -21,10 +21,10 @@
     <tr>
       <th>pin</th>
       <th>名称</th>
-      <th>代理游戏</th>
       <th>电话</th>
       <th>联系人</th>
       <th>域名</th>
+      <th>结束时间</th>
       <th>创建时间</th>
     </tr>
     </thead>
@@ -33,10 +33,10 @@
       <tr>
         <td><a routerLink="/system/proxy/view" [queryParams]="{id:item.id}">{{item.pin}}</a></td>
         <td>{{item.name}}</td>
-        <td><a routerLink="/system/proxyBiz/list" [queryParams]="{proxyId:item.id}">{{gametypeParse(item.games,gametypes)}}</a></td>
         <td>{{item.phone}}</td>
         <td>{{item.linkMan}}</td>
         <th>{{item.domain}}</th>
+        <th>{{item.endTime}}</th>
         <td>{{item.createTime}}</td>
       </tr>
     </ng-container>

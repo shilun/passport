@@ -65,6 +65,28 @@
             </fieldset>
             <fieldset>
               <div class="form-group">
+                <label class="col-sm-2 control-label">结束时间</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="endTime" formControlName="endTime"
+                         [formControl]="valForm.controls['endTime']" [(ngModel)]="entity.endTime"/>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">游戏</label>
+                <div class="col-sm-6">
+                  <ng-container *ngFor="let gameItem of games">
+                    <label class="checkbox-inline c-checkbox">
+                      <input type="checkbox"  checked="{{gameItem.checked}}" (click)="upChecket($event.target,$event.target.checked)" value="{{gameItem.id}}"/>
+                      <span class="fa fa-check"></span> {{gameItem.name}}
+                    </label>
+                  </ng-container>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
                 <label class="col-sm-2 control-label">备注</label>
                 <div class="col-sm-6">
                   <input class="form-control" type="text" id="remark" formControlName="remark"

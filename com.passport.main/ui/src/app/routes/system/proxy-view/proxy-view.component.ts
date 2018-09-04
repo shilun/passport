@@ -12,10 +12,11 @@ import {ProxyService} from '../../../services/proxy.service';
 export class ProxyViewComponent extends AbstractController implements OnInit {
 
   statuses: Array<any>;
+  games: Array<any>;
 
   constructor(fm: FormBuilder, baseService: ProxyService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
-    this.entity = {pin: '', name: '', status: '', phone: '', id: '', domain: '', linkMan: '', remark: ''};
+    this.entity = {pin: '', name: '', status: '', phone: '', id: '', domain: '', linkMan: '',games:[], remark: '',endTime:''};
     this.valForm = this.buildFormGroup(fm);
   }
 
@@ -24,6 +25,7 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
     return fb.group({
       'name': [null, Validators.required],
       'pin': [null,Validators.required],
+      'endTime': [null,Validators.required],
       'domain': [null],
       'remark': [null],
       'status': [null, Validators.required],
@@ -37,14 +39,49 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.statuses = result.data.list;
     }
+    result = await this.globalService.list('games');
+    if (result.success) {
+      this.games = result.data.list;
+    }
     await this.viewById();
+
+    for (let gameItem of this.games) {
+      gameItem.checked = '';
+      for (let role of this.entity.games) {
+        if (gameItem.id == role) {
+          gameItem.checked = 'checked';
+          break;
+        }
+      }
+    }
   }
 
+  upChecket(e: any, checket: boolean) {
+    for (let item of this.games) {
+      if (e.value == item.id) {
+        if (checket) {
+          item.checked = 'checked';
+        }
+        else {
+          item.checked = '';
+        }
+        break;
+      }
+    }
+  }
   public save() {
     this.saveData('/system/proxy/list');
   }
 
   submitForm($ev, value: any) {
+    let games = [];
+    for (let gameItem of this.games) {
+      if (gameItem.checked != '') {
+        games.push(gameItem.id);
+      }
+    }
+    this.entity.endTime=this.entity.endTime.replace("/\//g","-");
+    this.entity.games=games;
     this.save();
   }
 }

@@ -53,10 +53,6 @@ export class ProxyListComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.statuses = result.data.list;
     }
-    result = await this.globalService.list('proxygame');
-    if (result.success) {
-      this.gametypes = result.data.list;
-    }
   }
 
 }

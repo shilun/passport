@@ -7,7 +7,7 @@ export class TokenUtils {
    * @param {string} token
    */
   public static upToken(token: string): void {
-    Cookies.set('token', token, {expires: null, path: '/',domain:"jiahou.com"});
+    Cookies.set('token', token, {expires: null, path: '/'});
   }
 
   /**

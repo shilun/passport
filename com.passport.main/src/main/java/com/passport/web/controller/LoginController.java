@@ -43,7 +43,7 @@ public class LoginController extends AbstractClientController {
                 if (!login.getSuccess()) {
                     throw new BizException("loginError", "登录失败，登录账户或密码错误");
                 }
-//                putCookie("token", login.getData().getToken(), response);
+               putCookie("token", login.getData().getToken(), response);
                 return login.getData();
             }
         });

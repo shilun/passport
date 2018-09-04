@@ -1,32 +1,25 @@
-package com.passport.domain;
+package com.passport.rpc.dto;
 
 import com.common.util.AbstractBaseEntity;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.passport.domain.serializer.DateJsonSerializer;
 
 import java.util.Date;
 
 /**
  * 业务信息
  */
-public class ProxyBizInfo extends AbstractBaseEntity {
-    /**
-     * 代理商id
-     */
-    private Long proxyId;
+public class ProxyBizInfo  {
+
     /** 1 棋牌 2 彩票 3 小游戏
      * 申请业务
      */
-    private Integer bizType;
+    private String bizType;
     /**
      * 开始时间
      */
-    @JsonSerialize(using = DateJsonSerializer.class)
     private Date startTime;
     /**
      * 结束时间
      */
-    @JsonSerialize(using = DateJsonSerializer.class)
     private Date endTime;
 
     /**
@@ -40,22 +33,6 @@ public class ProxyBizInfo extends AbstractBaseEntity {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public Long getProxyId() {
-        return proxyId;
-    }
-
-    public void setProxyId(Long proxyId) {
-        this.proxyId = proxyId;
-    }
-
-    public Integer getBizType() {
-        return bizType;
-    }
-
-    public void setBizType(Integer bizType) {
-        this.bizType = bizType;
     }
 
     public Date getStartTime() {
@@ -72,5 +49,13 @@ public class ProxyBizInfo extends AbstractBaseEntity {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public String getBizType() {
+        return bizType;
+    }
+
+    public void setBizType(String bizType) {
+        this.bizType = bizType;
     }
 }

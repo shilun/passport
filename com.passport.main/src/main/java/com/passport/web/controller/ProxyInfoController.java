@@ -23,17 +23,6 @@ public class ProxyInfoController extends AbstractClientController {
     @Resource
     private ClientUserInfoService userInfoService;
 
-
-    /**
-     * 所有代理商
-     *
-     * @return
-     */
-    @RoleResource(resource = "passport")
-    @RequestMapping("/proxy/all")
-    public Map<String, Object> all() {
-        return buildMessage(() ->proxyInfoService.query(null));
-    }
     /**
      * 查询
      *
@@ -75,7 +64,7 @@ public class ProxyInfoController extends AbstractClientController {
             String pin=info.getPin();
             ClientUserInfo userInfo=userInfoService.findByPin(pin);
             if(userInfo==null){
-                throw new BizException(CodeConstant.USER_NULL, "pin对应的用户不存在");
+                throw new BizException("pin.error", "pin对应的用户不存在");
             }
             ProxyInfo entity = new ProxyInfo();
             BeanCoper.copyProperties(entity, info);

@@ -14,8 +14,6 @@ import {RoleListComponent} from './role-list/role-list.component';
 import {RoleViewComponent} from './role-view/role-view.component';
 import {ProxyListComponent} from './proxy-list/proxy-list.component';
 import {ProxyViewComponent} from './proxy-view/proxy-view.component';
-import {ProxyBizListComponent} from './proxy-biz-list/proxy-biz-list.component';
-import {ProxyBizViewComponent} from './proxy-biz-view/proxy-biz-view.component';
 import {AdminPassComponent} from './admin-pass/admin-pass.component';
 
 const routes: Routes = [
@@ -29,9 +27,7 @@ const routes: Routes = [
   {path: 'role/list', component: RoleListComponent},
   {path: 'role/view', component: RoleViewComponent},
   {path: 'proxy/list', component: ProxyListComponent},
-  {path: 'proxy/view', component: ProxyViewComponent},
-  {path: 'proxyBiz/list', component: ProxyBizListComponent},
-  {path: 'proxyBiz/view', component: ProxyBizViewComponent},
+  {path: 'proxy/view', component: ProxyViewComponent}
 ];
 
 @NgModule({
@@ -44,8 +40,7 @@ const routes: Routes = [
   ],
   declarations: [
     ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,
-    AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent, ProxyBizListComponent,
-    ProxyBizViewComponent]
+    AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent]
 })
 
 
