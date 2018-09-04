@@ -8,11 +8,11 @@ import com.common.util.AbstractBaseEntity;
  */
 public class ClientUserExtendInfo extends AbstractBaseEntity {
     // 用户编码
-    private int userCode;
+    private Integer userCode;
     // 头像URL
     private String headUrl;
-    //是否机器人
-    private int isRobot;
+    //是否机器人  1.是  0.否
+    private Integer isRobot;
     //最后登陆IP
     private String lastLoginIp;
     //签名

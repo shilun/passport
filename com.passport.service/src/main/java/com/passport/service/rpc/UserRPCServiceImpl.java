@@ -39,12 +39,12 @@ public class UserRPCServiceImpl implements UserRPCService {
     /**
      * 用户注册redis key
      */
-    private final String PASS_USER_REG = "pass.user.reg.{0}.{1}";
-    private final String PASS_USER_CHANGE_BY_MOBILE = "pass.user.change.by.mobile.{0}";
-    private final String MOBILE_USER_CHANGE = "mobile.user.change.mobile.{0}";
-    private final String MOBILE_USER_BIND = "mobile.user.bind.mobile.{0}";
-    private final String LOGIN_MOBILE_CODE = "login.mobile.code.account.{0}.proxyid.{1}";
-    private final String FORGET_PASS = "forget.pass.pin.{0}";
+    private final String PASS_USER_REG = "passport.userrpc.reg.account.{0}.proxyid.{1}";
+    private final String PASS_USER_CHANGE_BY_MOBILE = "passport.userrpc.changepass.mobile.{0}";
+    private final String MOBILE_USER_CHANGE = "passport.userrpc.change.mobile.{0}";
+    private final String MOBILE_USER_BIND = "passport.userrpc.bind.mobile.{0}";
+    private final String LOGIN_MOBILE_CODE = "passport.userrpc.login.account.{0}.proxyid.{1}";
+    private final String FORGET_PASS = "passport.userrpc.forgetpass.pin.{0}";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -215,7 +215,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<UserDTO> loginCodeBuildVerification(Long proxyId,String account, String vcode) {
+    public RPCResult<UserDTO> loginCodeBuildVerification(String ip,Long proxyId,String account, String vcode) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             if (StringUtils.isBlank(vcode)) {
@@ -255,6 +255,12 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
+            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
+            if(clientUserExtendInfo != null){
+                clientUserExtendInfo.setLastLoginIp(ip);
+                clientUserExtendInfoService.save(clientUserExtendInfo);
+            }
+
             redisTemplate.delete(key);
             UserDTO dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
@@ -270,7 +276,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<UserDTO> login(Long proxyId,String account, String passwrd) {
+    public RPCResult<UserDTO> login(String ip,Long proxyId,String account, String passwrd) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             if (StringUtils.isBlank(passwrd)) {
@@ -300,6 +306,12 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setMessage(MessageConstant.PASS_ERROR);
                 result.setSuccess(false);
                 return result;
+            }
+
+            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
+            if(clientUserExtendInfo != null){
+                clientUserExtendInfo.setLastLoginIp(ip);
+                clientUserExtendInfoService.save(clientUserExtendInfo);
             }
 
             UserDTO dto = new UserDTO();

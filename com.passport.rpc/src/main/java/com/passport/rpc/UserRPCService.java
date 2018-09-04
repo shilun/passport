@@ -57,7 +57,7 @@ public interface UserRPCService {
      * @param vcode
      * @return
      */
-    RPCResult<UserDTO> loginCodeBuildVerification(Long proxyId,String account, String vcode);
+    RPCResult<UserDTO> loginCodeBuildVerification(String ip,Long proxyId,String account, String vcode);
 
     /***
      *密码登录
@@ -65,7 +65,7 @@ public interface UserRPCService {
      * @param passwrd
      * @return
      */
-    RPCResult<UserDTO> login(Long proxyId,String account, String passwrd);
+    RPCResult<UserDTO> login(String ip,Long proxyId,String account, String passwrd);
 
     /**
      * 初始化密码
