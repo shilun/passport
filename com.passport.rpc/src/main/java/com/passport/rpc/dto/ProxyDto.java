@@ -10,7 +10,7 @@ public class ProxyDto implements Serializable {
      * 代理的游戏
      * 1 棋牌 2 彩票 3 小游戏
      */
-    private ProxyBizInfo[] games;
+    private Integer[] games;
     /**
      * 公司名称
      */
@@ -38,11 +38,11 @@ public class ProxyDto implements Serializable {
      */
     private Integer status;
 
-    public ProxyBizInfo[] getGames() {
+    public Integer[] getGames() {
         return games;
     }
 
-    public void setGames(ProxyBizInfo[] games) {
+    public void setGames(Integer[] games) {
         this.games = games;
     }
 
