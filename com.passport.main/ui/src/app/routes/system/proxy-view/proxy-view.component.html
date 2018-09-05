@@ -78,7 +78,7 @@
                 <div class="col-sm-6">
                   <ng-container *ngFor="let gameItem of games">
                     <label class="checkbox-inline c-checkbox">
-                      <input type="checkbox"  checked="{{gameItem.checked}}" (click)="upChecket($event.target,$event.target.checked)" value="{{gameItem.id}}"/>
+                      <input type="checkbox"  checked="{{gameItem.checked}}" (click)="upChecket($event.target,$event.target.checked)" value="{{gameItem.value}}"/>
                       <span class="fa fa-check"></span> {{gameItem.name}}
                     </label>
                   </ng-container>

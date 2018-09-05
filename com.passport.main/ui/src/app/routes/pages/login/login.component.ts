@@ -32,7 +32,6 @@ export class LoginComponent implements OnInit {
     }
     this.loginService.login(this.entity.userName, this.entity.password).then(result => {
       if (result.success) {
-        TokenUtils.upToken(result.data.token);
         this.router.navigate(["home"]);
       }
     });

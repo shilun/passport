@@ -48,7 +48,7 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
     for (let gameItem of this.games) {
       gameItem.checked = '';
       for (let role of this.entity.games) {
-        if (gameItem.id == role) {
+        if (gameItem.value == role) {
           gameItem.checked = 'checked';
           break;
         }
@@ -58,7 +58,7 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
 
   upChecket(e: any, checket: boolean) {
     for (let item of this.games) {
-      if (e.value == item.id) {
+      if (e.value == item.value) {
         if (checket) {
           item.checked = 'checked';
         }
@@ -77,7 +77,7 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
     let games = [];
     for (let gameItem of this.games) {
       if (gameItem.checked != '') {
-        games.push(gameItem.id);
+        games.push(gameItem.value);
       }
     }
     this.entity.endTime=this.entity.endTime.replace("/\//g","-");
