@@ -30,7 +30,7 @@ export class UserListComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.sexTypes = result.data.list;
     }
-    result = await this.proxyService.all();
+    result = await this.proxyService.list({pageinfo: {page: 0, size: 1000}})
     if (result.success) {
       let arr=[{id:null,name:'全部'}];
       for(let i=0;i<result.data.list.length;i++){
