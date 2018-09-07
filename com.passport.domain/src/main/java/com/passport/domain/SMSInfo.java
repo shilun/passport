@@ -2,8 +2,6 @@ package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
 
-import java.util.Date;
-
 /**
  *
  * @desc 短信内容
@@ -35,18 +33,6 @@ public class SMSInfo extends AbstractBaseEntity implements java.io.Serializable 
 	 * 状态 1 发送成功 2 发送失败
 	 */
 	private Integer status;
-	/**
-	 * 删除状态 1 常常 2 删除
-	 */
-	private Integer delStatus;
-	/**
-	 * 创建时间
-	 */
-	private Date createTime;
-	/**
-	 * 更新时间
-	 */
-	private Date updateTime;
 
 	public Integer getMinExecuteCount() {
 		return minExecuteCount;
@@ -94,29 +80,5 @@ public class SMSInfo extends AbstractBaseEntity implements java.io.Serializable 
 
 	public void setStatus(Integer status) {
 		this.status = status;
-	}
-
-	public Integer getDelStatus() {
-		return this.delStatus;
-	}
-
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
-
-	public Date getCreateTime() {
-		return this.createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	public Date getUpdateTime() {
-		return this.updateTime;
-	}
-
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
 	}
 }
