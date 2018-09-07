@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import javax.annotation.Resource;
 
-@Service
+@Service(timeout = 1000)
 @org.springframework.stereotype.Service
 public class ProxyRpcServiceImpl implements ProxyRpcService {
 
