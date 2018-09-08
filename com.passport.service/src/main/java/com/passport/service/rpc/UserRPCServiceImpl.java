@@ -8,15 +8,17 @@ import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
+import com.passport.domain.SMSInfo;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.SMSInfoService;
 import com.passport.service.constant.CodeConstant;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
-import com.passport.service.util.AliMsgUtil;
+import com.passport.service.util.AliyunMnsUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -54,6 +56,8 @@ public class UserRPCServiceImpl implements UserRPCService {
     private ClientUserInfoService clientUserInfoService;
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
+    @Resource
+    private SMSInfoService smsInfoService;
 
     @Override
     public RPCResult<Boolean> regist(Long proxyId,String account) {
@@ -78,15 +82,10 @@ public class UserRPCServiceImpl implements UserRPCService {
             return result;
         }
 
-        String code = AliMsgUtil.randomSixCode();
-        if(AliMsgUtil.sendMsgSingle(account,code)){
-            redisTemplate.opsForValue().set(MessageFormat.format(PASS_USER_REG,account,proxyId),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
-            result.setSuccess(true);
-        }else{
-            result.setSuccess(false);
-            result.setCode(CodeConstant.SEND_CODE_FAIL);
-            result.setMessage(MessageConstant.SEND_CODE_FAIL);
-        }
+        String code = AliyunMnsUtil.randomSixCode();
+        String redisKey = MessageFormat.format(PASS_USER_REG,account,proxyId);
+        sendSMSCode(account,redisKey,code);
+        result.setSuccess(true);
         return result;
     }
 
@@ -196,15 +195,10 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String code = AliMsgUtil.randomSixCode();
-            if(AliMsgUtil.sendMsgSingle(account,code)){
-                redisTemplate.opsForValue().set(MessageFormat.format(LOGIN_MOBILE_CODE,account,proxyId),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
-                result.setSuccess(true);
-            }else{
-                result.setSuccess(false);
-                result.setCode(CodeConstant.SEND_CODE_FAIL);
-                result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            }
+            String code = AliyunMnsUtil.randomSixCode();
+            String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE,account,proxyId);
+            sendSMSCode(account,redisKey,code);
+            result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.FIND_USER_FAIL);
@@ -356,16 +350,10 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String code = AliMsgUtil.randomSixCode();
-            boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
-            if(res){
-                redisTemplate.opsForValue().set(MessageFormat.format(MOBILE_USER_CHANGE,mobile),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
-                result.setSuccess(true);
-            }else{
-                result.setSuccess(false);
-                result.setCode(CodeConstant.SEND_CODE_FAIL);
-                result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            }
+            String code = AliyunMnsUtil.randomSixCode();
+            String redisKey = MessageFormat.format(MOBILE_USER_CHANGE,mobile);
+            sendSMSCode(mobile,redisKey,code);
+            result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.SEND_CODE_FAIL);
@@ -399,16 +387,10 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String code = AliMsgUtil.randomSixCode();
-            boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
-            if(res){
-                redisTemplate.opsForValue().set(MessageFormat.format(MOBILE_USER_BIND,mobile),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
-                result.setSuccess(true);
-            }else{
-                result.setSuccess(false);
-                result.setCode(CodeConstant.SEND_CODE_FAIL);
-                result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            }
+            String code = AliyunMnsUtil.randomSixCode();
+            String redisKey = MessageFormat.format(MOBILE_USER_BIND,mobile);
+            sendSMSCode(mobile,redisKey,code);
+            result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.SEND_CODE_FAIL);
@@ -605,7 +587,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, pin);
+            String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if(o == null){
                 result.setCode(CodeConstant.CODE_TIMEOUT);
@@ -674,16 +656,10 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String code = AliMsgUtil.randomSixCode();
-            boolean res = AliMsgUtil.sendMsgSingle(mobile, code);
-            if(res){
-                redisTemplate.opsForValue().set(MessageFormat.format(LOGIN_MOBILE_CODE,pin),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
-                result.setSuccess(true);
-            }else{
-                result.setSuccess(false);
-                result.setCode(CodeConstant.SEND_CODE_FAIL);
-                result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            }
+            String code = AliyunMnsUtil.randomSixCode();
+            String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE,mobile);
+            sendSMSCode(mobile,redisKey,code);
+            result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.SEND_CODE_FAIL);
@@ -711,16 +687,12 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setMessage(MessageConstant.USER_NULL);
                 return result;
             }
-            String code = AliMsgUtil.randomSixCode();
-            boolean res = AliMsgUtil.sendMsgSingle(userInfo.getPhone(), code);
-            if(res){
-                redisTemplate.opsForValue().set(MessageFormat.format(FORGET_PASS,pin),code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
-                result.setSuccess(true);
-            }else{
-                result.setSuccess(false);
-                result.setCode(CodeConstant.SEND_CODE_FAIL);
-                result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            }
+            String code = AliyunMnsUtil.randomSixCode();
+
+            String mobile = userInfo.getPhone();
+            String redisKey = MessageFormat.format(FORGET_PASS,pin);
+            sendSMSCode(mobile,redisKey,code);
+            result.setSuccess(true);
         }catch (Exception e){
             result.setSuccess(false);
             logger.error(MessageConstant.SEND_CODE_FAIL,e);
@@ -927,5 +899,15 @@ public class UserRPCServiceImpl implements UserRPCService {
             logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL,e);
         }
         return result;
+    }
+
+    private void sendSMSCode(String mobile,String redisKey,String code){
+        String content = MessageFormat.format("您好!您的验证码:{0},有效时间3分钟，请及时验证!",code);
+        SMSInfo info = new SMSInfo();
+        info.setMobile(mobile);
+        info.setContent(content);
+        info.setSender("大三环");
+        smsInfoService.insert(info);
+        redisTemplate.opsForValue().set(redisKey,code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
     }
 }

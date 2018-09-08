@@ -16,6 +16,7 @@ import javax.annotation.Resource;
  */
 
 @Service
+@com.alibaba.dubbo.config.annotation.Service
 public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
 
     @Resource
@@ -43,8 +44,8 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
             result.setSuccess(false);
             result.setCode("send.msg.error");
             result.setMessage("发送短信失败");
+            e.printStackTrace();
         }
         return result;
     }
-
 }

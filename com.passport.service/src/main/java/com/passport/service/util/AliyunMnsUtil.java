@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,7 +119,8 @@ public class AliyunMnsUtil {
         }
     }
 
-    public void send(Long bizId, String signName, String templateCode, Map<String, String> params, String mobile) {
+    public boolean send(Long bizId, String signName, String templateCode, Map<String, String> params, String mobile) {
+        boolean flag = false;
         try {
             System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
             System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -147,6 +149,7 @@ public class AliyunMnsUtil {
             SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
             if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
                 logger.info("send sms ok");
+                flag = true;
             } else {
                 String message = "send sms error with id=" + bizId + " code=" + sendSmsResponse.getCode()
                         + ", message=" + sendSmsResponse.getMessage();
@@ -157,6 +160,7 @@ public class AliyunMnsUtil {
             logger.error("send sms error with id=" + bizId, e);
             throw new BizException("send sms error with id=" + bizId);
         }
+        return flag;
     }
 
 
@@ -184,5 +188,11 @@ public class AliyunMnsUtil {
         this.smsTopic = smsTopic;
     }
 
-
+    /**
+     * 生成6位随机验证码
+     * @return
+     */
+    public static String randomSixCode(){
+        return String.valueOf(new Random().nextInt(899999) + 100000);
+    }
 }
