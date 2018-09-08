@@ -47,9 +47,13 @@ export class UserViewComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.sexTypes = result.data.list;
     }
-    result = await this.proxyService.all();
+    result = await this.proxyService.list({pageinfo: {page: 0, size: 1000}})
     if (result.success) {
-      this.proxys = result.data.list;
+      let arr=new Array();
+      for(let i=0;i<result.data.list.length;i++){
+        arr.push(result.data.list[i]);
+      }
+      this.proxys=arr;
     }
     await this.viewById();
 

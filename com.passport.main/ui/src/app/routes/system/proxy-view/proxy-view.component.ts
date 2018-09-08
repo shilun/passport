@@ -4,7 +4,7 @@ import {AbstractController} from '../../../common/abstract.controller';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProxyService} from '../../../services/proxy.service';
-
+declare let laydate;
 @Component({
   selector: 'app-proxy-view',
   templateUrl: './proxy-view.component.html'
@@ -54,6 +54,14 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
         }
       }
     }
+    laydate.render({
+      elem: '#endTime', // s为页面日期选择输入框的id
+      theme: '#0c6acf',
+      isInitValue: false,
+      done: (value, date, endDate) => {
+        this.entity.endTime = value;
+      }
+    });
   }
 
   upChecket(e: any, checket: boolean) {

@@ -1,7 +1,11 @@
 package com.passport.web.controller;
 
 import com.common.annotation.RoleResource;
+import com.common.security.MD5;
 import com.common.util.BeanCoper;
+import com.common.util.StringUtils;
+import com.common.util.model.SexEnum;
+import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
 import com.passport.service.ClientUserInfoService;
 import com.passport.web.AbstractClientController;
@@ -11,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Map;
 
 @Api(description = "用户管理")
@@ -67,6 +72,6 @@ public class ClientUserInfoController extends AbstractClientController {
         return buildMessage(() -> {
             BeanCoper.copyProperties(entity, info);
             return clientUserInfoService.save(entity);
-    });
-}
+        });
+    }
 }
