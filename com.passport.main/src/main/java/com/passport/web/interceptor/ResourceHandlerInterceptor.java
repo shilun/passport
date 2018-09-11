@@ -35,7 +35,7 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
                 }
                 List resourceList = (List) request.getSession().getAttribute(GlobalContstants.LOGIN_ROLE_RESOURCE_KEY);
                 if (resourceList == null) {
-                    RPCResult<List<String>> roleResource = this.adminRPCService.queryAdminRoles(getPin(request));
+                    RPCResult<List<String>> roleResource = this.adminRPCService.queryAdminRoles(getPin(request,response));
                     if (!roleResource.getSuccess().booleanValue()) {
                         logger.error("操作员资源获取失败," + roleResource.getMessage());
                         return false;
@@ -48,29 +48,34 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
                 } else {
                     return false;
                 }
-            }
-            else {
+            } else {
                 return true;
             }
         }
         return false;
     }
 
-    protected String getPin(HttpServletRequest request) {
+    protected String getPin(HttpServletRequest request,HttpServletResponse response) {
+        Cookie tokenCookie = null;
         String token = request.getHeader("token");
         if (StringUtils.isBlank(token)) {
-            Cookie tokenCookie = null;
             for (Cookie item : request.getCookies()) {
                 if (StringUtils.equals(item.getName(), "token")) {
                     tokenCookie = item;
                     break;
                 }
             }
+
             token = tokenCookie.getValue();
         }
         RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
         if (userDTOResult.getSuccess()) {
             return userDTOResult.getData().getPin();
+        } else {
+            if(tokenCookie!=null){
+                tokenCookie.setMaxAge(0);
+                response.addCookie(tokenCookie);
+            }
         }
         return token;
     }
