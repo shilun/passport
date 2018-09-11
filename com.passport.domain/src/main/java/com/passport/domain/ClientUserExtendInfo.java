@@ -12,7 +12,7 @@ public class ClientUserExtendInfo extends AbstractBaseEntity {
     // 头像URL
     private String headUrl;
     //是否机器人  1.是  0.否
-    private Integer isRobot;
+    private int isRobot;
     //最后登陆IP
     private String lastLoginIp;
     //签名
