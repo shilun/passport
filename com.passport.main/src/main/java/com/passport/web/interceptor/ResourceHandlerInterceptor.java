@@ -2,6 +2,7 @@ package com.passport.web.interceptor;
 
 import com.common.annotation.RoleResource;
 import com.common.constants.GlobalContstants;
+import com.common.exception.ApplicationException;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.rpc.AdminRPCService;
@@ -35,7 +36,11 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
                 }
                 List resourceList = (List) request.getSession().getAttribute(GlobalContstants.LOGIN_ROLE_RESOURCE_KEY);
                 if (resourceList == null) {
-                    RPCResult<List<String>> roleResource = this.adminRPCService.queryAdminRoles(getPin(request,response));
+                    String pin = getPin(request, response);
+                    if (StringUtils.isBlank(pin)) {
+                        return false;
+                    }
+                    RPCResult<List<String>> roleResource = this.adminRPCService.queryAdminRoles(pin);
                     if (!roleResource.getSuccess().booleanValue()) {
                         logger.error("操作员资源获取失败," + roleResource.getMessage());
                         return false;
@@ -55,7 +60,7 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    protected String getPin(HttpServletRequest request,HttpServletResponse response) {
+    protected String getPin(HttpServletRequest request, HttpServletResponse response) {
         Cookie tokenCookie = null;
         String token = request.getHeader("token");
         if (StringUtils.isBlank(token)) {
@@ -72,12 +77,12 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
         if (userDTOResult.getSuccess()) {
             return userDTOResult.getData().getPin();
         } else {
-            if(tokenCookie!=null){
+            if (tokenCookie != null) {
                 tokenCookie.setMaxAge(0);
                 response.addCookie(tokenCookie);
             }
         }
-        return token;
+        return null;
     }
 
     @Override
