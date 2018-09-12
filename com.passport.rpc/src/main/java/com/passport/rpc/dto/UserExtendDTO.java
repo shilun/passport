@@ -24,6 +24,7 @@ public class UserExtendDTO implements Serializable {
     private String idCard;
     //身份证上的名字
     private String realName;
+    private Long QQ;
 
     public int getUserCode() {
         return userCode;
@@ -87,5 +88,13 @@ public class UserExtendDTO implements Serializable {
 
     public void setRealName(String realName) {
         this.realName = realName;
+    }
+
+    public Long getQQ() {
+        return QQ;
+    }
+
+    public void setQQ(Long QQ) {
+        this.QQ = QQ;
     }
 }
