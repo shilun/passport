@@ -59,6 +59,9 @@ public class ProxyInfo extends AbstractBaseEntity {
      * 状态
      */
     private Integer status;
+    private String pass;
+    private String headImgUrl;
+    private String realName;
 
     public Date getEndTime() {
         return endTime;
@@ -146,5 +149,29 @@ public class ProxyInfo extends AbstractBaseEntity {
 
     public void setGames(Integer[] games) {
         this.games = games;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 }
