@@ -13,4 +13,8 @@ public interface ProxyRpcService {
      * @return
      */
     RPCResult<ProxyDto> findByDomain(String domain);
+
+    RPCResult<ProxyDto> login(String account,String pass);
+
+    RPCResult<Boolean> changePass(String account,String oldPass,String newPass);
 }

@@ -9,4 +9,7 @@ import com.passport.domain.ProxyInfo;
  */
 public interface ProxyInfoService extends MongoService<ProxyInfo> {
 
+    ProxyInfo findByLoginName(String loginName,String pass);
+
+    Boolean changePass(String loginName,String oldPass,String newPass);
 }

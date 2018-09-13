@@ -7,4 +7,6 @@ package com.passport.service.constant;
 public class SysContant {
     /**短信验证码过期时间*/
     public static final int MSGCODE_TIMEOUT = 60 * 3;
+
+    public static final int PROXY_EXPIRE_HOURS = 2;
 }

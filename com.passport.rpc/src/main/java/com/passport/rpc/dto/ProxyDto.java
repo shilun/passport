@@ -39,6 +39,9 @@ public class ProxyDto implements Serializable {
      * 状态
      */
     private Integer status;
+    private String headImgUrl;
+    private String realName;
+    private transient String account;
 
     public Integer[] getGames() {
         return games;
@@ -102,5 +105,29 @@ public class ProxyDto implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 }
