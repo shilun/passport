@@ -63,6 +63,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             ProxyInfo proxyInfo = proxyInfoService.findByLoginName(account, pass);
             ProxyDto dto = new ProxyDto();
             BeanCoper.copyProperties(dto,proxyInfo);
+            dto.setAccount(account);
             result.setData(dto);
             result.setSuccess(true);
         }catch (Exception e){
