@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-@Service
-@com.alibaba.dubbo.config.annotation.Service(timeout = 1000)
+@Service()
+@com.alibaba.dubbo.config.annotation.Service(interfaceClass =AdminRPCService.class,timeout = 4000)
 public class AdminRPCServiceImpl implements AdminRPCService {
 
 
