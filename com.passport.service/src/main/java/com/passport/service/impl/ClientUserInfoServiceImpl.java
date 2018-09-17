@@ -100,4 +100,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         up(info);
     }
+
+
 }

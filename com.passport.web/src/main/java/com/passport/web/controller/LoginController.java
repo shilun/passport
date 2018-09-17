@@ -48,7 +48,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return userRPCService.login(getIP(),getDomain().getId(), dto.getAccount(), dto.getPass());
+                return loginService.login(getIP(), getDomain().getId(), dto.getAccount(), dto.getPass());
             }
         });
     }
@@ -57,7 +57,10 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "手机号登陆获取验证码")
     public Map<String, Object> buildLoginMobileCode(@RequestBody LoginByCodeDto dto, HttpServletResponse response) {
-        return buildMessage(() -> userRPCService.loginCodeBuild(getDomain().getId(), dto.getAccount()));
+        return buildMessage(() -> {
+            loginService.loginCodeBuild(getDomain().getId(), dto.getAccount());
+            return null;
+        });
     }
 
     @RequestMapping("loginByCodeVer")
@@ -68,7 +71,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return  userRPCService.loginCodeBuildVerification(getIP(), getDomain().getId(), dto.getAccount(), dto.getCode());
+                return loginService.loginCodeBuildVerification(getIP(), getDomain().getId(), dto.getAccount(), dto.getCode());
             }
         });
     }
@@ -77,7 +80,10 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "手机号注册获取验证码")
     public Map<String, Object> register(@RequestBody RegisterDto dto, HttpServletResponse response) {
-        return buildMessage(() -> userRPCService.regist(getDomain().getId(), dto.getAccount()));
+        return buildMessage(() -> {
+            loginService.regist(getDomain().getId(), dto.getAccount());
+            return null;
+        });
     }
 
     @RequestMapping("registVerification")
@@ -87,7 +93,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-               return  userRPCService.registVerification(getDomain().getId(), dto.getAccount(), dto.getCode(), dto.getPass());
+                return loginService.registVerification(getDomain().getId(), dto.getAccount(), dto.getCode(), dto.getPass());
             }
         });
     }
@@ -125,13 +131,19 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("changeMobile")
     @ApiOperation(value = "修改手机号获取验证码")
     public Map<String, Object> changeMobile(@RequestBody ChangeMobileDto dto, HttpServletResponse response) {
-        return buildMessage(() -> userRPCService.changeMobile(getUserDto().getPin(), dto.getMobile()));
+        return buildMessage(() -> {
+            loginService.changeMobile(getDomain().getId(),getUserDto().getPin(), dto.getMobile());
+            return null;
+        });
     }
 
     @RequestMapping("changeMobileVer")
     @ApiOperation(value = "修改手机号校验")
     public Map<String, Object> changeMobileVer(@RequestBody ChangeMobileVerDto dto, HttpServletResponse response) {
-        return buildMessage(() -> userRPCService.changeMobile(getUserDto().getPin(), dto.getMobile(), dto.getCode()));
+        return buildMessage(() ->{
+            loginService.changeMobile(getDomain().getId(),getUserDto().getPin(), dto.getMobile(), dto.getCode());
+            return null;
+        } );
     }
 
     @RequestMapping("bindMobile")
