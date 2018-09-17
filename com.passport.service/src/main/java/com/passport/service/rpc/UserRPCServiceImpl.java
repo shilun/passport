@@ -61,6 +61,8 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Resource
     private SMSInfoService smsInfoService;
 
+
+
     @Override
     public RPCResult<Boolean> regist(Long proxyId, String account) {
         RPCResult result = new RPCResult();

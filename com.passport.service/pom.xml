@@ -27,7 +27,6 @@
             <artifactId>com.passport.rpc</artifactId>
             <version>1.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>

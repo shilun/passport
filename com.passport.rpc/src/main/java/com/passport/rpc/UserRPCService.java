@@ -68,6 +68,14 @@ public interface UserRPCService {
     RPCResult<UserDTO> login(String ip,Long proxyId,String account, String passwrd);
 
     /**
+     * 登录验证
+     * @param proxyId
+     * @param token
+     * @return
+     */
+    RPCResult<UserDTO> tokenVer(Long proxyId,String token);
+
+    /**
      * 初始化密码
      *
      * @param pin
