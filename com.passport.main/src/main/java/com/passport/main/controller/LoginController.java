@@ -1,4 +1,4 @@
-package com.passport.web.controller;
+package com.passport.main.controller;
 
 import com.common.exception.BizException;
 import com.common.util.RPCResult;
@@ -7,9 +7,9 @@ import com.common.web.IExecute;
 import com.passport.rpc.AdminRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.AdminUserInfoService;
-import com.passport.web.AbstractClientController;
-import com.passport.web.controller.dto.LoginDto;
-import com.passport.web.controller.dto.PasswordChangeDto;
+import com.passport.main.AbstractClientController;
+import com.passport.main.controller.dto.LoginDto;
+import com.passport.main.controller.dto.PasswordChangeDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,9 +1,9 @@
-package com.passport.web.controller;
+package com.passport.main.controller;
 
 import com.common.annotation.RoleResource;
 import com.passport.domain.MailInfo;
 import com.passport.service.MailInfoService;
-import com.passport.web.AbstractClientController;
+import com.passport.main.AbstractClientController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestBody;

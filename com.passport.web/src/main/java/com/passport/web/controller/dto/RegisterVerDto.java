@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author Luo
  * @date 2018/8/31 14:06
  */
-public class RegisterVerDto extends RegisterDto{
+public class RegisterVerDto extends RegisterDto {
     private static final long serialVersionUID = 1688043110049698697L;
     @ApiModelProperty(value = "验证码")
     private String code;

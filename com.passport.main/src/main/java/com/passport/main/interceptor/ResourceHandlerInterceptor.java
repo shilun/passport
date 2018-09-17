@@ -1,8 +1,7 @@
-package com.passport.web.interceptor;
+package com.passport.main.interceptor;
 
 import com.common.annotation.RoleResource;
 import com.common.constants.GlobalContstants;
-import com.common.exception.ApplicationException;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.rpc.AdminRPCService;

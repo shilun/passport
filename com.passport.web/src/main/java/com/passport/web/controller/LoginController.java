@@ -42,7 +42,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginByPassDto dto,HttpServletResponse response) {
+    public Map<String, Object> login(@RequestBody LoginByPassDto dto, HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {

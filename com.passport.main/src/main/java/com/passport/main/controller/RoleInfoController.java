@@ -1,11 +1,11 @@
-package com.passport.web.controller;
+package com.passport.main.controller;
 
 import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
 import com.passport.domain.RoleInfo;
 import com.passport.service.RoleInfoService;
-import com.passport.web.AbstractClientController;
-import com.passport.web.controller.dto.RoleDto;
+import com.passport.main.AbstractClientController;
+import com.passport.main.controller.dto.RoleDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;

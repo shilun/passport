@@ -1,4 +1,4 @@
-package com.passport.web.application;
+package com.passport.main.application;
 
 import com.alibaba.dubbo.spring.boot.annotation.EnableDubboConfiguration;
 import org.springframework.boot.SpringApplication;

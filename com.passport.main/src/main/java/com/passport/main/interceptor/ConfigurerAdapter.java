@@ -1,4 +1,4 @@
-package com.passport.web.interceptor;
+package com.passport.main.interceptor;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

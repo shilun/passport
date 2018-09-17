@@ -1,4 +1,4 @@
-package com.passport.web.application;
+package com.passport.main.application;
 
 import com.passport.service.util.AliyunMnsUtil;
 import org.springframework.beans.factory.annotation.Value;

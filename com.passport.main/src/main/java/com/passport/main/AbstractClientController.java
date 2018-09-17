@@ -1,4 +1,4 @@
-package com.passport.web;
+package com.passport.main;
 
 import com.common.exception.BizException;
 import com.common.util.RPCResult;

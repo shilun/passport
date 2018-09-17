@@ -1,21 +1,16 @@
-package com.passport.web.controller;
+package com.passport.main.controller;
 
 import com.common.annotation.RoleResource;
-import com.common.security.MD5;
 import com.common.util.BeanCoper;
-import com.common.util.StringUtils;
-import com.common.util.model.SexEnum;
-import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
 import com.passport.service.ClientUserInfoService;
-import com.passport.web.AbstractClientController;
-import com.passport.web.controller.dto.ClientUserDto;
+import com.passport.main.AbstractClientController;
+import com.passport.main.controller.dto.ClientUserDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.Map;
 
 @Api(description = "用户管理")

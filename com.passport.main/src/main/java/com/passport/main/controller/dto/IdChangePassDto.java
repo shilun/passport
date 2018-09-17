@@ -1,4 +1,4 @@
-package com.passport.web.controller.dto;
+package com.passport.main.controller.dto;
 
 public class IdChangePassDto {
     private Long id;

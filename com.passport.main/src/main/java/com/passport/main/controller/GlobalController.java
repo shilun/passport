@@ -1,4 +1,4 @@
-package com.passport.web.controller;
+package com.passport.main.controller;
 
 import com.common.exception.ApplicationException;
 import com.common.util.IGlossary;
@@ -6,7 +6,7 @@ import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.rpc.dto.BizTypeEnum;
-import com.passport.web.AbstractClientController;
+import com.passport.main.AbstractClientController;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 

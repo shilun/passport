@@ -1,12 +1,12 @@
-package com.passport.web.controller;
+package com.passport.main.controller;
 
 import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
 import com.passport.domain.ProxyInfo;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyInfoService;
-import com.passport.web.AbstractClientController;
-import com.passport.web.controller.dto.ProxyDto;
+import com.passport.main.AbstractClientController;
+import com.passport.main.controller.dto.ProxyDto;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

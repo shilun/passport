@@ -1,9 +1,8 @@
-package com.passport.web.controller.dto;
+package com.passport.main.controller.dto;
 
 import com.common.util.AbstractDTO;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.passport.domain.serializer.DateJsonDeserializer;
-import com.passport.rpc.dto.ProxyBizInfo;
 
 import java.util.Date;
 

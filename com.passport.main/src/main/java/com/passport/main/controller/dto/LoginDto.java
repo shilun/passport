@@ -1,4 +1,4 @@
-package com.passport.web.controller.dto;
+package com.passport.main.controller.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
