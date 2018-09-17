@@ -161,6 +161,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 entity.setStatus(YesOrNoEnum.YES.getValue());
                 entity.setPasswd(MD5.MD5Str(pass, passKey));
                 save(entity);
+
+                ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
+                clientUserExtendInfo.setUserCode(entity.getId().intValue());
+                clientUserExtendInfo.setIsRobot(YesOrNoEnum.NO.getValue());
+                clientUserExtendInfoService.save(clientUserExtendInfo);
+
                 UserDTO dto = new UserDTO();
                 BeanCoper.copyProperties(dto, entity);
                 return dto;
