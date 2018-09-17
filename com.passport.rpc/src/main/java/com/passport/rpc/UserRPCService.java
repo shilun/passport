@@ -32,7 +32,7 @@ public interface UserRPCService {
      * @param pin
      * @return
      */
-    RPCResult<UserDTO> findByPin(String pin);
+    RPCResult<UserDTO> findByPin(String proxyId,String pin);
 
     /***
      * 根据账户查找账户
@@ -74,7 +74,7 @@ public interface UserRPCService {
      * @param passwd
      * @return
      */
-    RPCResult<Boolean> initPass(String pin, String passwd);
+    RPCResult<Boolean> initPass(Long proxyId,String pin, String passwd);
 
     /**
      * 修改手机号码发送验证码
@@ -83,7 +83,7 @@ public interface UserRPCService {
      * @param mobile
      * @return
      */
-    RPCResult<Boolean> changeMobileBuildMsg(String pin, String mobile);
+    RPCResult<Boolean> changeMobileBuildMsg(Long proxyId,String pin, String mobile);
 
 
     /**
@@ -93,7 +93,16 @@ public interface UserRPCService {
      * @param mobile 手机
      * @return
      */
-    RPCResult<Boolean> bindMobileBuildMsg(String pin, String mobile);
+    RPCResult<Boolean> changeMobile(Long proxyId,String pin, String mobile);
+
+    /**
+     * 绑定手机号 发送短信
+     *
+     * @param pin
+     * @param mobile 手机号码
+     * @return
+     */
+    RPCResult<Boolean> bindMobile(Long proxyId,String pin, String mobile);
 
     /**
      * 绑定手机号
@@ -103,7 +112,7 @@ public interface UserRPCService {
      * @param msg    短信
      * @return
      */
-    RPCResult<Boolean> bindMobile(String pin, String mobile, String msg);
+    RPCResult<Boolean> bindMobile(Long proxyId,String pin, String mobile, String msg);
 
     /**
      * 修改手机
@@ -113,7 +122,7 @@ public interface UserRPCService {
      * @param msg
      * @return
      */
-    RPCResult<Boolean> changeMobile(String pin, String mobile, String msg);
+    RPCResult<Boolean> changeMobile(Long proxyId,String pin, String mobile, String msg);
 
     /**
      * 密码修改
@@ -123,7 +132,7 @@ public interface UserRPCService {
      * @param newPass
      * @return
      */
-    RPCResult<Boolean> changePass(String pin, String oldPass, String newPass);
+    RPCResult<Boolean> changePass(Long proxyId,String pin, String oldPass, String newPass);
 
     /**
      * 手机密码修改
@@ -134,7 +143,7 @@ public interface UserRPCService {
      * @param msg
      * @return
      */
-    RPCResult<Boolean> changePassByMobile(String pin, String mobile, String msg, String password);
+    RPCResult<Boolean> changePassByMobile(Long proxyId,String pin, String mobile, String msg, String password);
 
     /***
      * 修改手机号码
@@ -142,7 +151,7 @@ public interface UserRPCService {
      * @param mobile
      * @return
      */
-    RPCResult<Boolean> changePassByMobileBuildMsg(String pin, String mobile);
+    RPCResult<Boolean> changePassByMobileBuildMsg(Long proxyId,String pin, String mobile);
 
     /**
      * 密码丢失
@@ -150,7 +159,7 @@ public interface UserRPCService {
      * @param pin
      * @return
      */
-    RPCResult<Boolean> forgetPass(String pin);
+    RPCResult<Boolean> forgetPass(Long proxyId,String pin);
 
 
     /**
@@ -160,7 +169,7 @@ public interface UserRPCService {
      * @param code
      * @return
      */
-    RPCResult<Boolean> forgetPassCodeVerification(String pin, String code, String pass);
+    RPCResult<Boolean> forgetPassCodeVerification(Long proxyId,String pin, String code, String pass);
 
     /**
      * 改变用户昵称
@@ -169,7 +178,7 @@ public interface UserRPCService {
      * @param nickName
      * @return
      */
-    RPCResult<Boolean> changeNickName(String pin, String nickName);
+    RPCResult<Boolean> changeNickName(Long proxyId,String pin, String nickName);
 
     /**
      * 修改用户性别
@@ -178,7 +187,7 @@ public interface UserRPCService {
      * @param sexType
      * @return
      */
-    RPCResult<Boolean> changeSex(String pin, Integer sexType);
+    RPCResult<Boolean> changeSex(Long proxyId,String pin, Integer sexType);
 
     /**
      * 改变用户生日
@@ -187,9 +196,9 @@ public interface UserRPCService {
      * @param date
      * @return
      */
-    RPCResult<Boolean> changeBirthday(String pin, String date);
+    RPCResult<Boolean> changeBirthday(Long proxyId,String pin, String date);
 
-    RPCResult<UserExtendDTO> findByUserCode(Integer userCode);
+    RPCResult<UserExtendDTO> findByUserCode(Long proxyId,Integer userCode);
 
-    RPCResult<Boolean> saveUserExtendInfo(UserExtendDTO userExtendDTO);
+    RPCResult<Boolean> saveUserExtendInfo(Long proxyId,UserExtendDTO userExtendDTO);
 }

@@ -47,6 +47,8 @@ public class UserRPCServiceImpl implements UserRPCService {
     private final String MOBILE_USER_BIND = "passport.userrpc.bind.mobile.{0}";
     private final String LOGIN_MOBILE_CODE = "passport.userrpc.login.account.{0}.proxyid.{1}";
     private final String FORGET_PASS = "passport.userrpc.forgetpass.pin.{0}";
+    private final String LOGIN_PIN = "passport.login.{0}";
+    private final String LOGIN_PIN_TOKEN = "passport.login.{0}.token.{1}";
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -60,7 +62,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     private SMSInfoService smsInfoService;
 
     @Override
-    public RPCResult<Boolean> regist(Long proxyId,String account) {
+    public RPCResult<Boolean> regist(Long proxyId, String account) {
         RPCResult result = new RPCResult();
         if (StringUtils.isBlank(account)) {
             result.setCode(CodeConstant.PARAM_NULL);
@@ -74,7 +76,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setSuccess(false);
             return result;
         }
-        ClientUserInfo entity = clientUserInfoService.findByPhone(proxyId,account);
+        ClientUserInfo entity = clientUserInfoService.findByPhone(proxyId, account);
         if (entity != null) {
             result.setCode(CodeConstant.MOBILE_EXIST);
             result.setMessage(MessageConstant.MOBILE_EXIST);
@@ -83,17 +85,17 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
 
         String code = AliyunMnsUtil.randomSixCode();
-        String redisKey = MessageFormat.format(PASS_USER_REG,account,proxyId);
-        sendSMSCode(account,redisKey,code);
+        String redisKey = MessageFormat.format(PASS_USER_REG, account, proxyId);
+        sendSMSCode(account, redisKey, code);
         result.setSuccess(true);
         return result;
     }
 
     @Override
-    public RPCResult<UserDTO> registVerification(Long proxyId,String account, String vcode, String pass) {
+    public RPCResult<UserDTO> registVerification(Long proxyId, String account, String vcode, String pass) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
-            String key = MessageFormat.format(PASS_USER_REG, account,proxyId);
+            String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
                 result.setSuccess(true);
@@ -133,7 +135,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
-            if(userInfo == null){
+            if (userInfo == null) {
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
                 result.setSuccess(false);
@@ -154,7 +156,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<UserDTO> findByAccount(Long proxyId,String account) {
+    public RPCResult<UserDTO> findByAccount(Long proxyId, String account) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             if (!StringUtils.isMobileNO(account)) {
@@ -163,8 +165,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId,account);
-            if(userInfo == null){
+            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId, account);
+            if (userInfo == null) {
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
                 result.setSuccess(false);
@@ -185,7 +187,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<Boolean> loginCodeBuild(Long proxyId,String account) {
+    public RPCResult<Boolean> loginCodeBuild(Long proxyId, String account) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             if (!StringUtils.isMobileNO(account)) {
@@ -196,8 +198,8 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             String code = AliyunMnsUtil.randomSixCode();
-            String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE,account,proxyId);
-            sendSMSCode(account,redisKey,code);
+            String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
+            sendSMSCode(account, redisKey, code);
             result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
@@ -209,7 +211,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<UserDTO> loginCodeBuildVerification(String ip,Long proxyId,String account, String vcode) {
+    public RPCResult<UserDTO> loginCodeBuildVerification(String ip, Long proxyId, String account, String vcode) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             if (StringUtils.isBlank(vcode)) {
@@ -225,23 +227,23 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            String key = MessageFormat.format(LOGIN_MOBILE_CODE, account,proxyId);
+            String key = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
-            if(o == null){
+            if (o == null) {
                 result.setCode(CodeConstant.CODE_TIMEOUT);
                 result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
 
-            if(!o.equals(vcode)){
+            if (!o.equals(vcode)) {
                 result.setCode(CodeConstant.VERIFICATION_FAIL);
                 result.setMessage(MessageConstant.VERIFICATION_FAIL);
                 result.setSuccess(false);
                 return result;
             }
 
-            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId,account);
+            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId, account);
             if (userInfo == null) {
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
@@ -250,7 +252,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-            if(clientUserExtendInfo != null){
+            if (clientUserExtendInfo != null) {
                 clientUserExtendInfo.setLastLoginIp(ip);
                 clientUserExtendInfoService.save(clientUserExtendInfo);
             }
@@ -270,7 +272,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<UserDTO> login(String ip,Long proxyId,String account, String passwrd) {
+    public RPCResult<UserDTO> login(String ip, Long proxyId, String account, String passwrd) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             if (StringUtils.isBlank(passwrd)) {
@@ -286,7 +288,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId,account);
+            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId, account);
             if (userInfo == null) {
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
@@ -294,8 +296,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            passwrd = MD5.MD5Str(passwrd,passKey);
-            if(!passwrd.equals(userInfo.getPasswd())){
+            passwrd = MD5.MD5Str(passwrd, passKey);
+            if (!passwrd.equals(userInfo.getPasswd())) {
                 result.setCode(CodeConstant.PASS_ERROR);
                 result.setMessage(MessageConstant.PASS_ERROR);
                 result.setSuccess(false);
@@ -303,14 +305,28 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-            if(clientUserExtendInfo != null){
+            if (clientUserExtendInfo != null) {
                 clientUserExtendInfo.setLastLoginIp(ip);
                 clientUserExtendInfoService.save(clientUserExtendInfo);
             }
-
-            UserDTO dto = new UserDTO();
-            BeanCoper.copyProperties(dto, userInfo);
-            result.setData(dto);
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
+            if (dto != null) {
+                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN, dto.getToken());
+                redisTemplate.delete(login_pin_token);
+                dto.setToken(StringUtils.getUUID());
+                redisTemplate.opsForValue().set(login_pin_key, dto, 7, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
+            }
+            else{
+                dto = new UserDTO();
+                BeanCoper.copyProperties(dto, userInfo);
+                result.setData(dto);
+                dto.setToken(StringUtils.getUUID());
+                redisTemplate.opsForValue().set(login_pin_key, dto, 7, TimeUnit.DAYS);
+                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN, dto.getToken());
+                redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
+            }
             result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
@@ -351,20 +367,20 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             String code = AliyunMnsUtil.randomSixCode();
-            String redisKey = MessageFormat.format(MOBILE_USER_CHANGE,mobile);
-            sendSMSCode(mobile,redisKey,code);
+            String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
+            sendSMSCode(mobile, redisKey, code);
             result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.SEND_CODE_FAIL);
             result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+            logger.error(MessageConstant.SEND_CODE_FAIL, e);
         }
         return result;
     }
 
     @Override
-    public RPCResult<Boolean> bindMobileBuildMsg(String pin, String mobile) {
+    public RPCResult<Boolean> changeMobile(String pin, String mobile) {
         RPCResult<Boolean> result = new RPCResult();
         try {
             if (StringUtils.isBlank(pin)) {
@@ -388,14 +404,14 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             String code = AliyunMnsUtil.randomSixCode();
-            String redisKey = MessageFormat.format(MOBILE_USER_BIND,mobile);
-            sendSMSCode(mobile,redisKey,code);
+            String redisKey = MessageFormat.format(MOBILE_USER_BIND, mobile);
+            sendSMSCode(mobile, redisKey, code);
             result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.SEND_CODE_FAIL);
             result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+            logger.error(MessageConstant.SEND_CODE_FAIL, e);
         }
         return result;
     }
@@ -426,23 +442,23 @@ public class UserRPCServiceImpl implements UserRPCService {
 
             String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
-            if(o == null){
+            if (o == null) {
                 result.setCode(CodeConstant.CODE_TIMEOUT);
                 result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
 
-            if(!o.equals(msg)){
+            if (!o.equals(msg)) {
                 result.setCode(CodeConstant.VERIFICATION_FAIL);
                 result.setMessage(MessageConstant.VERIFICATION_FAIL);
                 result.setSuccess(false);
                 return result;
             }
             userInfo.setPhone(mobile);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.BIND_MOBILE_FAIL);
                 result.setMessage(MessageConstant.BIND_MOBILE_FAIL);
@@ -451,7 +467,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setSuccess(false);
             result.setCode(CodeConstant.BIND_MOBILE_FAIL);
             result.setMessage(MessageConstant.BIND_MOBILE_FAIL);
-            logger.error(MessageConstant.BIND_MOBILE_FAIL,e);
+            logger.error(MessageConstant.BIND_MOBILE_FAIL, e);
         }
         return result;
     }
@@ -482,14 +498,14 @@ public class UserRPCServiceImpl implements UserRPCService {
 
             String key = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
-            if(o == null){
+            if (o == null) {
                 result.setCode(CodeConstant.CODE_TIMEOUT);
                 result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
 
-            if(!o.equals(msg)){
+            if (!o.equals(msg)) {
                 result.setCode(CodeConstant.VERIFICATION_FAIL);
                 result.setMessage(MessageConstant.VERIFICATION_FAIL);
                 result.setSuccess(false);
@@ -497,9 +513,9 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             userInfo.setPhone(mobile);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_MOBILE_FAIL);
                 result.setMessage(MessageConstant.CHANGE_MOBILE_FAIL);
@@ -508,7 +524,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setSuccess(false);
             result.setCode(CodeConstant.CHANGE_MOBILE_FAIL);
             result.setMessage(MessageConstant.CHANGE_MOBILE_FAIL);
-            logger.error(MessageConstant.CHANGE_MOBILE_FAIL,e);
+            logger.error(MessageConstant.CHANGE_MOBILE_FAIL, e);
         }
         return result;
     }
@@ -531,18 +547,18 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            oldPass = MD5.MD5Str(oldPass,passKey);
-            if(!oldPass.equals(userInfo.getPasswd())){
+            oldPass = MD5.MD5Str(oldPass, passKey);
+            if (!oldPass.equals(userInfo.getPasswd())) {
                 result.setCode(CodeConstant.PASS_ERROR);
                 result.setMessage(MessageConstant.PASS_ERROR);
                 result.setSuccess(false);
                 return result;
             }
 
-            userInfo.setPasswd(MD5.MD5Str(newPass,passKey));
-            if(clientUserInfoService.save(userInfo) > 0){
+            userInfo.setPasswd(MD5.MD5Str(newPass, passKey));
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_PASS_FAIL);
                 result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
@@ -551,7 +567,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setSuccess(false);
             result.setCode(CodeConstant.CHANGE_PASS_FAIL);
             result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
-            logger.error(MessageConstant.CHANGE_PASS_FAIL,e);
+            logger.error(MessageConstant.CHANGE_PASS_FAIL, e);
         }
         return result;
     }
@@ -580,7 +596,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if(!mobile.equals(userInfo.getPhone())){
+            if (!mobile.equals(userInfo.getPhone())) {
                 result.setCode(CodeConstant.MOBILE_NOT_BELONG_USER);
                 result.setMessage(MessageConstant.MOBILE_NOT_BELONG_USER);
                 result.setSuccess(false);
@@ -589,30 +605,30 @@ public class UserRPCServiceImpl implements UserRPCService {
 
             String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
-            if(o == null){
+            if (o == null) {
                 result.setCode(CodeConstant.CODE_TIMEOUT);
                 result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
-            if(!o.equals(msg)){
+            if (!o.equals(msg)) {
                 result.setCode(CodeConstant.VERIFICATION_FAIL);
                 result.setMessage(MessageConstant.VERIFICATION_FAIL);
                 result.setSuccess(false);
                 return result;
             }
 
-            password = MD5.MD5Str(password,passKey);
-            if(!password.equals(userInfo.getPasswd())){
+            password = MD5.MD5Str(password, passKey);
+            if (!password.equals(userInfo.getPasswd())) {
                 result.setCode(CodeConstant.PASS_ERROR);
                 result.setMessage(MessageConstant.PASS_ERROR);
                 result.setSuccess(false);
                 return result;
             }
             userInfo.setPasswd(password);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_PASS_FAIL);
                 result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
@@ -621,7 +637,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setSuccess(false);
             result.setCode(CodeConstant.CHANGE_PASS_FAIL);
             result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
-            logger.error(MessageConstant.CHANGE_PASS_FAIL,e);
+            logger.error(MessageConstant.CHANGE_PASS_FAIL, e);
         }
         return result;
     }
@@ -649,7 +665,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setSuccess(false);
                 return result;
             }
-            if(!mobile.equals(userInfo.getPhone())){
+            if (!mobile.equals(userInfo.getPhone())) {
                 result.setCode(CodeConstant.MOBILE_NOT_BELONG_USER);
                 result.setMessage(MessageConstant.MOBILE_NOT_BELONG_USER);
                 result.setSuccess(false);
@@ -657,14 +673,14 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             String code = AliyunMnsUtil.randomSixCode();
-            String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE,mobile);
-            sendSMSCode(mobile,redisKey,code);
+            String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
+            sendSMSCode(mobile, redisKey, code);
             result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.SEND_CODE_FAIL);
             result.setMessage(MessageConstant.SEND_CODE_FAIL);
-            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+            logger.error(MessageConstant.SEND_CODE_FAIL, e);
         }
         return result;
     }
@@ -681,7 +697,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
-            if(userInfo == null){
+            if (userInfo == null) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
@@ -690,12 +706,12 @@ public class UserRPCServiceImpl implements UserRPCService {
             String code = AliyunMnsUtil.randomSixCode();
 
             String mobile = userInfo.getPhone();
-            String redisKey = MessageFormat.format(FORGET_PASS,pin);
-            sendSMSCode(mobile,redisKey,code);
+            String redisKey = MessageFormat.format(FORGET_PASS, pin);
+            sendSMSCode(mobile, redisKey, code);
             result.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
-            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+            logger.error(MessageConstant.SEND_CODE_FAIL, e);
         }
         return result;
     }
@@ -712,7 +728,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
-            if(userInfo == null){
+            if (userInfo == null) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
@@ -721,31 +737,31 @@ public class UserRPCServiceImpl implements UserRPCService {
 
             String key = MessageFormat.format(FORGET_PASS, pin);
             String o = (String) redisTemplate.opsForValue().get(key);
-            if(o == null){
+            if (o == null) {
                 result.setCode(CodeConstant.CODE_TIMEOUT);
                 result.setMessage(MessageConstant.CODE_TIMEOUT);
                 result.setSuccess(false);
                 return result;
             }
-            if(!o.equals(code)){
+            if (!o.equals(code)) {
                 result.setCode(CodeConstant.VERIFICATION_FAIL);
                 result.setMessage(MessageConstant.VERIFICATION_FAIL);
                 result.setSuccess(false);
                 return result;
             }
 
-            pass = MD5.MD5Str(pass,passKey);
+            pass = MD5.MD5Str(pass, passKey);
             userInfo.setPasswd(pass);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_PASS_FAIL);
                 result.setMessage(MessageConstant.CHANGE_PASS_FAIL);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
-            logger.error(MessageConstant.SEND_CODE_FAIL,e);
+            logger.error(MessageConstant.SEND_CODE_FAIL, e);
         }
         return result;
     }
@@ -754,7 +770,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<Boolean> changeNickName(String pin, String nickName) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            if(StringUtils.isBlank(pin) || StringUtils.isBlank(nickName)){
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(nickName)) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.PARAM_NULL);
                 result.setMessage(MessageConstant.PARAM_NULL);
@@ -762,7 +778,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
-            if(userInfo == null){
+            if (userInfo == null) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
@@ -770,18 +786,18 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             userInfo.setNickName(nickName);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_NICK_FAIL);
                 result.setMessage(MessageConstant.CHANGE_NICK_FAIL);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.CHANGE_NICK_FAIL);
             result.setMessage(MessageConstant.CHANGE_NICK_FAIL);
-            logger.error(MessageConstant.CHANGE_NICK_FAIL,e);
+            logger.error(MessageConstant.CHANGE_NICK_FAIL, e);
         }
         return result;
     }
@@ -790,7 +806,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<Boolean> changeSex(String pin, Integer sexType) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            if(StringUtils.isBlank(pin) || (sexType != SexEnum.MALE.getValue() && sexType != SexEnum.FEMALE.getValue())){
+            if (StringUtils.isBlank(pin) || (sexType != SexEnum.MALE.getValue() && sexType != SexEnum.FEMALE.getValue())) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.PARAM_NULL);
                 result.setMessage(MessageConstant.PARAM_NULL);
@@ -798,7 +814,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
-            if(userInfo == null){
+            if (userInfo == null) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
@@ -806,19 +822,19 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             userInfo.setSexType(sexType);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_SEX_FAIL);
                 result.setMessage(MessageConstant.CHANGE_SEX_FAIL);
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.CHANGE_SEX_FAIL);
             result.setMessage(MessageConstant.CHANGE_SEX_FAIL);
-            logger.error(MessageConstant.CHANGE_SEX_FAIL,e);
+            logger.error(MessageConstant.CHANGE_SEX_FAIL, e);
         }
         return result;
     }
@@ -827,7 +843,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<Boolean> changeBirthday(String pin, String date) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            if(StringUtils.isBlank(pin) || StringUtils.isBlank(date)){
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(date)) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.PARAM_NULL);
                 result.setMessage(MessageConstant.PARAM_NULL);
@@ -835,27 +851,27 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
-            if(userInfo == null){
+            if (userInfo == null) {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.USER_NULL);
                 result.setMessage(MessageConstant.USER_NULL);
                 return result;
             }
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date d = sdf.parse(date);
             userInfo.setBirthDay(d);
-            if(clientUserInfoService.save(userInfo) > 0){
+            if (clientUserInfoService.save(userInfo) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setCode(CodeConstant.CHANGE_BIRTHDAY_FAIL);
                 result.setMessage(MessageConstant.CHANGE_BIRTHDAY_FAIL);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(CodeConstant.CHANGE_BIRTHDAY_FAIL);
             result.setMessage(MessageConstant.CHANGE_BIRTHDAY_FAIL);
-            logger.error(MessageConstant.CHANGE_BIRTHDAY_FAIL,e);
+            logger.error(MessageConstant.CHANGE_BIRTHDAY_FAIL, e);
         }
         return result;
     }
@@ -863,9 +879,9 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Override
     public RPCResult<UserExtendDTO> findByUserCode(Integer userCode) {
         RPCResult<UserExtendDTO> result = new RPCResult<>();
-        try{
+        try {
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userCode);
-            if(clientUserExtendInfo == null){
+            if (clientUserExtendInfo == null) {
                 result.setSuccess(false);
                 result.setMessage(MessageConstant.NOT_FIND_EXTEND_INFO);
                 return result;
@@ -874,10 +890,10 @@ public class UserRPCServiceImpl implements UserRPCService {
             BeanCoper.copyProperties(dto, clientUserExtendInfo);
             result.setData(dto);
             result.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
-            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL,e);
+            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
         }
         return result;
     }
@@ -885,29 +901,30 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Override
     public RPCResult<Boolean> saveUserExtendInfo(UserExtendDTO userExtendDTO) {
         RPCResult<Boolean> result = null;
-        try{
+        try {
             result = new RPCResult<>();
             ClientUserExtendInfo entity = new ClientUserExtendInfo();
             BeanCoper.copyProperties(entity, userExtendDTO);
-            if(clientUserExtendInfoService.save(entity) > 0){
+            if (clientUserExtendInfoService.save(entity) > 0) {
                 result.setSuccess(true);
-            }else{
+            } else {
                 result.setSuccess(false);
                 result.setMessage(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL);
             }
-        }catch (Exception e){
-            logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL,e);
+        } catch (Exception e) {
+            logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e);
         }
         return result;
     }
 
-    private void sendSMSCode(String mobile,String redisKey,String code){
-        String content = MessageFormat.format("您好!您的验证码:{0},有效时间3分钟，请及时验证!",code);
+    private void sendSMSCode(String mobile, String redisKey, String code) {
+        String content = MessageFormat.format("您好!您的验证码:{0},有效时间3分钟，请及时验证!", code);
         SMSInfo info = new SMSInfo();
         info.setMobile(mobile);
         info.setContent(content);
         info.setSender("大三环");
         smsInfoService.insert(info);
-        redisTemplate.opsForValue().set(redisKey,code,SysContant.MSGCODE_TIMEOUT,TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(redisKey, code, SysContant.MSGCODE_TIMEOUT, TimeUnit.SECONDS);
     }
+
 }
