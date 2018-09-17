@@ -50,7 +50,10 @@ public class SMSWorker {
         Runnable run = () -> {
             SMSInfo data = item;
             try {
-                aliyunMnsUtil.sendSms(item.getId(),data.getContent(), data.getMobile());
+                aliyunMnsUtil.sendSms(
+                        item.getId(),
+                        data.getContent(),
+                        data.getMobile());
                 sendSuccess(data.getId());
             } catch (Exception e) {
                 logger.error("sendSMS error:content =>", e);

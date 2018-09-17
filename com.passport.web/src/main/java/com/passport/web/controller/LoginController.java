@@ -42,11 +42,13 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginByPassDto dto) {
+    public Map<String, Object> login(@RequestBody LoginByPassDto dto,HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return loginService.login(getIP(), getDomain().getId(), dto.getAccount(), dto.getPass());
+                UserDTO login = loginService.login(getIP(), getDomain().getId(), dto.getAccount(), dto.getPass());
+                putCookie("token", login.getToken(), cookieEncodeKey, response);
+                return login;
             }
         });
     }
