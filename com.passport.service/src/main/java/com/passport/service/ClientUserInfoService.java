@@ -22,7 +22,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param pin
      * @return
      */
-    ClientUserInfo findByPin(String pin);
+    ClientUserInfo findByPin(Long proxyId,String pin);
 
     /**
      *  *@param proxyId 代理iD
@@ -37,7 +37,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param pin
      * @param pwd
      */
-    void changePass(String pin, String pwd);
+    void changePass(Long proxyId,String pin, String pwd);
 
     /***
      * 注册
@@ -215,7 +215,17 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      */
     void changeBirthday(Long proxyId,String pin, String date);
 
+    /**
+     * 保存用户信息
+     * @param proxyId
+     * @param userExtendDTO
+     */
     void saveUserExtendInfo(Long proxyId,UserExtendDTO userExtendDTO);
 
 
+    /**
+     * 退出登录
+     * @param token
+     */
+    void loginOut(String token);
 }

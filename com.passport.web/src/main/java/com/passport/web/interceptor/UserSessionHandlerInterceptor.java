@@ -2,8 +2,7 @@ package com.passport.web.interceptor;
 
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
-import com.integration.dto.QipaiUserDTO;
-import com.integration.rpc.LoginRPCServeice;
+import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UserSessionHandlerInterceptor implements HandlerInterceptor {
     private Logger logger = Logger.getLogger(UserSessionHandlerInterceptor.class);
     @Resource
-    private LoginRPCServeice loginService;
+    private UserRPCService userRPCService;
 
     @Value("${app.cookie.encode.key}")
     private String cookieEncodeKey;
@@ -56,12 +55,14 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        RPCResult<QipaiUserDTO> result = loginService.verToken(token);
+        RPCResult<UserDTO> result = userRPCService.verfiyToken(token);
         if (result.getSuccess()) {
-            return result.getData().getUserDTO();
+            return result.getData();
         }
-        return result.getData().getUserDTO();
+        return result.getData();
     }
+
+
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {

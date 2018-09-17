@@ -21,6 +21,7 @@ public class MessageConstant {
     public static final String CHANGE_SEX_FAIL = "修改性别失败";
     public static final String CHANGE_BIRTHDAY_FAIL = "修改生日失败";
     public static final String FIND_USER_FAIL = "查找用户失败";
+    public static final String FIND_USER_BY_TOKEN = "TOKEN查找用户失败";
     public static final String MOBILE_EXIST = "手机号已存在";
     public static final String REG_FAIL = "注册失败";
     public static final String FIND_USER_EXTEND_INFO_FAIL = "获取信息失败";

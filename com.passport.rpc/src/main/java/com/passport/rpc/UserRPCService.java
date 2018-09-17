@@ -10,10 +10,11 @@ import com.passport.rpc.dto.UserExtendDTO;
  */
 public interface UserRPCService {
 
-    UserExtendDTO findByUserCode(Long proxyId,Integer userCode);
+    RPCResult<UserExtendDTO> findByUserCode(Long proxyId,Integer userCode);
 
-    UserDTO findByPin(Long proxyId,String pin);
+    RPCResult<UserDTO> findByPin(Long proxyId,String pin);
 
-    UserDTO verToken(Long proxyId,String token);
+    RPCResult<UserDTO> verToken(Long proxyId,String token);
 
+    RPCResult<UserDTO> verfiyToken(String token);
 }

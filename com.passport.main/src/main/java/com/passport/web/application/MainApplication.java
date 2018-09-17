@@ -10,8 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,MongoAutoConfiguration.class})
 @EnableDubboConfiguration
 @ComponentScan(basePackages = {"com.passport", "com.common.config"})
-public class WebApplication {
+public class MainApplication {
     public static void main(String[] args) {
-        SpringApplication.run(WebApplication.class, args);
+        SpringApplication.run(MainApplication.class, args);
     }
 }

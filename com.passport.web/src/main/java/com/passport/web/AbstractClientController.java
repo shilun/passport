@@ -48,7 +48,7 @@ public abstract class AbstractClientController extends AbstractController {
             }
             token = tokenCookie.getValue();
         }
-        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.tokenVer(getDomain().getId(), token);
+        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verToken(getDomain().getId(), token);
         if (!userDTORPCResult.getSuccess()) {
             throw new BizException(userDTORPCResult.getCode(), userDTORPCResult.getMessage());
         }
