@@ -56,25 +56,10 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        String pin=request.getHeader("c_pin");
-        if (StringUtils.isBlank(pin)) {
-            Cookie pinCookie = null;
-            for (Cookie item : request.getCookies()) {
-                if (StringUtils.equals(item.getName(), "c_pin")) {
-                    pinCookie = item;
-                    break;
-                }
-            }
-            if(pinCookie == null){
-                return null;
-            }
-            pin = pinCookie.getValue();
-        }
-        if (StringUtils.isBlank(pin)) {
-            return null;
-        }
         token= DesDecrypter.decryptString(token, cookieEncodeKey);
-        pin=DesDecrypter.decryptString(pin, cookieEncodeKey);
+        String[] contents=token.split(":");
+        String pin=contents[0];
+        token=contents[1];
         RPCResult<UserDTO> result = userRPCService.verfiyToken(pin,token);
         if (result.getSuccess()) {
             return result.getData();

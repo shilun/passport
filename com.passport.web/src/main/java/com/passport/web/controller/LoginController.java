@@ -47,8 +47,8 @@ public class LoginController extends AbstractClientController {
             @Override
             public Object getData() {
                 UserDTO login = loginService.login(getIP(), getDomain().getId(), dto.getAccount(), dto.getPass());
-                putCookie("c_token", login.getToken(), cookieEncodeKey, response);
-                putCookie("c_pin",login.getPin(),cookieEncodeKey,response);
+                String token=login.getPin()+":"+login.getToken();
+                putCookie("c_token", token, cookieEncodeKey, response);
                 return login;
             }
         });
