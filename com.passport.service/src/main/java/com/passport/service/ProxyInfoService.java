@@ -1,7 +1,6 @@
 package com.passport.service;
 
 import com.common.mongo.MongoService;
-import com.passport.domain.AdminUserInfo;
 import com.passport.domain.ProxyInfo;
 
 /**

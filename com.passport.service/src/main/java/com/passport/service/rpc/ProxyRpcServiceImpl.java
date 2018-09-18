@@ -1,26 +1,20 @@
 package com.passport.service.rpc;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
-import com.common.util.StringUtils;
-import com.common.util.model.YesOrNoEnum;
-import com.passport.domain.AdminUserInfo;
 import com.passport.domain.ProxyInfo;
+import com.passport.rpc.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
+import com.passport.rpc.dto.LogLoginDto;
 import com.passport.rpc.dto.ProxyDto;
-import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ProxyInfoService;
-import com.passport.service.constant.MessageConstant;
-import com.passport.service.constant.SysContant;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
-import java.text.MessageFormat;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 @Service(timeout = 1000)
 @org.springframework.stereotype.Service
@@ -31,6 +25,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     private String passKey;
     @Resource
     private ProxyInfoService proxyInfoService;
+    @Resource
+    private LogLoginService logLoginService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -86,6 +82,28 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setSuccess(false);
             result.setCode("proxy.changePass.error");
             result.setMessage("修改密码失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Long> QueryActiveUsers(Date startTime,Date endTime) {
+        RPCResult<Long> result = new RPCResult<>();
+        try{
+            if(startTime.getTime() > endTime.getTime()){
+                result.setSuccess(false);
+                result.setMessage("时间错误");
+                return result;
+            }
+
+            Long count = logLoginService.QueryActiveUsers(startTime,endTime);
+            result.setSuccess(true);
+            result.setData(count);
+        }catch (Exception e){
+            logger.error("查询活跃人数异常",e);
+            result.setSuccess(false);
+            result.setCode("query.active.users.error");
+            result.setMessage("查询活跃人数异常");
         }
         return result;
     }

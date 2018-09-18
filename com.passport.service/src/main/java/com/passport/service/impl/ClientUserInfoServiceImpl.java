@@ -11,6 +11,7 @@ import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
+import com.passport.rpc.LogLoginService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserExtendInfoService;
@@ -53,6 +54,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Resource
     private SMSInfoService smsInfoService;
     @Resource
+    private LogLoginService logLoginService;
+    @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -84,6 +87,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         query = findByOne(query);
         if (query != null) {
+            logLoginService.addLoginLog(query.getPin(),proxyId);
             return query;
         }
         return null;
@@ -222,6 +226,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             redisTemplate.delete(key);
             UserDTO dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
+            logLoginService.addLoginLog(dto.getPin(),proxyId);
            return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -275,6 +280,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
                 redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
             }
+            logLoginService.addLoginLog(dto.getPin(),proxyId);
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
