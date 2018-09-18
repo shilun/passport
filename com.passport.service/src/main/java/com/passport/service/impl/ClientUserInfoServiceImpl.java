@@ -645,15 +645,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void loginOut(String token) {
+    public void loginOut(String pin,String token) {
         try {
-            String login_pin_token = MessageFormat.format(LOGIN_PIN, token);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_token);
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
+            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_key);
             if(dto == null){
                 return;
             }
-            String pin = dto.getPin();
-            String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
+            String login_pin_token = MessageFormat.format(LOGIN_PIN,pin, token);
             redisTemplate.delete(login_pin_key);
             redisTemplate.delete(login_pin_token);
         }catch (Exception e){

@@ -227,5 +227,5 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * 退出登录
      * @param token
      */
-    void loginOut(String token);
+    void loginOut(String pin,String token);
 }
