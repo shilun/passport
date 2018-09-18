@@ -67,8 +67,6 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         return result.getData();
     }
 
-
-
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
