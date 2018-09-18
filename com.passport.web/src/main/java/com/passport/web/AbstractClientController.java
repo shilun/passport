@@ -1,6 +1,7 @@
 package com.passport.web;
 
 import com.common.exception.BizException;
+import com.common.security.DesDecrypter;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.web.AbstractController;
@@ -37,18 +38,43 @@ public abstract class AbstractClientController extends AbstractController {
 
 
     protected UserDTO getUserDto() {
-        String token = getRequest().getHeader("token");
+        String token = getRequest().getHeader("c_token");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
             for (Cookie item : getRequest().getCookies()) {
-                if (StringUtils.equals(item.getName(), "token")) {
+                if (StringUtils.equals(item.getName(), "c_token")) {
                     tokenCookie = item;
                     break;
                 }
             }
+            if(tokenCookie == null){
+                return null;
+            }
             token = tokenCookie.getValue();
         }
-        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verToken(getDomain().getId(), token);
+        if (StringUtils.isBlank(token)) {
+            return null;
+        }
+        String pin=getRequest().getHeader("c_pin");
+        if (StringUtils.isBlank(pin)) {
+            Cookie pinCookie = null;
+            for (Cookie item : getRequest().getCookies()) {
+                if (StringUtils.equals(item.getName(), "c_pin")) {
+                    pinCookie = item;
+                    break;
+                }
+            }
+            if(pinCookie == null){
+                return null;
+            }
+            pin = pinCookie.getValue();
+        }
+        if (StringUtils.isBlank(pin)) {
+            return null;
+        }
+        token= DesDecrypter.decryptString(token, cookieEncodeKey);
+        pin=DesDecrypter.decryptString(pin, cookieEncodeKey);
+        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verfiyToken(pin, token);
         if (!userDTORPCResult.getSuccess()) {
             throw new BizException(userDTORPCResult.getCode(), userDTORPCResult.getMessage());
         }
