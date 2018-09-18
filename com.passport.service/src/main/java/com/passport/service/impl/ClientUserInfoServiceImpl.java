@@ -164,7 +164,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
                 ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
                 clientUserExtendInfo.setUserCode(entity.getId().intValue());
-                clientUserExtendInfo.setIsRobot(YesOrNoEnum.NO.getValue());
+                clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
                 clientUserExtendInfoService.save(clientUserExtendInfo);
 
                 UserDTO dto = new UserDTO();
@@ -257,7 +257,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             ClientUserExtendInfo userExtendInfo = new ClientUserExtendInfo();
             userExtendInfo.setLastLoginIp(ip);
             userExtendInfo.setId(clientUserExtendInfo.getId());
-            clientUserExtendInfoService.save(clientUserExtendInfo);
+            clientUserExtendInfoService.save(userExtendInfo);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
             UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
             if (dto != null) {
