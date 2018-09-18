@@ -12,7 +12,7 @@ public class ClientUserExtendInfo extends AbstractBaseEntity {
     // 头像URL
     private String headUrl;
     //是否机器人  1.是  2.否
-    private int isRobot;
+    private Integer isRobot;
     //最后登陆IP
     private String lastLoginIp;
     //签名
@@ -24,7 +24,7 @@ public class ClientUserExtendInfo extends AbstractBaseEntity {
     //身份证上的名字
     private String realName;
     //qq
-    private Long QQ;
+    private Long qq;
 
     public int getUserCode() {
         return userCode;
@@ -42,11 +42,11 @@ public class ClientUserExtendInfo extends AbstractBaseEntity {
         this.headUrl = headUrl;
     }
 
-    public int getIsRobot() {
+    public Integer getIsRobot() {
         return isRobot;
     }
 
-    public void setIsRobot(int isRobot) {
+    public void setIsRobot(Integer isRobot) {
         this.isRobot = isRobot;
     }
 
@@ -91,10 +91,10 @@ public class ClientUserExtendInfo extends AbstractBaseEntity {
     }
 
     public Long getQQ() {
-        return QQ;
+        return qq;
     }
 
-    public void setQQ(Long QQ) {
-        this.QQ = QQ;
+    public void setQQ(Long qq) {
+        this.qq = qq;
     }
 }

@@ -252,7 +252,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
             if (clientUserExtendInfo == null) {
-               throw new BizException("","");
+               throw new BizException("find.clientUserExtendInfo.error","获取用户信息失败");
             }
             clientUserExtendInfo.setLastLoginIp(ip);
             clientUserExtendInfoService.save(clientUserExtendInfo);
