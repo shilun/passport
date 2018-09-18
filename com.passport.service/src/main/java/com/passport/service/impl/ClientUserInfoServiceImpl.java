@@ -254,7 +254,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (clientUserExtendInfo == null) {
                throw new BizException("find.clientUserExtendInfo.error","获取用户信息失败");
             }
-            clientUserExtendInfo.setLastLoginIp(ip);
+            ClientUserExtendInfo userExtendInfo = new ClientUserExtendInfo();
+            userExtendInfo.setLastLoginIp(ip);
+            userExtendInfo.setId(clientUserExtendInfo.getId());
             clientUserExtendInfoService.save(clientUserExtendInfo);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
             UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
