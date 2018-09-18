@@ -31,8 +31,8 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
 
+    private final String LOGIN_PIN = "passport.login.{0}";
     private final String LOGIN_PIN_TOKEN = "passport.login.{0}.token.{1}";
-
 
     @Override
     public RPCResult<UserExtendDTO> findByUserCode(Long proxyId, Integer userCode) {
@@ -88,46 +88,9 @@ public class UserRPCServiceImpl implements UserRPCService {
         return rpcResult;
     }
 
-    @Override
-    public RPCResult<UserDTO> verToken(Long proxyId, String token) {
-        RPCResult<UserDTO> rpcResult = new RPCResult<>();
-        try {
-            if (StringUtils.isBlank(token)) {
-                rpcResult.setSuccess(false);
-                rpcResult.setCode("find.userDTO.token.null");
-                rpcResult.setMessage(MessageConstant.FIND_USER_BY_TOKEN);
-                return rpcResult;
-            }
-            String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN, token);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_token);
-            if(dto == null){
-                rpcResult.setSuccess(false);
-                rpcResult.setCode("find.userDTO.dto.null");
-                rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
-                return rpcResult;
-            }
-            if(proxyId != dto.getProxyId()){
-                rpcResult.setSuccess(false);
-                rpcResult.setCode("find.userDTO.proxyId.error");
-                rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
-                return rpcResult;
-            }
-            rpcResult.setSuccess(true);
-            rpcResult.setCode("find.userDTO.dto.success");
-            rpcResult.setMessage("获取用户成功");
-            rpcResult.setData(dto);
-            return rpcResult;
-        } catch (Exception e) {
-            rpcResult.setSuccess(false);
-            rpcResult.setCode("find.userDTO.dto.error");
-            rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
-            logger.error(MessageConstant.FIND_USER_BY_TOKEN, e);
-        }
-        return rpcResult;
-    }
 
     @Override
-    public RPCResult<UserDTO> verfiyToken(String token) {
+    public RPCResult<UserDTO> verfiyToken(String pin,String token) {
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
             if (StringUtils.isBlank(token)) {
@@ -136,7 +99,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_BY_TOKEN);
                 return rpcResult;
             }
-            String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN, token);
+            String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,pin, token);
             UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_token);
             if(dto == null){
                 rpcResult.setSuccess(false);

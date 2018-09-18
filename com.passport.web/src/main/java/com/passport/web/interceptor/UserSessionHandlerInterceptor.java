@@ -1,5 +1,6 @@
 package com.passport.web.interceptor;
 
+import com.common.security.DesDecrypter;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.rpc.UserRPCService;
@@ -38,11 +39,11 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
     }
 
     protected UserDTO getUserDto(HttpServletRequest request) {
-        String token = request.getHeader("token");
+        String token = request.getHeader("c_token");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
             for (Cookie item : request.getCookies()) {
-                if (StringUtils.equals(item.getName(), "token")) {
+                if (StringUtils.equals(item.getName(), "c_token")) {
                     tokenCookie = item;
                     break;
                 }
@@ -55,7 +56,26 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        RPCResult<UserDTO> result = userRPCService.verfiyToken(token);
+        String pin=request.getHeader("c_pin");
+        if (StringUtils.isBlank(pin)) {
+            Cookie pinCookie = null;
+            for (Cookie item : request.getCookies()) {
+                if (StringUtils.equals(item.getName(), "c_pin")) {
+                    pinCookie = item;
+                    break;
+                }
+            }
+            if(pinCookie == null){
+                return null;
+            }
+            pin = pinCookie.getValue();
+        }
+        if (StringUtils.isBlank(pin)) {
+            return null;
+        }
+        token= DesDecrypter.decryptString(token, cookieEncodeKey);
+        pin=DesDecrypter.decryptString(pin, cookieEncodeKey);
+        RPCResult<UserDTO> result = userRPCService.verfiyToken(pin,token);
         if (result.getSuccess()) {
             return result.getData();
         }

@@ -251,14 +251,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-            if (clientUserExtendInfo != null) {
-                clientUserExtendInfo.setLastLoginIp(ip);
-                clientUserExtendInfoService.save(clientUserExtendInfo);
+            if (clientUserExtendInfo == null) {
+               throw new BizException("","");
             }
+            clientUserExtendInfo.setLastLoginIp(ip);
+            clientUserExtendInfoService.save(clientUserExtendInfo);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
             UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
             if (dto != null) {
-                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN, dto.getToken());
+                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
                 redisTemplate.delete(login_pin_token);
                 dto.setToken(StringUtils.getUUID());
                 redisTemplate.opsForValue().set(login_pin_key, dto, 7, TimeUnit.DAYS);
@@ -269,7 +270,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 BeanCoper.copyProperties(dto, userInfo);
                 dto.setToken(StringUtils.getUUID());
                 redisTemplate.opsForValue().set(login_pin_key, dto, 7, TimeUnit.DAYS);
-                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN, dto.getToken());
+                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
                 redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
             }
             return dto;

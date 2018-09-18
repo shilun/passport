@@ -14,7 +14,6 @@ public interface UserRPCService {
 
     RPCResult<UserDTO> findByPin(Long proxyId,String pin);
 
-    RPCResult<UserDTO> verToken(Long proxyId,String token);
+    RPCResult<UserDTO> verfiyToken(String pin,String token);
 
-    RPCResult<UserDTO> verfiyToken(String token);
 }
