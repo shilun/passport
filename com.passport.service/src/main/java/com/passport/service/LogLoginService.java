@@ -1,6 +1,4 @@
-package com.passport.rpc;
-
-import com.passport.rpc.dto.LogLoginDto;
+package com.passport.service;
 
 import java.util.Date;
 
@@ -11,5 +9,5 @@ import java.util.Date;
 public interface LogLoginService {
     Boolean addLoginLog(String pin,Long proxyId);
 
-    public Long QueryActiveUsers(Date startTime, Date endTime);
+    Long QueryActiveUsers(Date startTime, Date endTime);
 }

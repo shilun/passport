@@ -11,17 +11,16 @@ import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
-import com.passport.rpc.LogLoginService;
+import com.passport.service.*;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
-import com.passport.service.ClientUserExtendInfoService;
-import com.passport.service.ClientUserInfoService;
-import com.passport.service.SMSInfoService;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +28,7 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -55,6 +55,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private SMSInfoService smsInfoService;
     @Resource
     private LogLoginService logLoginService;
+    @Resource
+    private LogRegisterService logRegisterService;
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
@@ -173,6 +175,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
                 UserDTO dto = new UserDTO();
                 BeanCoper.copyProperties(dto, entity);
+                logRegisterService.addRegisterLog(dto.getPin(),proxyId);
                 return dto;
             }
         } catch (Exception e) {
@@ -677,5 +680,18 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         info.setSender("大三环");
         smsInfoService.insert(info);
         redisTemplate.opsForValue().set(redisKey, code, SysContant.MSGCODE_TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public List<ClientUserInfo> QueryRegisterUsers(Integer pageNum,Date startTime, Date endTime) {
+        try {
+            ClientUserInfo info = new ClientUserInfo();
+            info.setStartCreateTime(startTime);
+            info.setEndCreateTime(endTime);
+            Page<ClientUserInfo> pages = this.queryByPage(info, new PageRequest(pageNum, 30));
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+        return null;
     }
 }

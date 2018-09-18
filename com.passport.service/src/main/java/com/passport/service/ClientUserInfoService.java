@@ -5,6 +5,9 @@ import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * 客户用户接口
  */
@@ -228,4 +231,6 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param token
      */
     void loginOut(String pin,String token);
+
+    public List<ClientUserInfo> QueryRegisterUsers(Integer pageNum, Date startTime, Date endTime);
 }

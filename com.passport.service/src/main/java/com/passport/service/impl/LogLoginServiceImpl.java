@@ -3,7 +3,7 @@ package com.passport.service.impl;
 import com.common.mongo.AbstractMongoService;
 import com.common.util.StringUtils;
 import com.passport.domain.LogLoginInfo;
-import com.passport.rpc.LogLoginService;
+import com.passport.service.LogLoginService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
