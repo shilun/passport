@@ -100,7 +100,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return rpcResult;
             }
             String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,pin, token);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_token);
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
+            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_key);
             if(dto == null){
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.dto.null");
