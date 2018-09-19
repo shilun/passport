@@ -11,6 +11,13 @@ import java.util.Date;
  * 查询代理商信息
  */
 public interface ProxyRpcService {
+
+    /**
+     * 根据id 查找代理商信息
+     * @param proxyId
+     * @return
+     */
+    public RPCResult<ProxyDto> findById(Long proxyId);
     /**
      * 根据域名查询代理商信息
      * @param domain

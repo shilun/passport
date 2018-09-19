@@ -34,6 +34,29 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+
+    @Override
+    public RPCResult<ProxyDto> findById(Long id) {
+        RPCResult<ProxyDto> result=new RPCResult<>();
+        try {
+            ProxyInfo entity = new ProxyInfo();
+            entity.setId(id);
+            entity = proxyInfoService.findByOne(entity);
+            ProxyDto dto = new ProxyDto();
+            BeanCoper.copyProperties(dto, entity);
+            result.setData(dto);
+            result.setSuccess(true);
+            return result;
+        }
+        catch (Exception e){
+            logger.error("查找代理商失败",e);
+        }
+        result.setSuccess(false);
+        result.setCode("proxy.find.error");
+        result.setMessage("查找代理商失败");
+        return result;
+    }
+
     @Override
     public RPCResult<ProxyDto> findByDomain(String domain) {
         RPCResult<ProxyDto> result=new RPCResult<>();
