@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
+import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.LogRegisterInfo;
 import com.passport.domain.ProxyInfo;
 import com.passport.rpc.dto.DateType;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service(timeout = 1000)
 @org.springframework.stereotype.Service
@@ -32,8 +35,31 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     private LogLoginService logLoginService;
     @Resource
     private LogRegisterService logRegisterService;
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+
+    @Override
+    public RPCResult<List<ProxyDto>> queryAll() {
+        RPCResult<List<ProxyDto>> result = new RPCResult<>();
+        try {
+            ProxyInfo entity = new ProxyInfo();
+            entity.setStatus(YesOrNoEnum.YES.getValue());
+            List<ProxyInfo> queryList = proxyInfoService.query(entity);
+            List<ProxyDto> listresult = new ArrayList<>();
+            for (ProxyInfo info : queryList) {
+                ProxyDto dto = new ProxyDto();
+                BeanCoper.copyProperties(dto, info);
+                listresult.add(dto);
+            }
+            result.setData(listresult);
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            logger.error("查找代理商失败", e);
+        }
+        result.setSuccess(false);
+        result.setCode("proxy.find.error");
+        result.setMessage("查找代理商失败");
+        return result;
+    }
 
     @Override
     public RPCResult refreshToken(Long proxyId) {

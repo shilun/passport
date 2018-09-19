@@ -6,12 +6,18 @@ import com.passport.rpc.dto.LogLoginDto;
 import com.passport.rpc.dto.ProxyDto;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 查询代理商信息
  */
 public interface ProxyRpcService {
 
+    /**
+     * 查询所有代理商
+     * @return
+     */
+    public RPCResult<List<ProxyDto>> queryAll();
     /**
      * 根据id 查找代理商信息
      * @param proxyId
