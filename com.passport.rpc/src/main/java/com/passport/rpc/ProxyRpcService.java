@@ -1,6 +1,7 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
+import com.passport.rpc.dto.DateType;
 import com.passport.rpc.dto.LogLoginDto;
 import com.passport.rpc.dto.ProxyDto;
 
@@ -28,4 +29,16 @@ public interface ProxyRpcService {
      * @return
      */
     RPCResult<Long> QueryActiveUsers(Date startTime, Date endTime);
+
+    /**
+     * 查询新增用户
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    RPCResult<Long> QueryNewUsers(Date startTime, Date endTime);
+
+    RPCResult<Long> QueryActiveUsers(DateType type);
+
+    RPCResult<Long> QueryNewUsers(DateType type);
 }

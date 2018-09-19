@@ -8,8 +8,8 @@ import java.util.Date;
 /**
  * Created by shilun on 16-12-5.
  */
-public class UserDTO extends AbstractDTO {
-
+public class UserDTO extends AbstractDTO implements Serializable {
+    private static final long serialVersionUID = 8642175623513171274L;
     private String email;
     private String pin;
     private String nickName;

@@ -43,4 +43,8 @@ public class LogRegisterServiceImpl extends AbstractMongoService<LogRegisterInfo
         return flag;
     }
 
+    @Override
+    public Long QueryNewUsers(Date startTime, Date endTime) {
+        return null;
+    }
 }

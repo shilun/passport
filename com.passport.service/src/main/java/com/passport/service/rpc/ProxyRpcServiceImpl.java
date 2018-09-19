@@ -3,10 +3,13 @@ package com.passport.service.rpc;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
+import com.passport.domain.LogRegisterInfo;
 import com.passport.domain.ProxyInfo;
+import com.passport.rpc.dto.DateType;
 import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.rpc.dto.ProxyDto;
+import com.passport.service.LogRegisterService;
 import com.passport.service.ProxyInfoService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +29,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     private ProxyInfoService proxyInfoService;
     @Resource
     private LogLoginService logLoginService;
+    @Resource
+    private LogRegisterService logRegisterService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -105,5 +110,37 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setMessage("查询活跃人数异常");
         }
         return result;
+    }
+
+    @Override
+    public RPCResult<Long> QueryNewUsers(Date startTime, Date endTime) {
+        RPCResult<Long> result = new RPCResult<>();
+        try{
+            if(startTime.getTime() > endTime.getTime()){
+                result.setSuccess(false);
+                result.setMessage("时间错误");
+                return result;
+            }
+
+            Long count = logRegisterService.QueryNewUsers(startTime, endTime);
+            result.setSuccess(true);
+            result.setData(count);
+        }catch (Exception e){
+            logger.error("查询新增人数异常",e);
+            result.setSuccess(false);
+            result.setCode("query.new.users.error");
+            result.setMessage("查询新增人数异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Long> QueryActiveUsers(DateType type) {
+        return null;
+    }
+
+    @Override
+    public RPCResult<Long> QueryNewUsers(DateType type) {
+        return null;
     }
 }
