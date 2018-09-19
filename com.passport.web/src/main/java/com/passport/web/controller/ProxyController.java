@@ -6,6 +6,7 @@ import com.passport.domain.ProxyInfo;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyInfoService;
 import com.passport.web.AbstractClientController;
+import com.passport.web.controller.dto.PageDto;
 import com.passport.web.controller.dto.ProxyAddUserDto;
 import com.passport.web.controller.dto.ProxyChangeUserInfoDto;
 import io.swagger.annotations.ApiOperation;
@@ -56,9 +57,21 @@ public class ProxyController extends AbstractClientController {
         });
     }
 
+    @RequestMapping("getUsers")
+    @ResponseBody
+    @ApiOperation(value = "代理获取名下的用户")
+    public Map<String, Object> getUsres(@RequestBody PageDto dto) {
+        return buildMessage(() -> {
+            if(checkAuth()){
+                return loginService.proxyGetUsers(getDomain().getId(),dto.getPageNum());
+            }
+            return null;
+        });
+    }
+
 
     private Boolean checkAuth(){
-        String authorization = getRequest().getHeader("Authorization");
+        /*String authorization = getRequest().getHeader("Authorization");
         if(StringUtils.isBlank(authorization)){
             return false;
         }
@@ -74,7 +87,7 @@ public class ProxyController extends AbstractClientController {
         String authkey = MD5.MD5Str(byOne.getToken(), byOne.getEncodingKey());
         if(!authorization.endsWith(authkey)){
             return false;
-        }
+        }*/
         return true;
     }
 }

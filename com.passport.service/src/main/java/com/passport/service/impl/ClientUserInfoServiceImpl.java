@@ -667,12 +667,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public List<ClientUserInfo> QueryRegisterUsers(Integer pageNum,Date startTime, Date endTime) {
+    public Page<ClientUserInfo> QueryRegisterUsers(Integer pageNum,Date startTime, Date endTime) {
         try {
             ClientUserInfo info = new ClientUserInfo();
             info.setStartCreateTime(startTime);
             info.setEndCreateTime(endTime);
-            Page<ClientUserInfo> pages = this.queryByPage(info, new PageRequest(pageNum, 30));
+            return this.queryByPage(info, new PageRequest(pageNum, 30));
         } catch (Exception e) {
             logger.error("",e);
         }
@@ -683,7 +683,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email, SexEnum sexEnum, String birth) {
         UserDTO dto = null;
         try {
-            if(!StringUtils.isMobileNO(phone)){
+            if(!StringUtils.isMobileNO(phone) || !StringUtils.isMobileNO(account)){
                 return null;
             }
 
@@ -694,7 +694,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             Date date = null;
             if(!StringUtils.isBlank(birth)){
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 date = sdf.parse(birth);
             }
 
@@ -741,7 +741,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                     user.setPasswd(MD5.MD5Str(value, passKey));
                     break;
                 case BIRTH:
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     user.setBirthDay(sdf.parse(value));
                     break;
                 case EMAIL:
@@ -761,5 +761,24 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }catch (Exception e){
             logger.error("",e);
         }
+    }
+
+    @Override
+    public Page<ClientUserInfo> proxyGetUsers(Long proxyId,Integer pageNum) {
+        try{
+            if(proxyId == null){
+                return null;
+            }
+            if(pageNum == null || pageNum < 0){
+                pageNum = 0;
+            }
+
+            ClientUserInfo info = new ClientUserInfo();
+            info.setProxyId(proxyId);
+            return queryByPage(info, new PageRequest(pageNum, 30));
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return null;
     }
 }

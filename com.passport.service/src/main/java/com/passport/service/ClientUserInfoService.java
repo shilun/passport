@@ -6,6 +6,7 @@ import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.constant.ChangeType;
+import org.springframework.data.domain.Page;
 
 import java.util.Date;
 import java.util.List;
@@ -234,7 +235,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      */
     void loginOut(String pin,String token);
 
-    List<ClientUserInfo> QueryRegisterUsers(Integer pageNum, Date startTime, Date endTime);
+    Page<ClientUserInfo> QueryRegisterUsers(Integer pageNum, Date startTime, Date endTime);
 
     /***
      * 注册
@@ -244,4 +245,6 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email, SexEnum sexEnum,String birth);
 
     void proxyChangeUserInfo(Long proxyId, String userAccount, ChangeType type,String value);
+
+    Page<ClientUserInfo> proxyGetUsers(Long proxyId,Integer pageNum);
 }
