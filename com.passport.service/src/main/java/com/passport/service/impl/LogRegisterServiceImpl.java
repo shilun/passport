@@ -26,7 +26,7 @@ public class LogRegisterServiceImpl extends AbstractMongoService<LogRegisterInfo
     }
 
     @Override
-    public Boolean addRegisterLog(String pin, Long proxyId) {
+    public Boolean addRegisterLog(String pin, Long proxyId,Date registerDate) {
         Boolean flag = false;
         try{
             if(StringUtils.isBlank(pin) || proxyId == null){
@@ -35,7 +35,7 @@ public class LogRegisterServiceImpl extends AbstractMongoService<LogRegisterInfo
             LogRegisterInfo info = new LogRegisterInfo();
             info.setPin(pin);
             info.setProxyId(proxyId);
-            info.setRegisterDay(new Date());
+            info.setRegisterDay(registerDate);
             save(info);
             flag = true;
         }catch (Exception e){

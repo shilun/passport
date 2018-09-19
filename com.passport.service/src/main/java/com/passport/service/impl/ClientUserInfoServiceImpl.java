@@ -91,7 +91,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         query = findByOne(query);
         if (query != null) {
-            logLoginService.addLoginLog(query.getPin(),proxyId);
+            logLoginService.addLoginLog(query.getPin(),proxyId,query.getCreateTime());
             return query;
         }
         return null;
@@ -213,7 +213,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             redisTemplate.delete(key);
             UserDTO dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
-            logLoginService.addLoginLog(dto.getPin(),proxyId);
+            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime());
            return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -267,7 +267,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
                 redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
             }
-            logLoginService.addLoginLog(dto.getPin(),proxyId);
+            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime());
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -717,7 +717,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             dto = new UserDTO();
             BeanCoper.copyProperties(dto, entity);
-            logRegisterService.addRegisterLog(dto.getPin(),proxyId);
+            logRegisterService.addRegisterLog(dto.getPin(),proxyId,entity.getCreateTime());
         } catch (ParseException e) {
             logger.error("",e);
         }

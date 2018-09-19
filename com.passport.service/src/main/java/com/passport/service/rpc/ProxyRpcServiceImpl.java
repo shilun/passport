@@ -5,7 +5,6 @@ import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
-import com.passport.domain.LogRegisterInfo;
 import com.passport.domain.ProxyInfo;
 import com.passport.rpc.dto.DateType;
 import com.passport.service.LogLoginService;
@@ -13,11 +12,13 @@ import com.passport.rpc.ProxyRpcService;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.service.LogRegisterService;
 import com.passport.service.ProxyInfoService;
+import com.passport.service.util.DateUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
+import javax.swing.text.Document;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -237,7 +238,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     public RPCResult<Long> QueryActiveUsers(Long proxyId,DateType type) {
         RPCResult<Long> result = null;
         try{
-            result = analyzeDateType(1,proxyId,type);
+            Date[] arr = DateUtil.getStartAndEndDate(type);
+            result = QueryActiveUsers(proxyId,arr[0],arr[1]);
         }catch (Exception e){
             logger.error("",e);
         }
@@ -248,61 +250,68 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     public RPCResult<Long> QueryNewUsers(Long proxyId,DateType type) {
         RPCResult<Long> result = null;
         try{
-            result = analyzeDateType(2,proxyId,type);
+            Date[] arr = DateUtil.getStartAndEndDate(type);
+            result = QueryNewUsers(proxyId,arr[0],arr[1]);
         }catch (Exception e){
             logger.error("",e);
         }
         return result;
     }
 
-    private RPCResult<Long> analyzeDateType(Integer queryType,Long proxyId,DateType type) throws Exception{
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = null;
-        String str = null;
-        Date startTime = null;
-        Date endTime = new Date();
-        cal.setTime(endTime);
-        switch (type){
-            case ALL:
-                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                str = "2001-01-01 00:00:00";
-                startTime = sdf.parse(str);
-                break;
-            case DAY:
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                startTime = cal.getTime();
-                break;
-            case WEEK:
-                int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
-                if (dayofweek == 1) {
-                    dayofweek += 7;
-                }
-                cal.add(Calendar.DATE, 2 - dayofweek);
-                startTime = cal.getTime();
-                break;
-            case MONTH:
-                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.YEAR));
-                startTime = cal.getTime();
-                break;
-            case YEAY:
-                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-                cal.set(Calendar.DAY_OF_YEAR, cal.getActualMinimum(Calendar.YEAR));
-                startTime = cal.getTime();
-                break;
-            default:
-                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                str = "2001-01-01 00:00:00";
-                startTime = sdf.parse(str);
-        }
+    @Override
+    public RPCResult<Double> QueryRetention(Long proxyId, Date startTime, Date endTime) {
+        RPCResult<Double> result = null;
+        try{
+            if (startTime.getTime() > endTime.getTime()) {
+                result.setSuccess(false);
+                result.setMessage("时间错误");
+                return result;
+            }
 
-        if(queryType == 1){
-            return this.QueryActiveUsers(proxyId,startTime,endTime);
-        }else{
-            return this.QueryNewUsers(proxyId,startTime,endTime);
+            if(proxyId == null){
+                result.setSuccess(false);
+                result.setMessage("代理错误");
+                return result;
+            }
+
+            int diff = DateUtil.differentDays(startTime,endTime);
+            if(diff <= 0){
+                result.setSuccess(false);
+                result.setMessage("相隔不足一天，无法计算");
+                return result;
+            }
+            Date endPreOne = DateUtil.setZero(endTime);
+            //查询从startTime到endPreOne之间注册的人数
+            RPCResult<Long> result_1 = QueryNewUsers(proxyId, startTime, endPreOne);
+            if(!result_1.getSuccess()){
+                result.setSuccess(false);
+                result.setMessage("查询注册人数失败");
+                return result;
+            }
+            Long registerNum = result_1.getData();
+            //查询在endTime这一天的登陆人数(即endPreOne到endTime之间)，且注册时间在startTime到endPreOne之间
+            Long loginNum = this.logLoginService.QueryLoginUsersByRegDate(proxyId, endPreOne, endTime, startTime, endPreOne);
+            //计算
+            BigDecimal regBd = new BigDecimal(registerNum);
+            BigDecimal loginBd = new BigDecimal(loginNum);
+            Double res = loginBd.divide(regBd,4,BigDecimal.ROUND_HALF_UP).doubleValue();
+            result.setSuccess(true);
+            result.setData(res);
+        }catch (Exception e){
+            logger.error("",e);
         }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Double> QueryRetention(Long proxyId, DateType type) {
+        RPCResult<Double> result = null;
+        try{
+            Date[] arr = DateUtil.getStartAndEndDate(type);
+            result = QueryRetention(proxyId,arr[0],arr[1]);
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return result;
     }
 }

@@ -2,12 +2,15 @@ package com.passport.service.impl;
 
 import com.common.mongo.AbstractMongoService;
 import com.common.util.StringUtils;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.passport.domain.LogLoginInfo;
 import com.passport.service.LogLoginService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Luo
@@ -23,7 +26,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
     }
 
     @Override
-    public Boolean addLoginLog(String pin, Long proxyId) {
+    public Boolean addLoginLog(String pin, Long proxyId,Date registerDate) {
         Boolean flag = false;
         try{
             if(StringUtils.isBlank(pin) || proxyId == null){
@@ -33,6 +36,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
             info.setPin(pin);
             info.setProxyId(proxyId);
             info.setLoginDay(new Date());
+            info.setRegisterDate(registerDate);
             save(info);
             flag = true;
         }catch (Exception e){
@@ -46,12 +50,29 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
         try {
             LogLoginInfo info = new LogLoginInfo();
             info.setProxyId(proxyId);
-            info.setStartTime(startTime);
-            info.setEndTime(endTime);
+            info.setLoginStartTime(startTime);
+            info.setLoginEndTime(endTime);
+            //TODO  去重
+            /*DBObject query = new BasicDBObject();
+            query.put("proxyId",proxyId);
+            this.template.getCollection("logLoginInfo").count(query);*/
             return queryCount(info);
         } catch (Exception e) {
             logger.error("",e);
         }
         return null;
     }
+
+    @Override
+    public Long QueryLoginUsersByRegDate(Long proxyId, Date loginStartTime, Date loginEndTime, Date regStartTime, Date regEndTime) {
+        LogLoginInfo info = new LogLoginInfo();
+        info.setProxyId(proxyId);
+        info.setLoginStartTime(loginStartTime);
+        info.setLoginEndTime(loginEndTime);
+        info.setRegStartTime(regStartTime);
+        info.setRegEndTime(regEndTime);
+        //TODO  去重
+        return queryCount(info);
+    }
+
 }

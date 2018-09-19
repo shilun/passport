@@ -79,7 +79,35 @@ public interface ProxyRpcService {
      */
     RPCResult<Long> QueryNewUsers(Long proxyId,Date startTime, Date endTime);
 
+    /**
+     * 查询活跃人数
+     * @param proxyId
+     * @param type
+     * @return
+     */
     RPCResult<Long> QueryActiveUsers(Long proxyId,DateType type);
 
+    /**
+     * 查询新增人数
+     * @param proxyId
+     * @param type
+     * @return
+     */
     RPCResult<Long> QueryNewUsers(Long proxyId,DateType type);
+
+    /**
+     * 查询留存率
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    RPCResult<Double> QueryRetention(Long proxyId,Date startTime, Date endTime);
+
+    /**
+     * 查询留存率
+     * @param proxyId
+     * @param type
+     * @return
+     */
+    RPCResult<Double> QueryRetention(Long proxyId,DateType type);
 }

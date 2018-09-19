@@ -13,6 +13,7 @@ import com.passport.service.ClientUserInfoService;
 import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

@@ -27,13 +27,24 @@ public class LogLoginInfo extends AbstractBaseEntity {
     @JsonSerialize(using = DateJsonSerializer.class)
     private Date loginDay;
 
+    @JsonSerialize(using = DateJsonSerializer.class)
+    private Date registerDate;
+
     @Transient
     @QueryField(name="loginDay",type= QueryType.GTE)
-    private Date startTime;
+    private Date loginStartTime;
 
     @Transient
     @QueryField(name="loginDay",type= QueryType.LTE)
-    private Date endTime;
+    private Date loginEndTime;
+
+    @Transient
+    @QueryField(name="registerDate",type= QueryType.GTE)
+    private Date regStartTime;
+
+    @Transient
+    @QueryField(name="registerDate",type= QueryType.LTE)
+    private Date regEndTime;
 
     public String getPin() {
         return pin;
@@ -59,11 +70,27 @@ public class LogLoginInfo extends AbstractBaseEntity {
         this.loginDay = loginDay;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setLoginStartTime(Date loginStartTime) {
+        this.loginStartTime = loginStartTime;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setLoginEndTime(Date loginEndTime) {
+        this.loginEndTime = loginEndTime;
+    }
+
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
+    }
+
+    public void setRegStartTime(Date regStartTime) {
+        this.regStartTime = regStartTime;
+    }
+
+    public void setRegEndTime(Date regEndTime) {
+        this.regEndTime = regEndTime;
     }
 }
