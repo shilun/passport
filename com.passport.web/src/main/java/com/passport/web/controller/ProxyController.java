@@ -44,10 +44,10 @@ public class ProxyController extends AbstractClientController {
         });
     }
 
-    @RequestMapping("changePass")
+    @RequestMapping("changeInfo")
     @ResponseBody
-    @ApiOperation(value = "修改密码")
-    public Map<String, Object> changePass(@RequestBody ProxyChangeUserInfoDto dto) {
+    @ApiOperation(value = "代理修改用户信息")
+    public Map<String, Object> changeInfo(@RequestBody ProxyChangeUserInfoDto dto) {
         return buildMessage(() -> {
             if(checkAuth()){
                 loginService.proxyChangeUserInfo(getDomain().getId(),dto.getAccount(),dto.getType(),dto.getValue());
