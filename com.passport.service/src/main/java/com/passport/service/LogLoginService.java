@@ -9,5 +9,5 @@ import java.util.Date;
 public interface LogLoginService {
     Boolean addLoginLog(String pin,Long proxyId);
 
-    Long QueryActiveUsers(Date startTime, Date endTime);
+    Long QueryActiveUsers(Long proxyId,Date startTime, Date endTime);
 }

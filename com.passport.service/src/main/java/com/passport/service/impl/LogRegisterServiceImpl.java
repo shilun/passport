@@ -3,6 +3,7 @@ package com.passport.service.impl;
 import com.common.mongo.AbstractMongoService;
 import com.common.util.StringUtils;
 import com.passport.domain.ClientUserInfo;
+import com.passport.domain.LogLoginInfo;
 import com.passport.domain.LogRegisterInfo;
 import com.passport.service.LogRegisterService;
 import org.apache.log4j.Logger;
@@ -44,7 +45,16 @@ public class LogRegisterServiceImpl extends AbstractMongoService<LogRegisterInfo
     }
 
     @Override
-    public Long QueryNewUsers(Date startTime, Date endTime) {
+    public Long QueryNewUsers(Long proxyId,Date startTime, Date endTime) {
+        try {
+            LogRegisterInfo info = new LogRegisterInfo();
+            info.setProxyId(proxyId);
+            info.setStartTime(startTime);
+            info.setEndTime(endTime);
+            return queryCount(info);
+        } catch (Exception e) {
+            logger.error("",e);
+        }
         return null;
     }
 }

@@ -69,7 +69,7 @@ public interface ProxyRpcService {
      * @param endTime
      * @return
      */
-    RPCResult<Long> QueryActiveUsers(Date startTime, Date endTime);
+    RPCResult<Long> QueryActiveUsers(Long proxyId,Date startTime, Date endTime);
 
     /**
      * 查询新增用户
@@ -77,9 +77,9 @@ public interface ProxyRpcService {
      * @param endTime
      * @return
      */
-    RPCResult<Long> QueryNewUsers(Date startTime, Date endTime);
+    RPCResult<Long> QueryNewUsers(Long proxyId,Date startTime, Date endTime);
 
-    RPCResult<Long> QueryActiveUsers(DateType type);
+    RPCResult<Long> QueryActiveUsers(Long proxyId,DateType type);
 
-    RPCResult<Long> QueryNewUsers(DateType type);
+    RPCResult<Long> QueryNewUsers(Long proxyId,DateType type);
 }

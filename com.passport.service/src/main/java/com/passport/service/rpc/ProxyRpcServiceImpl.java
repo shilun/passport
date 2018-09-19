@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -176,7 +178,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryActiveUsers(Date startTime, Date endTime) {
+    public RPCResult<Long> QueryActiveUsers(Long proxyId,Date startTime, Date endTime) {
         RPCResult<Long> result = new RPCResult<>();
         try {
             if (startTime.getTime() > endTime.getTime()) {
@@ -185,7 +187,13 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 return result;
             }
 
-            Long count = logLoginService.QueryActiveUsers(startTime, endTime);
+            if(proxyId == null){
+                result.setSuccess(false);
+                result.setMessage("代理错误");
+                return result;
+            }
+
+            Long count = logLoginService.QueryActiveUsers(proxyId,startTime, endTime);
             result.setSuccess(true);
             result.setData(count);
         } catch (Exception e) {
@@ -198,7 +206,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryNewUsers(Date startTime, Date endTime) {
+    public RPCResult<Long> QueryNewUsers(Long proxyId,Date startTime, Date endTime) {
         RPCResult<Long> result = new RPCResult<>();
         try {
             if (startTime.getTime() > endTime.getTime()) {
@@ -207,7 +215,13 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 return result;
             }
 
-            Long count = logRegisterService.QueryNewUsers(startTime, endTime);
+            if(proxyId == null){
+                result.setSuccess(false);
+                result.setMessage("代理错误");
+                return result;
+            }
+
+            Long count = logRegisterService.QueryNewUsers(proxyId,startTime, endTime);
             result.setSuccess(true);
             result.setData(count);
         } catch (Exception e) {
@@ -220,12 +234,75 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryActiveUsers(DateType type) {
-        return null;
+    public RPCResult<Long> QueryActiveUsers(Long proxyId,DateType type) {
+        RPCResult<Long> result = null;
+        try{
+            result = analyzeDateType(1,proxyId,type);
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return result;
     }
 
     @Override
-    public RPCResult<Long> QueryNewUsers(DateType type) {
-        return null;
+    public RPCResult<Long> QueryNewUsers(Long proxyId,DateType type) {
+        RPCResult<Long> result = null;
+        try{
+            result = analyzeDateType(2,proxyId,type);
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return result;
+    }
+
+    private RPCResult<Long> analyzeDateType(Integer queryType,Long proxyId,DateType type) throws Exception{
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = null;
+        String str = null;
+        Date startTime = null;
+        Date endTime = new Date();
+        cal.setTime(endTime);
+        switch (type){
+            case ALL:
+                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                str = "2001-01-01 00:00:00";
+                startTime = sdf.parse(str);
+                break;
+            case DAY:
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                startTime = cal.getTime();
+                break;
+            case WEEK:
+                int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
+                if (dayofweek == 1) {
+                    dayofweek += 7;
+                }
+                cal.add(Calendar.DATE, 2 - dayofweek);
+                startTime = cal.getTime();
+                break;
+            case MONTH:
+                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.YEAR));
+                startTime = cal.getTime();
+                break;
+            case YEAY:
+                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+                cal.set(Calendar.DAY_OF_YEAR, cal.getActualMinimum(Calendar.YEAR));
+                startTime = cal.getTime();
+                break;
+            default:
+                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                str = "2001-01-01 00:00:00";
+                startTime = sdf.parse(str);
+        }
+
+        if(queryType == 1){
+            return this.QueryActiveUsers(proxyId,startTime,endTime);
+        }else{
+            return this.QueryNewUsers(proxyId,startTime,endTime);
+        }
     }
 }

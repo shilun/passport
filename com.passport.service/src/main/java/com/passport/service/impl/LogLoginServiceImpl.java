@@ -42,9 +42,10 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
     }
 
     @Override
-    public Long QueryActiveUsers(Date startTime, Date endTime) {
+    public Long QueryActiveUsers(Long proxyId,Date startTime, Date endTime) {
         try {
             LogLoginInfo info = new LogLoginInfo();
+            info.setProxyId(proxyId);
             info.setStartTime(startTime);
             info.setEndTime(endTime);
             return queryCount(info);

@@ -10,7 +10,8 @@ public enum DateType implements IGlossary {
     ALL("全部", 1),
     DAY("今日", 2),
     WEEK("本周", 3),
-    MONTH("本月", 4);
+    MONTH("本月", 4),
+    YEAY("本年", 5);
 
     DateType(String name, Integer value) {
         this.name = name;

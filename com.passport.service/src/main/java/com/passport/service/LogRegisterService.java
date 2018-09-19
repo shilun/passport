@@ -10,5 +10,5 @@ import java.util.Date;
 public interface LogRegisterService {
     Boolean addRegisterLog(String pin,Long proxyId);
 
-    Long QueryNewUsers(Date startTime, Date endTime);
+    Long QueryNewUsers(Long proxyId,Date startTime, Date endTime);
 }
