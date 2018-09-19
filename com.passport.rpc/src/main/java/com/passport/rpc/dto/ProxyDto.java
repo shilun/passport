@@ -36,6 +36,15 @@ public class ProxyDto implements Serializable {
     private String remark;
 
     /**
+     * 接入token
+     */
+    private String token;
+
+    /**
+     * 接入加密key uuid生成
+     */
+    private String encodingKey;
+    /**
      * 状态
      */
     private Integer status;

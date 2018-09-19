@@ -18,6 +18,21 @@ public interface ProxyRpcService {
      * @return
      */
     public RPCResult<ProxyDto> findById(Long proxyId);
+
+    /**
+     * 重新生成token
+     * @param proxyId
+     * @return
+     */
+    public RPCResult refreshToken(Long proxyId);
+
+    /**
+     * 修改加密串
+     * @param proxyId
+     * @param encodingKey
+     * @return
+     */
+    public RPCResult upEncodingKey(Long proxyId,String encodingKey);
     /**
      * 根据域名查询代理商信息
      * @param domain
@@ -25,8 +40,21 @@ public interface ProxyRpcService {
      */
     RPCResult<ProxyDto> findByDomain(String domain);
 
+    /**
+     * 登录
+     * @param account
+     * @param pass
+     * @return
+     */
     RPCResult<ProxyDto> login(String account,String pass);
 
+    /**
+     * 登录密码
+     * @param account
+     * @param oldPass
+     * @param newPass
+     * @return
+     */
     RPCResult<Boolean> changePass(String account,String oldPass,String newPass);
 
     /**
