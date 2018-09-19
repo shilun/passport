@@ -14,6 +14,7 @@ import com.passport.domain.module.UserStatusEnum;
 import com.passport.service.*;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
+import com.passport.service.constant.ChangeType;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -158,25 +160,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
-                ClientUserInfo entity = new ClientUserInfo();
-                entity.setProxyId(proxyId);
-                entity.setPin(StringUtils.getUUID());
-                entity.setPhone(account);
-                entity.setNickName(account);
-                entity.setSexType(SexEnum.MALE.getValue());
-                entity.setStatus(YesOrNoEnum.YES.getValue());
-                entity.setPasswd(MD5.MD5Str(pass, passKey));
-                save(entity);
-
-                ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
-                clientUserExtendInfo.setUserCode(entity.getId().intValue());
-                clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
-                clientUserExtendInfoService.save(clientUserExtendInfo);
-
-                UserDTO dto = new UserDTO();
-                BeanCoper.copyProperties(dto, entity);
-                logRegisterService.addRegisterLog(dto.getPin(),proxyId);
-                return dto;
+                return regist(proxyId,account,pass,account,account,null,SexEnum.MALE,null);
             }
         } catch (Exception e) {
             logger.error(MessageConstant.REG_FAIL, e);
@@ -693,5 +677,89 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             logger.error("",e);
         }
         return null;
+    }
+
+    @Override
+    public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email, SexEnum sexEnum, String birth) {
+        UserDTO dto = null;
+        try {
+            if(!StringUtils.isMobileNO(phone)){
+                return null;
+            }
+
+            if(email != null){
+                if(!StringUtils.isEmail(email)){
+                    return null;
+                }
+            }
+            Date date = null;
+            if(!StringUtils.isBlank(birth)){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+                date = sdf.parse(birth);
+            }
+
+            ClientUserInfo entity = new ClientUserInfo();
+            entity.setProxyId(proxyId);
+            entity.setPin(StringUtils.getUUID());
+            entity.setPhone(account);
+            entity.setNickName(nick);
+            entity.setSexType(sexEnum.getValue());
+            entity.setStatus(YesOrNoEnum.YES.getValue());
+            entity.setPasswd(MD5.MD5Str(pass, passKey));
+            entity.setBirthDay(date);
+            entity.setEmail(email);
+            save(entity);
+
+            ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
+            clientUserExtendInfo.setUserCode(entity.getId().intValue());
+            clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
+            clientUserExtendInfoService.save(clientUserExtendInfo);
+
+            dto = new UserDTO();
+            BeanCoper.copyProperties(dto, entity);
+            logRegisterService.addRegisterLog(dto.getPin(),proxyId);
+        } catch (ParseException e) {
+            logger.error("",e);
+        }
+        return dto;
+    }
+
+    @Override
+    public void proxyChangeUserInfo(Long proxyId, String userAccount, ChangeType type, String value) {
+        try{
+            if (proxyId == null || StringUtils.isBlank(userAccount) || StringUtils.isBlank(value)) {
+                return;
+            }
+
+            ClientUserInfo user = findByPhone(proxyId, userAccount);
+            if(user == null){
+                return;
+            }
+
+            switch (type){
+                case PASS:
+                    user.setPasswd(MD5.MD5Str(value, passKey));
+                    break;
+                case BIRTH:
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+                    user.setBirthDay(sdf.parse(value));
+                    break;
+                case EMAIL:
+                    if(!StringUtils.isEmail(value)){
+                        return;
+                    }
+                    user.setEmail(value);
+                    break;
+                case PHONE:
+                    if(!StringUtils.isMobileNO(value)){
+                        return;
+                    }
+                    user.setPhone(value);
+                    break;
+            }
+            save(user);
+        }catch (Exception e){
+            logger.error("",e);
+        }
     }
 }
