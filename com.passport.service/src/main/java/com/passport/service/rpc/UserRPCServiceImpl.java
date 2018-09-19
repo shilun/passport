@@ -12,11 +12,14 @@ import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
+import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @com.alibaba.dubbo.config.annotation.Service(timeout = 1000)
@@ -120,6 +123,38 @@ public class UserRPCServiceImpl implements UserRPCService {
             logger.error(MessageConstant.FIND_USER_BY_TOKEN, e);
         }
         return rpcResult;
+    }
+
+
+    /**
+     * 获取全部玩家
+     * @param dto
+     * @return
+     */
+    @Override
+    public RPCResult<List<UserDTO>> query(UserDTO dto) {
+        RPCResult<List<UserDTO>> result = new RPCResult<>();
+        try {
+           List<UserDTO> userDTOs = new ArrayList<>();
+            ClientUserInfo entity = new ClientUserInfo();
+            BeanCoper.copyProperties(entity,dto);
+            Page<ClientUserInfo> page= clientUserInfoService.queryByPage(entity,dto.getPageinfo().getPage());
+            for(ClientUserInfo clientUserInfo:page){
+                UserDTO userDTO = new UserDTO();
+                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                userDTOs.add(userDTO);
+            }
+            result.setSuccess(true);
+            result.setCode("find.userDTO.dto.success");
+            result.setMessage("获取用户成功");
+            result.setData(userDTOs);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("find.userDTO.dto.error");
+            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
+            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
+        }
+        return result;
     }
 
 }

@@ -4,6 +4,8 @@ import com.common.util.RPCResult;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 
+import java.util.List;
+
 /**
  * 客户webservice接口
  * Created by shilun on 16-12-5.
@@ -15,5 +17,7 @@ public interface UserRPCService {
     RPCResult<UserDTO> findByPin(Long proxyId,String pin);
 
     RPCResult<UserDTO> verfiyToken(String pin,String token);
+
+    RPCResult<List<UserDTO>> query(UserDTO dto);
 
 }

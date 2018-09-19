@@ -1,25 +1,28 @@
 package com.passport.rpc.dto;
 
+import com.common.util.AbstractDTO;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by shilun on 16-12-5.
  */
-public class UserDTO implements Serializable {
+public class UserDTO extends AbstractDTO {
+
     private String email;
     private String pin;
     private String nickName;
     private String mobile;
-    private String realName;
     private String birthday;
     private Integer sexType;
     private Boolean initPass;
-
     private String token;
     private Long proxyId;
     private Date birthDay;
     private Long id;
+    private String realName;
+
 
     public String getToken() {
         return token;
@@ -116,4 +119,5 @@ public class UserDTO implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
 }
