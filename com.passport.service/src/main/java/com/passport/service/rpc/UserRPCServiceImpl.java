@@ -133,8 +133,8 @@ public class UserRPCServiceImpl implements UserRPCService {
      * @return
      */
     @Override
-    public RPCResult<List<UserDTO>> query(UserDTO dto) {
-        RPCResult<List<UserDTO>> result = new RPCResult<>();
+    public RPCResult<Page<UserDTO>> query(UserDTO dto) {
+        RPCResult<Page<UserDTO>> result = new RPCResult<>();
         try {
            List<UserDTO> userDTOs = new ArrayList<>();
             ClientUserInfo entity = new ClientUserInfo();
@@ -145,10 +145,12 @@ public class UserRPCServiceImpl implements UserRPCService {
                 BeanCoper.copyProperties(userDTO,clientUserInfo);
                 userDTOs.add(userDTO);
             }
+            Page<UserDTO> users = new PageImpl<>(userDTOs, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+
             result.setSuccess(true);
             result.setCode("find.userDTO.dto.success");
             result.setMessage("获取用户成功");
-            result.setData(userDTOs);
+            result.setData(users);
         }catch (Exception e){
             result.setSuccess(false);
             result.setCode("find.userDTO.dto.error");

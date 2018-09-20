@@ -3,6 +3,7 @@ package com.passport.rpc;
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,6 +19,6 @@ public interface UserRPCService {
 
     RPCResult<UserDTO> verfiyToken(String pin,String token);
 
-    RPCResult<List<UserDTO>> query(UserDTO dto);
+    RPCResult<Page<UserDTO>> query(UserDTO dto);
 
 }
