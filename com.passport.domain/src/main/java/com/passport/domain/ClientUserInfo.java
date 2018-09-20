@@ -50,6 +50,20 @@ public class ClientUserInfo extends AbstractBaseEntity {
      */
     private String registerIp;
 
+    // 头像URL
+    private String headUrl;
+
+    //最后登陆IP
+    private String lastLoginIp;
+    //微信
+    private String wechat;
+    //身份证号
+    private String idCard;
+    //身份证上的名字
+    private String realName;
+    //qq
+    private Long qq;
+
     public Long getProxyId() {
         return proxyId;
     }
@@ -129,5 +143,53 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     public void setRegisterIp(String registerIp) {
         this.registerIp = registerIp;
+    }
+
+    public String getHeadUrl() {
+        return headUrl;
+    }
+
+    public void setHeadUrl(String headUrl) {
+        this.headUrl = headUrl;
+    }
+
+    public String getLastLoginIp() {
+        return lastLoginIp;
+    }
+
+    public void setLastLoginIp(String lastLoginIp) {
+        this.lastLoginIp = lastLoginIp;
+    }
+
+    public String getWechat() {
+        return wechat;
+    }
+
+    public void setWechat(String wechat) {
+        this.wechat = wechat;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public Long getQq() {
+        return qq;
+    }
+
+    public void setQq(Long qq) {
+        this.qq = qq;
     }
 }

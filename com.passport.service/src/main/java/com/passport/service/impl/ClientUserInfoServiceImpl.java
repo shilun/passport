@@ -159,7 +159,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
-                return regist(proxyId,account,pass,account,account,null,SexEnum.MALE,null,ip);
+                return regist(proxyId,account,pass,account,account,null,SexEnum.MALE,null,ip,null,null,null,null,null);
             }
         } catch (Exception e) {
             logger.error(MessageConstant.REG_FAIL, e);
@@ -204,11 +204,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (userInfo == null) {
                 return null;
             }
-            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-            if (clientUserExtendInfo != null) {
-                clientUserExtendInfo.setLastLoginIp(ip);
-                clientUserExtendInfoService.save(clientUserExtendInfo);
-            }
+            userInfo.setLastLoginIp(ip);
             redisTemplate.delete(key);
             UserDTO dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
@@ -243,12 +239,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
             if (clientUserExtendInfo == null) {
-               throw new BizException("find.clientUserExtendInfo.error","获取用户信息失败");
+                clientUserExtendInfo = new ClientUserExtendInfo();
+                clientUserExtendInfo.setId(clientUserExtendInfo.getId());
+                clientUserExtendInfoService.save(clientUserExtendInfo);
             }
-            ClientUserExtendInfo userExtendInfo = new ClientUserExtendInfo();
-            userExtendInfo.setLastLoginIp(ip);
-            userExtendInfo.setId(clientUserExtendInfo.getId());
-            clientUserExtendInfoService.save(userExtendInfo);
+            userInfo.setLastLoginIp(ip);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
             UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
             if (dto != null) {
@@ -679,7 +674,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email, SexEnum sexEnum, String birth,String ip) {
+    public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email,
+                          SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
+                          String realName,Long qq) {
         UserDTO dto = null;
         try {
             if(!StringUtils.isMobileNO(phone) || !StringUtils.isMobileNO(account)){
@@ -708,6 +705,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setBirthDay(date);
             entity.setEmail(email);
             entity.setRegisterIp(ip);
+            entity.setLastLoginIp(ip);
+            entity.setHeadUrl(headUrl);
+            entity.setWechat(wechat);
+            entity.setIdCard(idCard);
+            entity.setRealName(realName);
+            entity.setQq(qq);
             save(entity);
 
             ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
