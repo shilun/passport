@@ -4,6 +4,8 @@ import com.common.util.RPCResult;
 import com.passport.rpc.dto.DateType;
 import com.passport.rpc.dto.LogLoginDto;
 import com.passport.rpc.dto.ProxyDto;
+import com.passport.rpc.dto.UserDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.Date;
 import java.util.List;
@@ -110,4 +112,22 @@ public interface ProxyRpcService {
      * @return
      */
     RPCResult<Double> QueryRetention(Long proxyId,DateType type);
+
+    /**
+     * 根据时间段筛选用户
+     * @param proxyId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    RPCResult<Page<UserDTO>> QueryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto);
+
+    /**
+     * 根据IP段筛选用户
+     * @param proxyId
+     * @param ip
+     * @param dto
+     * @return
+     */
+    RPCResult<Page<LogLoginDto>> QueryUsersByLoginIp(Long proxyId, String ip, UserDTO dto);
 }

@@ -1,5 +1,10 @@
 package com.passport.service;
 
+import com.passport.domain.ClientUserInfo;
+import com.passport.domain.LogLoginInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Date;
 
 /**
@@ -7,9 +12,18 @@ import java.util.Date;
  * @date 2018/9/18 15:48
  */
 public interface LogLoginService {
-    Boolean addLoginLog(String pin,Long proxyId,Date registerDate);
+    Boolean addLoginLog(String pin,Long proxyId,Date registerDate,String ip);
 
     Long QueryActiveUsers(Long proxyId,Date startTime, Date endTime);
 
     Long QueryLoginUsersByRegDate(Long proxyId,Date loginStartTime, Date loginEndTime,Date regStartTime, Date regEndTime);
+
+    /**
+     * 根据IP查询用户列表
+     * @param proxyId
+     * @param ip
+     * @param pageable
+     * @return
+     */
+    Page<LogLoginInfo> queryByIp(Long proxyId, String ip, Pageable pageable);
 }

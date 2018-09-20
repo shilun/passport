@@ -38,7 +38,8 @@ public class ProxyController extends AbstractClientController {
     public Map<String, Object> addUser(@RequestBody ProxyAddUserDto dto) {
         return buildMessage(() -> {
             if(checkAuth()){
-                return loginService.regist(getDomain().getId(), dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),dto.getEmail(),dto.getSexType(),dto.getBirthDay());
+                return loginService.regist(getDomain().getId(), dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),dto.getEmail(),dto.getSexType(),
+                        dto.getBirthDay(),getIP(),dto.getHeadUrl(),dto.getWechat(),dto.getIdCard(),dto.getRealName(),dto.getQq());
             }else{
                 return null;
             }

@@ -7,6 +7,7 @@ import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.constant.ChangeType;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param passwd
      * @return
      */
-    ClientUserInfo login(Long proxyId,String loginName, String passwd);
+    ClientUserInfo login(Long proxyId,String loginName, String passwd,String ip);
 
     /**
      * @param pin
@@ -59,7 +60,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param vcode   验证码
      * @return
      */
-    UserDTO registVerification(Long proxyId, String account, String vcode, String pass);
+    UserDTO registVerification(Long proxyId, String account, String vcode, String pass,String ip);
 
 
 
@@ -242,9 +243,42 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param
      * @return
      */
-    UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email, SexEnum sexEnum,String birth);
+    UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email,
+                   SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
+                   String realName,Long qq);
 
+    /**
+     * 代理修改下面用户的信息
+     * @param proxyId
+     * @param userAccount
+     * @param type
+     * @param value
+     */
     void proxyChangeUserInfo(Long proxyId, String userAccount, ChangeType type,String value);
 
+    /**
+     * 代理获取下面的用户
+     * @param proxyId
+     * @param pageNum
+     * @return
+     */
     Page<ClientUserInfo> proxyGetUsers(Long proxyId,Integer pageNum);
+
+    /**
+     * 根据注册时间段查询用户列表
+     * @param proxyId
+     * @param startRegTime
+     * @param endRegTime
+     * @return
+     */
+    Page<ClientUserInfo> queryByRegTime(Long proxyId,Date startRegTime,Date endRegTime,Pageable pageable);
+    /**
+     * 根据注册时间段查询用户数量
+     * @param proxyId
+     * @param startRegTime
+     * @param endRegTime
+     * @return
+     */
+    Long queryCountByRegTime(Long proxyId,Date startRegTime,Date endRegTime);
+
 }

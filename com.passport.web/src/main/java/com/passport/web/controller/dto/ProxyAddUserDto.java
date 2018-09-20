@@ -28,6 +28,16 @@ public class ProxyAddUserDto implements Serializable {
     private SexEnum sexType;
     @ApiModelProperty(value = "生日")
     private String birthDay;
+    @ApiModelProperty(value = "头像地址")
+    private String headUrl;
+    @ApiModelProperty(value = "微信")
+    private String wechat;
+    @ApiModelProperty(value = "身份证号")
+    private String idCard;
+    @ApiModelProperty(value = "真实姓名")
+    private String realName;
+    @ApiModelProperty(value = "qq")
+    private Long qq;
 
     public String getAccount() {
         return account;
@@ -83,5 +93,45 @@ public class ProxyAddUserDto implements Serializable {
 
     public void setBirthDay(String birthDay) {
         this.birthDay = birthDay;
+    }
+
+    public String getHeadUrl() {
+        return headUrl;
+    }
+
+    public void setHeadUrl(String headUrl) {
+        this.headUrl = headUrl;
+    }
+
+    public String getWechat() {
+        return wechat;
+    }
+
+    public void setWechat(String wechat) {
+        this.wechat = wechat;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public Long getQq() {
+        return qq;
+    }
+
+    public void setQq(Long qq) {
+        this.qq = qq;
     }
 }

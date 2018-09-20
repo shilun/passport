@@ -1,7 +1,5 @@
 package com.passport.rpc.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,6 +20,10 @@ public class LogLoginDto implements Serializable {
     private Long proxyId;
 
     private Date loginDay;
+
+    private Date registerDate;
+
+    private String ip;
 
     public String getPin() {
         return pin;
@@ -45,5 +47,21 @@ public class LogLoginDto implements Serializable {
 
     public void setLoginDay(Date loginDay) {
         this.loginDay = loginDay;
+    }
+
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

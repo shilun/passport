@@ -24,9 +24,15 @@ public class LogLoginInfo extends AbstractBaseEntity {
      */
     private Long proxyId;
 
+    /**
+     * 登陆时间
+     */
     @JsonSerialize(using = DateJsonSerializer.class)
     private Date loginDay;
 
+    /**
+     * 注册时间
+     */
     @JsonSerialize(using = DateJsonSerializer.class)
     private Date registerDate;
 
@@ -45,6 +51,11 @@ public class LogLoginInfo extends AbstractBaseEntity {
     @Transient
     @QueryField(name="registerDate",type= QueryType.LTE)
     private Date regEndTime;
+
+    /**
+     * 登陆ip
+     */
+    private String ip;
 
     public String getPin() {
         return pin;
@@ -92,5 +103,9 @@ public class LogLoginInfo extends AbstractBaseEntity {
 
     public void setRegEndTime(Date regEndTime) {
         this.regEndTime = regEndTime;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

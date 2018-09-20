@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -58,8 +59,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Resource
     private LogLoginService logLoginService;
     @Resource
-    private LogRegisterService logRegisterService;
-    @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -68,7 +67,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return ClientUserInfo.class;
     }
 
-    public ClientUserInfo login(Long proxyId,String loginName, String passwd) {
+    public ClientUserInfo login(Long proxyId,String loginName, String passwd,String ip) {
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd)||proxyId==null) {
             return null;
         }
@@ -91,7 +90,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         query = findByOne(query);
         if (query != null) {
-            logLoginService.addLoginLog(query.getPin(),proxyId,query.getCreateTime());
+            logLoginService.addLoginLog(query.getPin(),proxyId,query.getCreateTime(),ip);
             return query;
         }
         return null;
@@ -155,12 +154,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO registVerification(Long proxyId, String account, String vcode, String pass) {
+    public UserDTO registVerification(Long proxyId, String account, String vcode, String pass,String ip) {
         try {
             String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
-                return regist(proxyId,account,pass,account,account,null,SexEnum.MALE,null);
+                return regist(proxyId,account,pass,account,account,null,SexEnum.MALE,null,ip,null,null,null,null,null);
             }
         } catch (Exception e) {
             logger.error(MessageConstant.REG_FAIL, e);
@@ -205,15 +204,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (userInfo == null) {
                 return null;
             }
-            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-            if (clientUserExtendInfo != null) {
-                clientUserExtendInfo.setLastLoginIp(ip);
-                clientUserExtendInfoService.save(clientUserExtendInfo);
-            }
+            userInfo.setLastLoginIp(ip);
             redisTemplate.delete(key);
             UserDTO dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
-            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime());
+            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
            return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -244,12 +239,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
             if (clientUserExtendInfo == null) {
-               throw new BizException("find.clientUserExtendInfo.error","获取用户信息失败");
+                clientUserExtendInfo = new ClientUserExtendInfo();
+                clientUserExtendInfo.setId(clientUserExtendInfo.getId());
+                clientUserExtendInfoService.save(clientUserExtendInfo);
             }
-            ClientUserExtendInfo userExtendInfo = new ClientUserExtendInfo();
-            userExtendInfo.setLastLoginIp(ip);
-            userExtendInfo.setId(clientUserExtendInfo.getId());
-            clientUserExtendInfoService.save(userExtendInfo);
+            userInfo.setLastLoginIp(ip);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
             UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
             if (dto != null) {
@@ -267,7 +261,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
                 redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
             }
-            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime());
+            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -680,7 +674,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email, SexEnum sexEnum, String birth) {
+    public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email,
+                          SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
+                          String realName,Long qq) {
         UserDTO dto = null;
         try {
             if(!StringUtils.isMobileNO(phone) || !StringUtils.isMobileNO(account)){
@@ -708,6 +704,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setPasswd(MD5.MD5Str(pass, passKey));
             entity.setBirthDay(date);
             entity.setEmail(email);
+            entity.setRegisterIp(ip);
+            entity.setLastLoginIp(ip);
+            entity.setHeadUrl(headUrl);
+            entity.setWechat(wechat);
+            entity.setIdCard(idCard);
+            entity.setRealName(realName);
+            entity.setQq(qq);
             save(entity);
 
             ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
@@ -717,7 +720,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             dto = new UserDTO();
             BeanCoper.copyProperties(dto, entity);
-            logRegisterService.addRegisterLog(dto.getPin(),proxyId,entity.getCreateTime());
         } catch (ParseException e) {
             logger.error("",e);
         }
@@ -777,6 +779,32 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             info.setProxyId(proxyId);
             return queryByPage(info, new PageRequest(pageNum, 30));
         }catch (Exception e){
+            logger.error("",e);
+        }
+        return null;
+    }
+
+    @Override
+    public Page<ClientUserInfo> queryByRegTime(Long proxyId, Date startRegTime, Date endRegTime, Pageable pageable) {
+        try {
+            ClientUserInfo info = new ClientUserInfo();
+            info.setStartCreateTime(startRegTime);
+            info.setEndCreateTime(endRegTime);
+            return queryByPage(info, pageable);
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+        return null;
+    }
+
+    @Override
+    public Long queryCountByRegTime(Long proxyId, Date startRegTime, Date endRegTime) {
+        try {
+            ClientUserInfo info = new ClientUserInfo();
+            info.setStartCreateTime(startRegTime);
+            info.setEndCreateTime(endRegTime);
+            return queryCount(info);
+        } catch (Exception e) {
             logger.error("",e);
         }
         return null;
