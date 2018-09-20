@@ -47,7 +47,7 @@ public abstract class AbstractClientController extends AbstractController {
                     break;
                 }
             }
-            if(tokenCookie == null){
+            if (tokenCookie == null) {
                 return null;
             }
             token = tokenCookie.getValue();
@@ -55,26 +55,7 @@ public abstract class AbstractClientController extends AbstractController {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        String pin=getRequest().getHeader("c_pin");
-        if (StringUtils.isBlank(pin)) {
-            Cookie pinCookie = null;
-            for (Cookie item : getRequest().getCookies()) {
-                if (StringUtils.equals(item.getName(), "c_pin")) {
-                    pinCookie = item;
-                    break;
-                }
-            }
-            if(pinCookie == null){
-                return null;
-            }
-            pin = pinCookie.getValue();
-        }
-        if (StringUtils.isBlank(pin)) {
-            return null;
-        }
-        token= DesDecrypter.decryptString(token, cookieEncodeKey);
-        //pin=DesDecrypter.decryptString(pin, cookieEncodeKey);
-        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verfiyToken( token);
+        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verfiyToken(token);
         if (!userDTORPCResult.getSuccess()) {
             throw new BizException(userDTORPCResult.getCode(), userDTORPCResult.getMessage());
         }

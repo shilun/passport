@@ -1,5 +1,6 @@
 package com.passport.service.rpc;
 
+import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
@@ -13,6 +14,7 @@ import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,21 +39,22 @@ public class UserRPCServiceImpl implements UserRPCService {
     private ClientUserExtendInfoService clientUserExtendInfoService;
 
     private final String LOGIN_TOKEN = "passport.login.token.{1}";
-    private final String LOGIN_PIN = "passport.login.{0}";
+    @Value("${app.token.encode.key}")
+    private String appTokenEncodeKey;
 
     @Override
     public RPCResult<UserExtendDTO> findByUserCode(Long proxyId, Integer userCode) {
         RPCResult<UserExtendDTO> rpcResult = new RPCResult<>();
-        try{
+        try {
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userCode);
             UserExtendDTO dto = new UserExtendDTO();
-            BeanCoper.copyProperties(dto,clientUserExtendInfo);
+            BeanCoper.copyProperties(dto, clientUserExtendInfo);
             rpcResult.setSuccess(true);
             rpcResult.setMessage("获取用户信息成功");
             rpcResult.setCode("find.userExtend.success");
             rpcResult.setData(dto);
             return rpcResult;
-        }catch (Exception e) {
+        } catch (Exception e) {
             rpcResult.setSuccess(false);
             rpcResult.setCode("find.userExtend.error");
             rpcResult.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
@@ -70,7 +73,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
                 return rpcResult;
             }
-            ClientUserInfo userInfo = clientUserInfoService.findByPin(proxyId,pin);
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(proxyId, pin);
             if (userInfo == null) {
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.null");
@@ -96,17 +99,20 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<UserDTO> verfiyToken(String token) {
+
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
+            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+            token = token.split(":")[2];
             if (StringUtils.isBlank(token)) {
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.token.null");
                 rpcResult.setMessage(MessageConstant.FIND_USER_BY_TOKEN);
                 return rpcResult;
             }
-            String tokenKey = MessageFormat.format(LOGIN_TOKEN,token);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(tokenKey);
-            if(dto == null){
+            String tokenKey = MessageFormat.format(LOGIN_TOKEN, token);
+            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(tokenKey);
+            if (dto == null) {
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.dto.null");
                 rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
@@ -129,6 +135,7 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     /**
      * 获取全部玩家
+     *
      * @param dto
      * @return
      */
@@ -136,13 +143,13 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<Page<UserDTO>> query(UserDTO dto) {
         RPCResult<Page<UserDTO>> result = new RPCResult<>();
         try {
-           List<UserDTO> userDTOs = new ArrayList<>();
+            List<UserDTO> userDTOs = new ArrayList<>();
             ClientUserInfo entity = new ClientUserInfo();
-            BeanCoper.copyProperties(entity,dto);
-            Page<ClientUserInfo> page= clientUserInfoService.queryByPage(entity,dto.getPageinfo().getPage());
-            for(ClientUserInfo clientUserInfo:page){
+            BeanCoper.copyProperties(entity, dto);
+            Page<ClientUserInfo> page = clientUserInfoService.queryByPage(entity, dto.getPageinfo().getPage());
+            for (ClientUserInfo clientUserInfo : page) {
                 UserDTO userDTO = new UserDTO();
-                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                BeanCoper.copyProperties(userDTO, clientUserInfo);
                 userDTOs.add(userDTO);
             }
             Page<UserDTO> users = new PageImpl<>(userDTOs, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
@@ -151,7 +158,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setCode("find.userDTO.dto.success");
             result.setMessage("获取用户成功");
             result.setData(users);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("find.userDTO.dto.error");
             result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
@@ -162,18 +169,19 @@ public class UserRPCServiceImpl implements UserRPCService {
 
     @Override
     public RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token) {
-        RPCResult<QipaiUserDTO> result = null;
-        try{
-            result = new RPCResult<>();
+        RPCResult<QipaiUserDTO> result = new RPCResult<>();
+        try {
+            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+            token = token.split(":")[2];
             if (StringUtils.isBlank(token)) {
                 result.setSuccess(false);
                 result.setCode("token.null");
                 return result;
             }
 
-            String tokenKey = MessageFormat.format(LOGIN_TOKEN,token);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(tokenKey);
-            if(dto == null){
+            String tokenKey = MessageFormat.format(LOGIN_TOKEN, token);
+            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(tokenKey);
+            if (dto == null) {
                 result.setSuccess(false);
                 result.setCode("token.error");
                 return result;
@@ -184,7 +192,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             qipaiDTO.setUserExtendDTO(extendResult.getData());
             result.setSuccess(true);
             result.setData(qipaiDTO);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("qipaiVerfiyToken.error");
             logger.error("", e);

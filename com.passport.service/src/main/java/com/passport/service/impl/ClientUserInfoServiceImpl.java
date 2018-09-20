@@ -5,6 +5,7 @@ import com.common.mongo.AbstractMongoService;
 import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
+import com.common.util.DateUtil;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
@@ -55,6 +56,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Value("${app.passKey}")
     private String passKey;
 
+    @Value("${app.token.encode.key}")
+    private String appTokenEncodeKey;
     @Resource
     private SMSInfoService smsInfoService;
     @Resource
@@ -68,8 +71,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return ClientUserInfo.class;
     }
 
-    public ClientUserInfo login(Long proxyId,String loginName, String passwd,String ip) {
-        if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd)||proxyId==null) {
+    public ClientUserInfo login(Long proxyId, String loginName, String passwd, String ip) {
+        if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd) || proxyId == null) {
             return null;
         }
         ClientUserInfo query = new ClientUserInfo();
@@ -91,13 +94,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         query = findByOne(query);
         if (query != null) {
-            logLoginService.addLoginLog(query.getPin(),proxyId,query.getCreateTime(),ip);
+            logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip);
             return query;
         }
         return null;
     }
 
-    public ClientUserInfo findByPin(Long proxyId,String pin) {
+    public ClientUserInfo findByPin(Long proxyId, String pin) {
         String userKey = MessageFormat.format(CLIENT_USER_CACHE, pin);
         ClientUserInfo user = (ClientUserInfo) redisTemplate.opsForValue().get(userKey);
         if (user == null) {
@@ -115,7 +118,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
     }
 
-    public ClientUserInfo findByPhone(Long proxyId,String phone) {
+    public ClientUserInfo findByPhone(Long proxyId, String phone) {
         ClientUserInfo clientUserInfo = new ClientUserInfo();
         clientUserInfo.setProxyId(proxyId);
         clientUserInfo.setPhone(phone);
@@ -123,15 +126,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Page<ClientUserInfo> queryByNick(Long proxyId, String nickName,Pageable pageable) {
+    public Page<ClientUserInfo> queryByNick(Long proxyId, String nickName, Pageable pageable) {
         ClientUserInfo clientUserInfo = new ClientUserInfo();
         clientUserInfo.setProxyId(proxyId);
         clientUserInfo.setNickName(nickName);
-        return this.queryByPage(clientUserInfo,pageable);
+        return this.queryByPage(clientUserInfo, pageable);
     }
 
     public void changePass(Long proxyId, String pin, String pwd) {
-        ClientUserInfo byPin = findByPin(proxyId,pin);
+        ClientUserInfo byPin = findByPin(proxyId, pin);
         Long id = byPin.getId();
         ClientUserInfo info = new ClientUserInfo();
         info.setPasswd(MD5.MD5Str(pwd, passKey));
@@ -148,14 +151,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public void regist(Long proxyId, String account) {
         if (StringUtils.isBlank(account)) {
-            return ;
+            return;
         }
         if (!StringUtils.isMobileNO(account)) {
-            return ;
+            return;
         }
         ClientUserInfo entity = findByPhone(proxyId, account);
         if (entity != null) {
-            return ;
+            return;
         }
         String code = AliyunMnsUtil.randomSixCode();
         String redisKey = MessageFormat.format(PASS_USER_REG, account, proxyId);
@@ -163,16 +166,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO registVerification(Long proxyId, String account, String vcode, String pass,String ip) {
+    public UserDTO registVerification(Long proxyId, String account, String vcode, String pass, String ip) {
         try {
             String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
-                return regist(proxyId,account,pass,account,account,null,SexEnum.MALE,null,ip,null,null,null,null,null);
+                return regist(proxyId, account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
             }
         } catch (Exception e) {
             logger.error(MessageConstant.REG_FAIL, e);
-            new BizException(MessageConstant.REG_FAIL,e.getMessage());
+            new BizException(MessageConstant.REG_FAIL, e.getMessage());
         }
         return null;
     }
@@ -181,14 +184,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void loginCodeBuild(Long proxyId, String account) {
         try {
             if (!StringUtils.isMobileNO(account)) {
-                return ;
+                return;
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
             sendSMSCode(account, redisKey, code);
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
-            new BizException(MessageConstant.FIND_USER_FAIL,e.getMessage());
+            new BizException(MessageConstant.FIND_USER_FAIL, e.getMessage());
         }
     }
 
@@ -218,27 +221,27 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             Object o1 = redisTemplate.opsForValue().get(login_pin_key);
             String newToken = StringUtils.getUUID();
             UserDTO dto = null;
-            if(o1 != null){
+            if (o1 != null) {
                 String oldTokenKey = o1.toString();
-                dto = (UserDTO)redisTemplate.opsForValue().get(oldTokenKey);
+                dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
                 redisTemplate.delete(oldTokenKey);
-            }else{
+            } else {
                 dto = new UserDTO();
                 BeanCoper.copyProperties(dto, userInfo);
             }
             userInfo.setLastLoginIp(ip);
             userInfo.setLastLoginTime(new Date());
             save(userInfo);
-            String newTokenKey = MessageFormat.format(LOGIN_TOKEN,newToken);
-            redisTemplate.opsForValue().set(login_pin_key,newTokenKey,7,TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(newTokenKey,dto,7,TimeUnit.DAYS);
+            String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
+            redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
             //删除验证码
             redisTemplate.delete(key);
-            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
-           return dto;
+            logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
+            return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
-            new BizException(MessageConstant.FIND_USER_FAIL,e.getMessage());
+            new BizException(MessageConstant.FIND_USER_FAIL, e.getMessage());
         }
         return null;
     }
@@ -276,23 +279,26 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             Object o = redisTemplate.opsForValue().get(login_pin_key);
             String newToken = StringUtils.getUUID();
             UserDTO dto = null;
-            if(o != null){
+            if (o != null) {
                 String oldTokenKey = o.toString();
-                dto = (UserDTO)redisTemplate.opsForValue().get(oldTokenKey);
+                dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
                 redisTemplate.delete(oldTokenKey);
-            }else{
+            } else {
                 dto = new UserDTO();
                 BeanCoper.copyProperties(dto, userInfo);
             }
             dto.setToken(newToken);
-            String newTokenKey = MessageFormat.format(LOGIN_TOKEN,newToken);
-            redisTemplate.opsForValue().set(login_pin_key,newTokenKey,7,TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(newTokenKey,dto,7,TimeUnit.DAYS);
-            logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
+            String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
+            redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
+            logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
+            String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
+            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+            dto.setToken(token);
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
-            new BizException(MessageConstant.FIND_USER_FAIL,e.getMessage());
+            new BizException(MessageConstant.FIND_USER_FAIL, e.getMessage());
         }
         return null;
     }
@@ -301,20 +307,20 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void initPass(Long proxyId, String pin, String passwd) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
             if (StringUtils.isBlank(passwd)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             userInfo.setPasswd(MD5.MD5Str(passwd, passKey));
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
-            new BizException(MessageConstant.SEND_CODE_FAIL,e.getMessage());
+            new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
         }
     }
 
@@ -322,21 +328,21 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeMobileBuildMsg(Long proxyId, String pin, String mobile) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
             sendSMSCode(mobile, redisKey, code);
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
-            new BizException(MessageConstant.SEND_CODE_FAIL,e.getMessage());
+            new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
         }
     }
 
@@ -344,14 +350,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeMobile(Long proxyId, String pin, String mobile) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_BIND, mobile);
@@ -359,7 +365,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
-            new BizException(MessageConstant.SEND_CODE_FAIL,e.getMessage());
+            new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
         }
     }
 
@@ -367,22 +373,22 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void bindMobile(Long proxyId, String pin, String mobile) {
         try {
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return ;
+                return;
             }
             userInfo.setPhone(mobile);
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.BIND_MOBILE_FAIL, e);
-            new BizException(MessageConstant.BIND_MOBILE_FAIL,e.getMessage());
+            new BizException(MessageConstant.BIND_MOBILE_FAIL, e.getMessage());
         }
     }
 
@@ -390,30 +396,30 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void bindMobile(Long proxyId, String pin, String mobile, String msg) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(msg)) {
-                return ;
+                return;
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
 
             String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return ;
+                return;
             }
 
             if (!o.equals(msg)) {
-                return ;
+                return;
             }
             userInfo.setPhone(mobile);
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.BIND_MOBILE_FAIL, e);
-            new BizException(MessageConstant.BIND_MOBILE_FAIL,e.getMessage());
+            new BizException(MessageConstant.BIND_MOBILE_FAIL, e.getMessage());
         }
     }
 
@@ -421,31 +427,31 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeMobile(Long proxyId, String pin, String mobile, String msg) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(msg)) {
-                return ;
+                return;
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
 
             String key = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return ;
+                return;
             }
 
             if (!o.equals(msg)) {
-                return ;
+                return;
             }
 
             userInfo.setPhone(mobile);
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.CHANGE_MOBILE_FAIL, e);
-            new BizException(MessageConstant.CHANGE_MOBILE_FAIL,e.getMessage());
+            new BizException(MessageConstant.CHANGE_MOBILE_FAIL, e.getMessage());
         }
     }
 
@@ -453,23 +459,23 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changePass(Long proxyId, String pin, String oldPass, String newPass) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
 
             oldPass = MD5.MD5Str(oldPass, passKey);
             if (!oldPass.equals(userInfo.getPasswd())) {
-                return ;
+                return;
             }
 
             userInfo.setPasswd(MD5.MD5Str(newPass, passKey));
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.CHANGE_PASS_FAIL, e);
-            new BizException(MessageConstant.CHANGE_PASS_FAIL,e.getMessage());
+            new BizException(MessageConstant.CHANGE_PASS_FAIL, e.getMessage());
         }
 
     }
@@ -478,36 +484,36 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changePassByMobile(Long proxyId, String pin, String mobile, String msg, String password) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
 
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo =findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             if (!mobile.equals(userInfo.getPhone())) {
-                return ;
+                return;
             }
             String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return ;
+                return;
             }
             if (!o.equals(msg)) {
-                return ;
+                return;
             }
             password = MD5.MD5Str(password, passKey);
             if (!password.equals(userInfo.getPasswd())) {
-                return ;
+                return;
             }
             userInfo.setPasswd(password);
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.CHANGE_PASS_FAIL, e);
-            new BizException(MessageConstant.CHANGE_PASS_FAIL,e.getMessage());
+            new BizException(MessageConstant.CHANGE_PASS_FAIL, e.getMessage());
         }
     }
 
@@ -515,24 +521,24 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changePassByMobileBuildMsg(Long proxyId, String pin, String mobile) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             if (!mobile.equals(userInfo.getPhone())) {
-                return ;
+                return;
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
             sendSMSCode(mobile, redisKey, code);
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
-            new BizException(MessageConstant.SEND_CODE_FAIL,e.getMessage());
+            new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
         }
     }
 
@@ -540,11 +546,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void forgetPass(Long proxyId, String pin) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             String code = AliyunMnsUtil.randomSixCode();
             String mobile = userInfo.getPhone();
@@ -552,7 +558,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             sendSMSCode(mobile, redisKey, code);
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
-            new BizException(MessageConstant.SEND_CODE_FAIL,e.getMessage());
+            new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
         }
     }
 
@@ -562,7 +568,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (StringUtils.isBlank(pin)) {
                 return null;
             }
-            ClientUserInfo userInfo =findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
                 return null;
             }
@@ -578,11 +584,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             userInfo.setPasswd(pass);
             save(userInfo);
             UserDTO dto = new UserDTO();
-            BeanCoper.copyProperties(dto,userInfo);
+            BeanCoper.copyProperties(dto, userInfo);
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
-            new BizException(MessageConstant.SEND_CODE_FAIL,e.getMessage());
+            new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
 
         }
         return null;
@@ -592,17 +598,17 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeNickName(Long proxyId, String pin, String nickName) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(nickName)) {
-                return ;
+                return;
             }
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             userInfo.setNickName(nickName);
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.CHANGE_NICK_FAIL, e);
-            new BizException(MessageConstant.CHANGE_NICK_FAIL,e.getMessage());
+            new BizException(MessageConstant.CHANGE_NICK_FAIL, e.getMessage());
         }
     }
 
@@ -610,18 +616,18 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeSex(Long proxyId, String pin, Integer sexType) {
         try {
             if (StringUtils.isBlank(pin) || (sexType != SexEnum.MALE.getValue() && sexType != SexEnum.FEMALE.getValue())) {
-                return ;
+                return;
             }
 
-            ClientUserInfo userInfo = findByPin(proxyId,pin);
+            ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             userInfo.setSexType(sexType);
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.CHANGE_SEX_FAIL, e);
-            new BizException(MessageConstant.CHANGE_SEX_FAIL,e.getMessage());
+            new BizException(MessageConstant.CHANGE_SEX_FAIL, e.getMessage());
         }
     }
 
@@ -629,12 +635,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeBirthday(Long proxyId, String pin, String date) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(date)) {
-                return ;
+                return;
             }
 
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return ;
+                return;
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date d = sdf.parse(date);
@@ -642,7 +648,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             save(userInfo);
         } catch (Exception e) {
             logger.error(MessageConstant.CHANGE_BIRTHDAY_FAIL, e);
-            new BizException(MessageConstant.CHANGE_BIRTHDAY_FAIL,e.getMessage());
+            new BizException(MessageConstant.CHANGE_BIRTHDAY_FAIL, e.getMessage());
         }
     }
 
@@ -654,24 +660,24 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             clientUserExtendInfoService.save(entity);
         } catch (Exception e) {
             logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e);
-            new BizException(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL,e.getMessage());
+            new BizException(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e.getMessage());
         }
     }
 
     @Override
-    public void loginOut(String pin,String token) {
+    public void loginOut(String pin, String token) {
         try {
             String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_key);
-            if(dto == null){
+            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
+            if (dto == null) {
                 return;
             }
-            String login_pin_token = MessageFormat.format(LOGIN_PIN,pin, token);
+            String login_pin_token = MessageFormat.format(LOGIN_PIN, pin, token);
             redisTemplate.delete(login_pin_key);
             redisTemplate.delete(login_pin_token);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e);
-            new BizException(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL,e.getMessage());
+            new BizException(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e.getMessage());
         }
 
     }
@@ -688,83 +694,77 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Page<ClientUserInfo> QueryRegisterUsers(Integer pageNum,Date startTime, Date endTime) {
+    public Page<ClientUserInfo> QueryRegisterUsers(Integer pageNum, Date startTime, Date endTime) {
         try {
             ClientUserInfo info = new ClientUserInfo();
             info.setStartCreateTime(startTime);
             info.setEndCreateTime(endTime);
             return this.queryByPage(info, new PageRequest(pageNum, 30));
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return null;
     }
 
     @Override
-    public UserDTO regist(Long proxyId, String account, String pass, String phone, String nick, String email,
-                          SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
-                          String realName,Long qq) {
-        UserDTO dto = null;
-        try {
-            if(!StringUtils.isMobileNO(phone) || !StringUtils.isMobileNO(account)){
-                return null;
-            }
+    public UserDTO regist(Long proxyId, String refId, String pass, String phone, String nick, String email,
+                          SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
+                          String realName, Long qq) {
 
-            if(email != null){
-                if(!StringUtils.isEmail(email)){
-                    return null;
-                }
-            }
-            Date date = null;
-            if(!StringUtils.isBlank(birth)){
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                date = sdf.parse(birth);
-            }
-
-            ClientUserInfo entity = new ClientUserInfo();
-            entity.setProxyId(proxyId);
-            entity.setPin(StringUtils.getUUID());
-            entity.setPhone(account);
-            entity.setNickName(nick);
-            entity.setSexType(sexEnum.getValue());
-            entity.setStatus(YesOrNoEnum.YES.getValue());
-            entity.setPasswd(MD5.MD5Str(pass, passKey));
-            entity.setBirthDay(date);
-            entity.setEmail(email);
-            entity.setRegisterIp(ip);
-            entity.setHeadUrl(headUrl);
-            entity.setWechat(wechat);
-            entity.setIdCard(idCard);
-            entity.setRealName(realName);
-            entity.setQq(qq);
-            save(entity);
-
-            ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
-            clientUserExtendInfo.setUserCode(entity.getId().intValue());
-            clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
-            clientUserExtendInfoService.save(clientUserExtendInfo);
-
-            dto = new UserDTO();
-            BeanCoper.copyProperties(dto, entity);
-        } catch (ParseException e) {
-            logger.error("",e);
+        if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
+            throw new BizException("phone.error", "电话号码错误");
         }
+        if (!StringUtils.isBlank(refId)) {
+            throw new BizException("refId.error", "参考账户不能为空");
+        }
+        if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
+            throw new BizException("email.error", "邮件地址错误");
+        }
+        Date date = null;
+        if (!StringUtils.isBlank(birth)) {
+            date = DateUtil.parseDate(birth);
+        }
+
+        ClientUserInfo entity = new ClientUserInfo();
+        entity.setProxyId(proxyId);
+        entity.setRefId(refId);
+        entity.setPin(StringUtils.getUUID());
+        entity.setPhone(phone);
+        entity.setNickName(nick);
+        entity.setSexType(sexEnum.getValue());
+        entity.setStatus(YesOrNoEnum.YES.getValue());
+        entity.setPasswd(MD5.MD5Str(pass, passKey));
+        entity.setBirthDay(date);
+        entity.setEmail(email);
+        entity.setRegisterIp(ip);
+        entity.setHeadUrl(headUrl);
+        entity.setWechat(wechat);
+        entity.setIdCard(idCard);
+        entity.setRealName(realName);
+        entity.setQq(qq);
+        save(entity);
+        ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
+        clientUserExtendInfo.setUserCode(entity.getId().intValue());
+        clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
+        clientUserExtendInfoService.save(clientUserExtendInfo);
+        UserDTO dto = new UserDTO();
+        BeanCoper.copyProperties(dto, entity);
         return dto;
     }
 
     @Override
     public void proxyChangeUserInfo(Long proxyId, String userAccount, ChangeType type, String value) {
-        try{
+        try {
             if (proxyId == null || StringUtils.isBlank(userAccount) || StringUtils.isBlank(value)) {
                 return;
             }
 
             ClientUserInfo user = findByPhone(proxyId, userAccount);
-            if(user == null){
+            if (user == null) {
                 return;
             }
 
-            switch (type){
+            switch (type) {
                 case PASS:
                     user.setPasswd(MD5.MD5Str(value, passKey));
                     break;
@@ -773,39 +773,39 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                     user.setBirthDay(sdf.parse(value));
                     break;
                 case EMAIL:
-                    if(!StringUtils.isEmail(value)){
+                    if (!StringUtils.isEmail(value)) {
                         return;
                     }
                     user.setEmail(value);
                     break;
                 case PHONE:
-                    if(!StringUtils.isMobileNO(value)){
+                    if (!StringUtils.isMobileNO(value)) {
                         return;
                     }
                     user.setPhone(value);
                     break;
             }
             save(user);
-        }catch (Exception e){
-            logger.error("",e);
+        } catch (Exception e) {
+            logger.error("", e);
         }
     }
 
     @Override
-    public Page<ClientUserInfo> proxyGetUsers(Long proxyId,Integer pageNum) {
-        try{
-            if(proxyId == null){
+    public Page<ClientUserInfo> proxyGetUsers(Long proxyId, Integer pageNum) {
+        try {
+            if (proxyId == null) {
                 return null;
             }
-            if(pageNum == null || pageNum < 0){
+            if (pageNum == null || pageNum < 0) {
                 pageNum = 0;
             }
 
             ClientUserInfo info = new ClientUserInfo();
             info.setProxyId(proxyId);
             return queryByPage(info, new PageRequest(pageNum, 30));
-        }catch (Exception e){
-            logger.error("",e);
+        } catch (Exception e) {
+            logger.error("", e);
         }
         return null;
     }
@@ -818,7 +818,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             info.setEndCreateTime(endRegTime);
             return queryByPage(info, pageable);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return null;
     }
@@ -831,19 +831,19 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             info.setEndCreateTime(endRegTime);
             return queryCount(info);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return null;
     }
 
     @Override
-    public Page<ClientUserInfo> queryByLastLoginIP(Long proxyId, String ip,Pageable pageable) {
+    public Page<ClientUserInfo> queryByLastLoginIP(Long proxyId, String ip, Pageable pageable) {
         try {
             ClientUserInfo info = new ClientUserInfo();
             info.setLastLoginIp(ip);
-            return queryByPage(info,pageable);
+            return queryByPage(info, pageable);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return null;
     }
@@ -853,22 +853,22 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         try {
             ClientUserInfo info = new ClientUserInfo();
             info.setRegisterIp(ip);
-            return queryByPage(info,pageable);
+            return queryByPage(info, pageable);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return null;
     }
 
     @Override
-    public Page<ClientUserInfo> queryByLastLoginTime(Long proxyId, Date startTime, Date endTime,Pageable pageable) {
+    public Page<ClientUserInfo> queryByLastLoginTime(Long proxyId, Date startTime, Date endTime, Pageable pageable) {
         try {
             ClientUserInfo info = new ClientUserInfo();
             info.setStartLastTime(startTime);
             info.setEndLastTime(endTime);
-            return queryByPage(info,pageable);
+            return queryByPage(info, pageable);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.error("", e);
         }
         return null;
     }

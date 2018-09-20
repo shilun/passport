@@ -20,7 +20,6 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String token;
     private Long proxyId;
     private Date birthDay;
-    private Long id;
     private String realName;
     private String registerIp;
 
@@ -125,13 +124,6 @@ public class UserDTO extends AbstractDTO implements Serializable {
         this.birthDay = birthDay;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getRegisterIp() {
         return registerIp;

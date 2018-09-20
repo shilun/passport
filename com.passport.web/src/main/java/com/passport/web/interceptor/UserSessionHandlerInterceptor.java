@@ -56,16 +56,14 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        token= DesDecrypter.decryptString(token, cookieEncodeKey);
-        String[] contents=token.split(":");
-        //String pin=contents[0];
-        token=contents[1];
         RPCResult<UserDTO> result = userRPCService.verfiyToken(token);
         if (result.getSuccess()) {
             return result.getData();
         }
         return result.getData();
     }
+
+
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {

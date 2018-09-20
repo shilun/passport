@@ -20,6 +20,10 @@ public class ClientUserInfo extends AbstractBaseEntity {
     private String pin;
 
     /**
+     * 第三方账户
+     */
+    private String refId;
+    /**
      * 代理商id
      */
     private Long proxyId;
@@ -48,6 +52,14 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     @JsonSerialize(using = DateJsonSerializer.class)
     private Date birthDay;
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
 
     /**
      * 注册ip
