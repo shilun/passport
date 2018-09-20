@@ -43,7 +43,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private final String PASS_USER_REG = "passport.userrpc.reg.account.{0}.proxyid.{1}";
     private final String LOGIN_MOBILE_CODE = "passport.userrpc.login.account.{0}.proxyid.{1}";
     private final String LOGIN_PIN = "passport.login.{0}";
-    private final String LOGIN_PIN_TOKEN = "passport.login.{0}.token.{1}";
+    private final String LOGIN_TOKEN = "passport.login.token.{1}";
     private final String MOBILE_USER_CHANGE = "passport.userrpc.change.mobile.{0}";
     private final String MOBILE_USER_BIND = "passport.userrpc.bind.mobile.{0}";
     private final String PASS_USER_CHANGE_BY_MOBILE = "passport.userrpc.changepass.mobile.{0}";
@@ -250,15 +250,17 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String newToken = StringUtils.getUUID();
             UserDTO dto = null;
             if(o != null){
-                String oldToken = o.toString();
-                dto = (UserDTO)redisTemplate.opsForValue().get(oldToken);
+                String oldTokenKey = o.toString();
+                dto = (UserDTO)redisTemplate.opsForValue().get(oldTokenKey);
+                redisTemplate.delete(oldTokenKey);
             }else{
                 dto = new UserDTO();
                 BeanCoper.copyProperties(dto, userInfo);
             }
             dto.setToken(newToken);
-            redisTemplate.opsForValue().set(userInfo.getPin(),newToken,7,TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(newToken,dto,7,TimeUnit.DAYS);
+            String newTokenKey = MessageFormat.format(LOGIN_TOKEN,newToken);
+            redisTemplate.opsForValue().set(userInfo.getPin(),newTokenKey,7,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(newTokenKey,dto,7,TimeUnit.DAYS);
             logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
             return dto;
         } catch (Exception e) {

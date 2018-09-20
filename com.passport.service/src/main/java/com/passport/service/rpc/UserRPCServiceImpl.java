@@ -36,8 +36,8 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
 
+    private final String LOGIN_TOKEN = "passport.login.token.{1}";
     private final String LOGIN_PIN = "passport.login.{0}";
-    private final String LOGIN_PIN_TOKEN = "passport.login.{0}.token.{1}";
 
     @Override
     public RPCResult<UserExtendDTO> findByUserCode(Long proxyId, Integer userCode) {
@@ -104,7 +104,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_BY_TOKEN);
                 return rpcResult;
             }
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(token);
+            String tokenKey = MessageFormat.format(LOGIN_TOKEN,token);
+            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(tokenKey);
             if(dto == null){
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.dto.null");
@@ -170,7 +171,8 @@ public class UserRPCServiceImpl implements UserRPCService {
                 return result;
             }
 
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(token);
+            String tokenKey = MessageFormat.format(LOGIN_TOKEN,token);
+            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(tokenKey);
             if(dto == null){
                 result.setSuccess(false);
                 result.setCode("token.error");
