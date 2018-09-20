@@ -5,23 +5,26 @@ import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
+import com.passport.domain.ClientUserInfo;
+import com.passport.domain.LogLoginInfo;
 import com.passport.domain.ProxyInfo;
 import com.passport.rpc.dto.DateType;
+import com.passport.rpc.dto.LogLoginDto;
+import com.passport.rpc.dto.UserDTO;
+import com.passport.service.ClientUserInfoService;
 import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.rpc.dto.ProxyDto;
-import com.passport.service.LogRegisterService;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.util.DateUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import javax.annotation.Resource;
-import javax.swing.text.Document;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +40,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     @Resource
     private LogLoginService logLoginService;
     @Resource
-    private LogRegisterService logRegisterService;
+    private ClientUserInfoService clientUserInfoService;
 
     @Override
     public RPCResult<List<ProxyDto>> queryAll() {
@@ -222,7 +225,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 return result;
             }
 
-            Long count = logRegisterService.QueryNewUsers(proxyId,startTime, endTime);
+            Long count = clientUserInfoService.queryCountByRegTime(proxyId,startTime,endTime);
             result.setSuccess(true);
             result.setData(count);
         } catch (Exception e) {
@@ -241,7 +244,10 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             Date[] arr = DateUtil.getStartAndEndDate(type);
             result = QueryActiveUsers(proxyId,arr[0],arr[1]);
         }catch (Exception e){
-            logger.error("",e);
+            logger.error("查询活跃人数异常", e);
+            result.setSuccess(false);
+            result.setCode("query.active.users.error");
+            result.setMessage("查询活跃人数异常");
         }
         return result;
     }
@@ -253,7 +259,10 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             Date[] arr = DateUtil.getStartAndEndDate(type);
             result = QueryNewUsers(proxyId,arr[0],arr[1]);
         }catch (Exception e){
-            logger.error("",e);
+            logger.error("查询新增人数异常", e);
+            result.setSuccess(false);
+            result.setCode("query.new.users.error");
+            result.setMessage("查询新增人数异常");
         }
         return result;
     }
@@ -298,7 +307,10 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setSuccess(true);
             result.setData(res);
         }catch (Exception e){
-            logger.error("",e);
+            logger.error("查询留存异常", e);
+            result.setSuccess(false);
+            result.setCode("query.retention.users.error");
+            result.setMessage("查询留存异常");
         }
         return result;
     }
@@ -310,7 +322,72 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             Date[] arr = DateUtil.getStartAndEndDate(type);
             result = QueryRetention(proxyId,arr[0],arr[1]);
         }catch (Exception e){
-            logger.error("",e);
+            logger.error("查询留存异常", e);
+            result.setSuccess(false);
+            result.setCode("query.retention.users.error");
+            result.setMessage("查询留存异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Page<UserDTO>> QueryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto) {
+        RPCResult<Page<UserDTO>> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null){
+                result.setSuccess(false);
+                return result;
+            }
+            if(startTime.getTime() > endTime.getTime()){
+                result.setSuccess(false);
+                return result;
+            }
+            Page<ClientUserInfo> infos = clientUserInfoService.queryByRegTime(proxyId, startTime, endTime, dto.getPageinfo().getPage());
+            List<UserDTO> listResult = new ArrayList<>();
+            for(ClientUserInfo clientUserInfo:infos){
+                UserDTO userDTO = new UserDTO();
+                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                listResult.add(userDTO);
+            }
+            Page<UserDTO> users = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            result.setSuccess(true);
+            result.setData(users);
+        }catch (Exception e){
+            logger.error("查询用户列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.list.error");
+            result.setMessage("查询用户列表异常");
+        }
+        return null;
+    }
+
+    @Override
+    public RPCResult<Page<LogLoginDto>> QueryUsersByLoginIp(Long proxyId, String ip, UserDTO dto) {
+        RPCResult<Page<LogLoginDto>> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || StringUtils.isBlank(ip)){
+                result.setSuccess(false);
+                return result;
+            }
+
+            Page<LogLoginInfo> logLoginInfos = logLoginService.queryByIp(proxyId, ip, dto.getPageinfo().getPage());
+            List<LogLoginDto> listResult = new ArrayList<>();
+            for(LogLoginInfo logLoginInfo:logLoginInfos){
+                LogLoginDto logLoginDto = new LogLoginDto();
+                BeanCoper.copyProperties(logLoginDto,logLoginInfo);
+                listResult.add(logLoginDto);
+            }
+
+            Page<LogLoginDto> infos = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            result.setSuccess(true);
+            result.setData(infos);
+        }catch (Exception e){
+            logger.error("查询用户列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.list.error");
+            result.setMessage("查询用户列表异常");
         }
         return result;
     }

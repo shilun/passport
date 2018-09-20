@@ -45,6 +45,11 @@ public class ClientUserInfo extends AbstractBaseEntity {
     @JsonSerialize(using = DateJsonSerializer.class)
     private Date birthDay;
 
+    /**
+     * 注册ip
+     */
+    private String registerIp;
+
     public Long getProxyId() {
         return proxyId;
     }
@@ -116,5 +121,13 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
+    }
+
+    public String getRegisterIp() {
+        return registerIp;
+    }
+
+    public void setRegisterIp(String registerIp) {
+        this.registerIp = registerIp;
     }
 }

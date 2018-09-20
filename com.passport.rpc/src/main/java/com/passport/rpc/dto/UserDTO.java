@@ -22,6 +22,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private Date birthDay;
     private Long id;
     private String realName;
+    private String ip;
 
 
     public String getToken() {
@@ -120,4 +121,11 @@ public class UserDTO extends AbstractDTO implements Serializable {
         this.id = id;
     }
 
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 }

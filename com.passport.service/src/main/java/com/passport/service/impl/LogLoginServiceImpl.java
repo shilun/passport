@@ -4,9 +4,12 @@ import com.common.mongo.AbstractMongoService;
 import com.common.util.StringUtils;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
 import com.passport.service.LogLoginService;
 import org.apache.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,7 +29,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
     }
 
     @Override
-    public Boolean addLoginLog(String pin, Long proxyId,Date registerDate) {
+    public Boolean addLoginLog(String pin, Long proxyId,Date registerDate,String ip) {
         Boolean flag = false;
         try{
             if(StringUtils.isBlank(pin) || proxyId == null){
@@ -37,6 +40,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
             info.setProxyId(proxyId);
             info.setLoginDay(new Date());
             info.setRegisterDate(registerDate);
+            info.setIp(ip);
             save(info);
             flag = true;
         }catch (Exception e){
@@ -75,4 +79,11 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
         return queryCount(info);
     }
 
+    @Override
+    public Page<LogLoginInfo> queryByIp(Long proxyId, String ip, Pageable pageable) {
+        LogLoginInfo info = new LogLoginInfo();
+        info.setProxyId(proxyId);
+        info.setIp(ip);
+        return queryByPage(info,pageable);
+    }
 }
