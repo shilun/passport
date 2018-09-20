@@ -3,17 +3,16 @@ package com.passport.rpc.dto;
 import com.common.util.IGlossary;
 
 /**
+ * 根据条件只能查到唯一结果
  * @author Luo
- * @date 2018/9/19 15:52
+ * @date 2018/9/20 16:39
  */
-public enum DateType implements IGlossary {
-    ALL("全部", 1),
-    DAY("今日", 2),
-    WEEK("本周", 3),
-    MONTH("本月", 4),
-    YEAY("本年", 5);
+public enum ConditionType implements IGlossary {
 
-    DateType(String name, Integer value) {
+    ID("id", 1),
+    ACCOUNT("账号", 2);
+
+    ConditionType(String name, Integer value) {
         this.name = name;
         this.value = value;
     }

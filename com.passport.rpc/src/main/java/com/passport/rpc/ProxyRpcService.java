@@ -1,10 +1,7 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
-import com.passport.rpc.dto.DateType;
-import com.passport.rpc.dto.LogLoginDto;
-import com.passport.rpc.dto.ProxyDto;
-import com.passport.rpc.dto.UserDTO;
+import com.passport.rpc.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.Date;
@@ -71,7 +68,7 @@ public interface ProxyRpcService {
      * @param endTime
      * @return
      */
-    RPCResult<Long> QueryActiveUsers(Long proxyId,Date startTime, Date endTime);
+    RPCResult<Long> queryActiveUsers(Long proxyId,Date startTime, Date endTime);
 
     /**
      * 查询新增用户
@@ -79,7 +76,7 @@ public interface ProxyRpcService {
      * @param endTime
      * @return
      */
-    RPCResult<Long> QueryNewUsers(Long proxyId,Date startTime, Date endTime);
+    RPCResult<Long> queryNewUsers(Long proxyId,Date startTime, Date endTime);
 
     /**
      * 查询活跃人数
@@ -87,7 +84,7 @@ public interface ProxyRpcService {
      * @param type
      * @return
      */
-    RPCResult<Long> QueryActiveUsers(Long proxyId,DateType type);
+    RPCResult<Long> queryActiveUsers(Long proxyId,DateType type);
 
     /**
      * 查询新增人数
@@ -95,7 +92,7 @@ public interface ProxyRpcService {
      * @param type
      * @return
      */
-    RPCResult<Long> QueryNewUsers(Long proxyId,DateType type);
+    RPCResult<Long> queryNewUsers(Long proxyId,DateType type);
 
     /**
      * 查询留存率
@@ -103,7 +100,7 @@ public interface ProxyRpcService {
      * @param endTime
      * @return
      */
-    RPCResult<Double> QueryRetention(Long proxyId,Date startTime, Date endTime);
+    RPCResult<Double> queryRetention(Long proxyId,Date startTime, Date endTime);
 
     /**
      * 查询留存率
@@ -111,23 +108,65 @@ public interface ProxyRpcService {
      * @param type
      * @return
      */
-    RPCResult<Double> QueryRetention(Long proxyId,DateType type);
+    RPCResult<Double> queryRetention(Long proxyId,DateType type);
 
     /**
-     * 根据时间段筛选用户
+     * 根据注册时间段筛选用户
      * @param proxyId
      * @param startTime
      * @param endTime
      * @return
      */
-    RPCResult<Page<UserDTO>> QueryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto);
+    RPCResult<Page<UserDTO>> queryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto);
 
     /**
-     * 根据IP段筛选用户
+     * 根据登陆IP筛选用户
      * @param proxyId
      * @param ip
      * @param dto
      * @return
      */
-    RPCResult<Page<LogLoginDto>> QueryUsersByLoginIp(Long proxyId, String ip, UserDTO dto);
+    RPCResult<Page<UserDTO>> queryUsersByLoginIp(Long proxyId, String ip, UserDTO dto);
+    /**
+     * 根据注册IP筛选用户
+     * @param proxyId
+     * @param ip
+     * @param dto
+     * @return
+     */
+    RPCResult<Page<UserDTO>> queryUsersByRegIp(Long proxyId, String ip, UserDTO dto);
+
+
+    /**
+     * 根据最后登陆时间筛选用户
+     * @param proxyId
+     * @param startTime
+     * @param endTime
+     * @param dto
+     * @return
+     */
+    RPCResult<Page<UserDTO>> queryUsersByLastLoginTime(Long proxyId, Date startTime,Date endTime,UserDTO dto);
+    /**
+     * 根据条件查询用户详细信息
+     * @param proxyId
+     * @param type
+     * @param data
+     * @return
+     */
+    RPCResult<UserDTO> queryUsersByCondition(Long proxyId, ConditionType type, String data);
+    /**
+     * 根据昵称查询用户列表
+     * @param proxyId
+     * @param nick
+     * @return
+     */
+    RPCResult<Page<UserDTO>> queryUsersByNick(Long proxyId, String nick,UserDTO userDTO);
+
+    /**
+     * 查询用户的上级信息
+     * @param proxyId
+     * @param phone
+     * @return
+     */
+    RPCResult<ProxyDto> queryUsersSuperior(Long proxyId, String phone);
 }

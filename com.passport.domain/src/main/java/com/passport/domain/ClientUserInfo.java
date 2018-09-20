@@ -1,8 +1,12 @@
 package com.passport.domain;
 
+import com.common.annotation.QueryField;
+import com.common.mongo.QueryType;
 import com.common.util.AbstractBaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.passport.domain.serializer.DateJsonSerializer;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
 
@@ -63,6 +67,16 @@ public class ClientUserInfo extends AbstractBaseEntity {
     private String realName;
     //qq
     private Long qq;
+    //最后登陆时间
+    private Date lastLoginTime;
+    @Transient
+    @QueryField(name = "lastLoginTime", type = QueryType.GTE)
+    @JsonIgnore
+    private Date startLastTime;
+    @QueryField(name = "lastLoginTime", type = QueryType.LTE)
+    @Transient
+    @JsonIgnore
+    private Date endLastTime;
 
     public Long getProxyId() {
         return proxyId;
@@ -191,5 +205,21 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     public void setQq(Long qq) {
         this.qq = qq;
+    }
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    public void setStartLastTime(Date startLastTime) {
+        this.startLastTime = startLastTime;
+    }
+
+    public void setEndLastTime(Date endLastTime) {
+        this.endLastTime = endLastTime;
     }
 }

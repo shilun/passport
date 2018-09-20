@@ -122,7 +122,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return this.findByOne(clientUserInfo);
     }
 
-    public void changePass(Long proxyId,String pin, String pwd) {
+    @Override
+    public Page<ClientUserInfo> queryByNick(Long proxyId, String nickName,Pageable pageable) {
+        ClientUserInfo clientUserInfo = new ClientUserInfo();
+        clientUserInfo.setProxyId(proxyId);
+        clientUserInfo.setNickName(nickName);
+        return this.queryByPage(clientUserInfo,pageable);
+    }
+
+    public void changePass(Long proxyId, String pin, String pwd) {
         ClientUserInfo byPin = findByPin(proxyId,pin);
         Long id = byPin.getId();
         ClientUserInfo info = new ClientUserInfo();
@@ -205,10 +213,27 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (userInfo == null) {
                 return null;
             }
+
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+            Object o1 = redisTemplate.opsForValue().get(login_pin_key);
+            String newToken = StringUtils.getUUID();
+            UserDTO dto = null;
+            if(o1 != null){
+                String oldTokenKey = o1.toString();
+                dto = (UserDTO)redisTemplate.opsForValue().get(oldTokenKey);
+                redisTemplate.delete(oldTokenKey);
+            }else{
+                dto = new UserDTO();
+                BeanCoper.copyProperties(dto, userInfo);
+            }
             userInfo.setLastLoginIp(ip);
+            userInfo.setLastLoginTime(new Date());
+            save(userInfo);
+            String newTokenKey = MessageFormat.format(LOGIN_TOKEN,newToken);
+            redisTemplate.opsForValue().set(login_pin_key,newTokenKey,7,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(newTokenKey,dto,7,TimeUnit.DAYS);
+            //删除验证码
             redisTemplate.delete(key);
-            UserDTO dto = new UserDTO();
-            BeanCoper.copyProperties(dto, userInfo);
             logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
            return dto;
         } catch (Exception e) {
@@ -245,6 +270,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 clientUserExtendInfoService.save(clientUserExtendInfo);
             }
             userInfo.setLastLoginIp(ip);
+            userInfo.setLastLoginTime(new Date());
+            save(userInfo);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
             Object o = redisTemplate.opsForValue().get(login_pin_key);
             String newToken = StringUtils.getUUID();
@@ -259,7 +286,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             dto.setToken(newToken);
             String newTokenKey = MessageFormat.format(LOGIN_TOKEN,newToken);
-            redisTemplate.opsForValue().set(userInfo.getPin(),newTokenKey,7,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(login_pin_key,newTokenKey,7,TimeUnit.DAYS);
             redisTemplate.opsForValue().set(newTokenKey,dto,7,TimeUnit.DAYS);
             logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
             return dto;
@@ -803,6 +830,43 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             info.setStartCreateTime(startRegTime);
             info.setEndCreateTime(endRegTime);
             return queryCount(info);
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+        return null;
+    }
+
+    @Override
+    public Page<ClientUserInfo> queryByLastLoginIP(Long proxyId, String ip,Pageable pageable) {
+        try {
+            ClientUserInfo info = new ClientUserInfo();
+            info.setLastLoginIp(ip);
+            return queryByPage(info,pageable);
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+        return null;
+    }
+
+    @Override
+    public Page<ClientUserInfo> queryByRegIP(Long proxyId, String ip, Pageable pageable) {
+        try {
+            ClientUserInfo info = new ClientUserInfo();
+            info.setRegisterIp(ip);
+            return queryByPage(info,pageable);
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+        return null;
+    }
+
+    @Override
+    public Page<ClientUserInfo> queryByLastLoginTime(Long proxyId, Date startTime, Date endTime,Pageable pageable) {
+        try {
+            ClientUserInfo info = new ClientUserInfo();
+            info.setStartLastTime(startTime);
+            info.setEndLastTime(endTime);
+            return queryByPage(info,pageable);
         } catch (Exception e) {
             logger.error("",e);
         }

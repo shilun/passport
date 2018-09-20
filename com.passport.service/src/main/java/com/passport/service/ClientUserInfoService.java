@@ -37,6 +37,12 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     ClientUserInfo findByPhone(Long proxyId,String phone);
+    /**
+     *  *@param proxyId 代理iD
+     * @param nickName
+     * @return
+     */
+    Page<ClientUserInfo> queryByNick(Long proxyId,String nickName,Pageable pageable);
 
     /**
      * 修改用户密码
@@ -280,5 +286,28 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     Long queryCountByRegTime(Long proxyId,Date startRegTime,Date endRegTime);
+
+    /**
+     * 根据最后登陆ip查询用户列表
+     * @param proxyId
+     * @param ip
+     * @return
+     */
+    Page<ClientUserInfo> queryByLastLoginIP(Long proxyId,String ip,Pageable pageable);
+    /**
+     * 根据注册ip查询用户列表
+     * @param proxyId
+     * @param ip
+     * @return
+     */
+    Page<ClientUserInfo> queryByRegIP(Long proxyId,String ip,Pageable pageable);
+    /**
+     * 根据最后登陆时间查询用户列表
+     * @param proxyId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    Page<ClientUserInfo> queryByLastLoginTime(Long proxyId,Date startTime,Date endTime,Pageable pageable);
 
 }

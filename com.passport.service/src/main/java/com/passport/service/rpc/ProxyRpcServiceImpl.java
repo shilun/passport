@@ -6,15 +6,11 @@ import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
-import com.passport.domain.LogLoginInfo;
 import com.passport.domain.ProxyInfo;
-import com.passport.rpc.dto.DateType;
-import com.passport.rpc.dto.LogLoginDto;
-import com.passport.rpc.dto.UserDTO;
+import com.passport.rpc.dto.*;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
-import com.passport.rpc.dto.ProxyDto;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.util.DateUtil;
 import org.apache.log4j.Logger;
@@ -182,7 +178,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryActiveUsers(Long proxyId,Date startTime, Date endTime) {
+    public RPCResult<Long> queryActiveUsers(Long proxyId,Date startTime, Date endTime) {
         RPCResult<Long> result = new RPCResult<>();
         try {
             if (startTime.getTime() > endTime.getTime()) {
@@ -210,7 +206,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryNewUsers(Long proxyId,Date startTime, Date endTime) {
+    public RPCResult<Long> queryNewUsers(Long proxyId,Date startTime, Date endTime) {
         RPCResult<Long> result = new RPCResult<>();
         try {
             if (startTime.getTime() > endTime.getTime()) {
@@ -238,11 +234,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryActiveUsers(Long proxyId,DateType type) {
+    public RPCResult<Long> queryActiveUsers(Long proxyId,DateType type) {
         RPCResult<Long> result = null;
         try{
             Date[] arr = DateUtil.getStartAndEndDate(type);
-            result = QueryActiveUsers(proxyId,arr[0],arr[1]);
+            result = queryActiveUsers(proxyId,arr[0],arr[1]);
         }catch (Exception e){
             logger.error("查询活跃人数异常", e);
             result.setSuccess(false);
@@ -253,11 +249,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Long> QueryNewUsers(Long proxyId,DateType type) {
+    public RPCResult<Long> queryNewUsers(Long proxyId,DateType type) {
         RPCResult<Long> result = null;
         try{
             Date[] arr = DateUtil.getStartAndEndDate(type);
-            result = QueryNewUsers(proxyId,arr[0],arr[1]);
+            result = queryNewUsers(proxyId,arr[0],arr[1]);
         }catch (Exception e){
             logger.error("查询新增人数异常", e);
             result.setSuccess(false);
@@ -268,7 +264,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Double> QueryRetention(Long proxyId, Date startTime, Date endTime) {
+    public RPCResult<Double> queryRetention(Long proxyId, Date startTime, Date endTime) {
         RPCResult<Double> result = null;
         try{
             if (startTime.getTime() > endTime.getTime()) {
@@ -291,7 +287,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             }
             Date endPreOne = DateUtil.setZero(endTime);
             //查询从startTime到endPreOne之间注册的人数
-            RPCResult<Long> result_1 = QueryNewUsers(proxyId, startTime, endPreOne);
+            RPCResult<Long> result_1 = queryNewUsers(proxyId, startTime, endPreOne);
             if(!result_1.getSuccess()){
                 result.setSuccess(false);
                 result.setMessage("查询注册人数失败");
@@ -316,11 +312,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Double> QueryRetention(Long proxyId, DateType type) {
+    public RPCResult<Double> queryRetention(Long proxyId, DateType type) {
         RPCResult<Double> result = null;
         try{
             Date[] arr = DateUtil.getStartAndEndDate(type);
-            result = QueryRetention(proxyId,arr[0],arr[1]);
+            result = queryRetention(proxyId,arr[0],arr[1]);
         }catch (Exception e){
             logger.error("查询留存异常", e);
             result.setSuccess(false);
@@ -331,7 +327,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Page<UserDTO>> QueryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto) {
+    public RPCResult<Page<UserDTO>> queryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto) {
         RPCResult<Page<UserDTO>> result = null;
         try{
             result = new RPCResult<>();
@@ -359,12 +355,12 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setCode("query.users.list.error");
             result.setMessage("查询用户列表异常");
         }
-        return null;
+        return result;
     }
 
     @Override
-    public RPCResult<Page<LogLoginDto>> QueryUsersByLoginIp(Long proxyId, String ip, UserDTO dto) {
-        RPCResult<Page<LogLoginDto>> result = null;
+    public RPCResult<Page<UserDTO>> queryUsersByLoginIp(Long proxyId, String ip, UserDTO dto) {
+        RPCResult<Page<UserDTO>> result = null;
         try{
             result = new RPCResult<>();
             if(proxyId == null || StringUtils.isBlank(ip)){
@@ -372,15 +368,15 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 return result;
             }
 
-            Page<LogLoginInfo> logLoginInfos = logLoginService.queryByIp(proxyId, ip, dto.getPageinfo().getPage());
-            List<LogLoginDto> listResult = new ArrayList<>();
-            for(LogLoginInfo logLoginInfo:logLoginInfos){
-                LogLoginDto logLoginDto = new LogLoginDto();
-                BeanCoper.copyProperties(logLoginDto,logLoginInfo);
-                listResult.add(logLoginDto);
+            Page<ClientUserInfo> logLoginInfos = clientUserInfoService.queryByLastLoginIP(proxyId, ip, dto.getPageinfo().getPage());
+            List<UserDTO> listResult = new ArrayList<>();
+            for(ClientUserInfo clientUserInfo:logLoginInfos){
+                UserDTO userDTO = new UserDTO();
+                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                listResult.add(userDTO);
             }
 
-            Page<LogLoginDto> infos = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            Page<UserDTO> infos = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
             result.setSuccess(true);
             result.setData(infos);
         }catch (Exception e){
@@ -388,6 +384,166 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setSuccess(false);
             result.setCode("query.users.list.error");
             result.setMessage("查询用户列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Page<UserDTO>> queryUsersByRegIp(Long proxyId, String ip, UserDTO dto) {
+        RPCResult<Page<UserDTO>> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || StringUtils.isBlank(ip)){
+                result.setSuccess(false);
+                return result;
+            }
+
+            Page<ClientUserInfo> logLoginInfos = clientUserInfoService.queryByRegIP(proxyId, ip, dto.getPageinfo().getPage());
+            List<UserDTO> listResult = new ArrayList<>();
+            for(ClientUserInfo clientUserInfo:logLoginInfos){
+                UserDTO userDTO = new UserDTO();
+                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                listResult.add(userDTO);
+            }
+
+            Page<UserDTO> infos = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            result.setSuccess(true);
+            result.setData(infos);
+        }catch (Exception e){
+            logger.error("查询用户列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.list.error");
+            result.setMessage("查询用户列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Page<UserDTO>> queryUsersByLastLoginTime(Long proxyId, Date startTime, Date endTime,UserDTO dto) {
+        RPCResult<Page<UserDTO>> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || startTime.getTime() > endTime.getTime()){
+                result.setSuccess(false);
+                return result;
+            }
+
+            Page<ClientUserInfo> logLoginInfos = clientUserInfoService.queryByLastLoginTime(proxyId, startTime, endTime,dto.getPageinfo().getPage());
+            List<UserDTO> listResult = new ArrayList<>();
+            for(ClientUserInfo clientUserInfo:logLoginInfos){
+                UserDTO userDTO = new UserDTO();
+                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                listResult.add(userDTO);
+            }
+
+            Page<UserDTO> infos = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            result.setSuccess(true);
+            result.setData(infos);
+        }catch (Exception e){
+            logger.error("查询用户列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.list.error");
+            result.setMessage("查询用户列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<UserDTO> queryUsersByCondition(Long proxyId, ConditionType type, String data) {
+        RPCResult<UserDTO> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || StringUtils.isBlank(data)){
+                result.setSuccess(false);
+                return result;
+            }
+
+            ClientUserInfo clientUserInfo = null;
+            switch (type){
+                case ID:
+                    clientUserInfo = clientUserInfoService.findById(Long.parseLong(data));
+                    break;
+                case ACCOUNT:
+                    clientUserInfo = clientUserInfoService.findByPhone(proxyId,data);
+                    break;
+                    default:
+            }
+
+            if(clientUserInfo == null){
+                result.setSuccess(false);
+                return result;
+            }
+
+            UserDTO userDTO = new UserDTO();
+            BeanCoper.copyProperties(userDTO,clientUserInfo);
+            result.setSuccess(true);
+            result.setData(userDTO);
+        }catch (Exception e){
+            logger.error("查询用户信息异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.info.error");
+            result.setMessage("查询用户信息异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Page<UserDTO>> queryUsersByNick(Long proxyId, String nick,UserDTO dto) {
+        RPCResult<Page<UserDTO>> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || StringUtils.isBlank(nick)){
+                result.setSuccess(false);
+                return result;
+            }
+            Page<ClientUserInfo> infos = clientUserInfoService.queryByNick(proxyId, nick, dto.getPageinfo().getPage());
+            List<UserDTO> listResult = new ArrayList<>();
+            for(ClientUserInfo clientUserInfo:infos){
+                UserDTO userDTO = new UserDTO();
+                BeanCoper.copyProperties(userDTO,clientUserInfo);
+                listResult.add(userDTO);
+            }
+            Page<UserDTO> users = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            result.setSuccess(true);
+            result.setData(users);
+        }catch (Exception e){
+            logger.error("查询用户列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.list.error");
+            result.setMessage("查询用户列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<ProxyDto> queryUsersSuperior(Long proxyId, String phone) {
+        RPCResult<ProxyDto> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || !StringUtils.isMobileNO(phone)){
+                result.setSuccess(false);
+                return result;
+            }
+
+            ClientUserInfo clientUserInfo = clientUserInfoService.findByPhone(proxyId,phone);
+            if(clientUserInfo == null){
+                result.setSuccess(false);
+                return result;
+            }
+            ProxyInfo proxy = proxyInfoService.findById(clientUserInfo.getProxyId());
+            if(proxy == null){
+                result.setSuccess(false);
+                return result;
+            }
+            ProxyDto dto = new ProxyDto();
+            BeanCoper.copyProperties(dto,proxy);
+            result.setSuccess(true);
+            result.setData(dto);
+        }catch (Exception e){
+            logger.error("查询直属代理信息异常", e);
+            result.setSuccess(false);
+            result.setCode("query.users.Superior.info.error");
+            result.setMessage("查询直属代理信息异常");
         }
         return result;
     }
