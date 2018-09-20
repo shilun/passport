@@ -6,6 +6,7 @@ import com.common.util.StringUtils;
 import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.UserRPCService;
+import com.passport.rpc.dto.QipaiUserDTO;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserExtendInfoService;
@@ -94,7 +95,7 @@ public class UserRPCServiceImpl implements UserRPCService {
 
 
     @Override
-    public RPCResult<UserDTO> verfiyToken(String pin,String token) {
+    public RPCResult<UserDTO> verfiyToken(String token) {
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
             if (StringUtils.isBlank(token)) {
@@ -103,9 +104,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_BY_TOKEN);
                 return rpcResult;
             }
-            String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,pin, token);
-            String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
-            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(login_pin_key);
+            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(token);
             if(dto == null){
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.dto.null");
@@ -160,4 +159,34 @@ public class UserRPCServiceImpl implements UserRPCService {
         return result;
     }
 
+    @Override
+    public RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token) {
+        RPCResult<QipaiUserDTO> result = null;
+        try{
+            result = new RPCResult<>();
+            if (StringUtils.isBlank(token)) {
+                result.setSuccess(false);
+                result.setCode("token.null");
+                return result;
+            }
+
+            UserDTO dto = (UserDTO)redisTemplate.opsForValue().get(token);
+            if(dto == null){
+                result.setSuccess(false);
+                result.setCode("token.error");
+                return result;
+            }
+            QipaiUserDTO qipaiDTO = new QipaiUserDTO();
+            qipaiDTO.setUserDTO(dto);
+            RPCResult<UserExtendDTO> extendResult = this.findByUserCode(dto.getProxyId(), dto.getId().intValue());
+            qipaiDTO.setUserExtendDTO(extendResult.getData());
+            result.setSuccess(true);
+            result.setData(qipaiDTO);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("qipaiVerfiyToken.error");
+            logger.error("", e);
+        }
+        return result;
+    }
 }

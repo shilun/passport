@@ -2,6 +2,7 @@ package com.passport.service.impl;
 
 import com.common.exception.BizException;
 import com.common.mongo.AbstractMongoService;
+import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
@@ -245,22 +246,19 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             userInfo.setLastLoginIp(ip);
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
-            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
-            if (dto != null) {
-                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
-                redisTemplate.delete(login_pin_token);
-                dto.setToken(StringUtils.getUUID());
-                redisTemplate.opsForValue().set(login_pin_key, dto, 7, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
-            }
-            else{
+            Object o = redisTemplate.opsForValue().get(login_pin_key);
+            String newToken = StringUtils.getUUID();
+            UserDTO dto = null;
+            if(o != null){
+                String oldToken = o.toString();
+                dto = (UserDTO)redisTemplate.opsForValue().get(oldToken);
+            }else{
                 dto = new UserDTO();
                 BeanCoper.copyProperties(dto, userInfo);
-                dto.setToken(StringUtils.getUUID());
-                redisTemplate.opsForValue().set(login_pin_key, dto, 7, TimeUnit.DAYS);
-                String login_pin_token = MessageFormat.format(LOGIN_PIN_TOKEN,userInfo.getPin(), dto.getToken());
-                redisTemplate.opsForValue().set(login_pin_token,dto.getToken(),7, TimeUnit.DAYS);
             }
+            dto.setToken(newToken);
+            redisTemplate.opsForValue().set(userInfo.getPin(),newToken,7,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(newToken,dto,7,TimeUnit.DAYS);
             logLoginService.addLoginLog(dto.getPin(),proxyId,userInfo.getCreateTime(),ip);
             return dto;
         } catch (Exception e) {
@@ -705,7 +703,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setBirthDay(date);
             entity.setEmail(email);
             entity.setRegisterIp(ip);
-            entity.setLastLoginIp(ip);
             entity.setHeadUrl(headUrl);
             entity.setWechat(wechat);
             entity.setIdCard(idCard);

@@ -1,6 +1,7 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
+import com.passport.rpc.dto.QipaiUserDTO;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import org.springframework.data.domain.Page;
@@ -17,8 +18,15 @@ public interface UserRPCService {
 
     RPCResult<UserDTO> findByPin(Long proxyId,String pin);
 
-    RPCResult<UserDTO> verfiyToken(String pin,String token);
+    RPCResult<UserDTO> verfiyToken(String token);
 
     RPCResult<Page<UserDTO>> query(UserDTO dto);
+
+    /**
+     * 棋牌服务器校验token
+     * @param token
+     * @return
+     */
+    RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token);
 
 }

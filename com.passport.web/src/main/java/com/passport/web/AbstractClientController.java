@@ -73,8 +73,8 @@ public abstract class AbstractClientController extends AbstractController {
             return null;
         }
         token= DesDecrypter.decryptString(token, cookieEncodeKey);
-        pin=DesDecrypter.decryptString(pin, cookieEncodeKey);
-        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verfiyToken(pin, token);
+        //pin=DesDecrypter.decryptString(pin, cookieEncodeKey);
+        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verfiyToken( token);
         if (!userDTORPCResult.getSuccess()) {
             throw new BizException(userDTORPCResult.getCode(), userDTORPCResult.getMessage());
         }

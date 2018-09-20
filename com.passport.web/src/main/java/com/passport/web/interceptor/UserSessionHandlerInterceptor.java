@@ -58,9 +58,9 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         }
         token= DesDecrypter.decryptString(token, cookieEncodeKey);
         String[] contents=token.split(":");
-        String pin=contents[0];
+        //String pin=contents[0];
         token=contents[1];
-        RPCResult<UserDTO> result = userRPCService.verfiyToken(pin,token);
+        RPCResult<UserDTO> result = userRPCService.verfiyToken(token);
         if (result.getSuccess()) {
             return result.getData();
         }
