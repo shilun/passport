@@ -53,8 +53,8 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("out")
     @ResponseBody
     @ApiOperation(value = "登出")
-    public RPCResult<Boolean> loginOut() {
-        return buildRPCMessage(new IExecute() {
+    public Map<String, Object> loginOut() {
+        return buildMessage(new IExecute() {
             @Override
             public Object getData() {
                 return adminRPCService.loginOut(getToken());
