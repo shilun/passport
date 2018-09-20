@@ -139,4 +139,20 @@ public class ProxyDto implements Serializable {
     public void setAccount(String account) {
         this.account = account;
     }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getEncodingKey() {
+        return encodingKey;
+    }
+
+    public void setEncodingKey(String encodingKey) {
+        this.encodingKey = encodingKey;
+    }
 }
