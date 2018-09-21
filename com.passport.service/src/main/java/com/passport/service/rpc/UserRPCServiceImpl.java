@@ -124,6 +124,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             rpcResult.setSuccess(true);
             rpcResult.setCode("find.userDTO.dto.success");
             rpcResult.setMessage("获取用户成功");
+            dto.setToken(token);
             rpcResult.setData(dto);
             return rpcResult;
         } catch (Exception e) {
@@ -189,6 +190,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setCode("token.error");
                 return result;
             }
+            dto.setToken(token);
             QipaiUserDTO qipaiDTO = new QipaiUserDTO();
             qipaiDTO.setUserDTO(dto);
             RPCResult<UserExtendDTO> extendResult = this.findByUserCode(dto.getProxyId(), dto.getId().intValue());
