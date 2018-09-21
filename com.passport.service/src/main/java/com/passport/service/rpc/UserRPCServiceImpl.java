@@ -177,7 +177,7 @@ public class UserRPCServiceImpl implements UserRPCService {
         try {
             token = DesDecrypter.decryptString(token, appTokenEncodeKey);
             String realToken = token.split(":")[2];
-            if (StringUtils.isBlank(token)) {
+            if (StringUtils.isBlank(realToken)) {
                 result.setSuccess(false);
                 result.setCode("token.null");
                 return result;

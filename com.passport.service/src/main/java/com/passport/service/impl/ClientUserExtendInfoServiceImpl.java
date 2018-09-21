@@ -22,4 +22,12 @@ public class ClientUserExtendInfoServiceImpl extends AbstractMongoService<Client
         clientUserExtendInfo.setUserCode(userCode);
         return this.findByOne(clientUserExtendInfo);
     }
+
+    @Override
+    public Long insert(ClientUserExtendInfo entity) {
+        if(entity.getRobot() == null){
+            entity.setRobot(2);
+        }
+        return super.insert(entity);
+    }
 }

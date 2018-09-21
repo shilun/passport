@@ -710,10 +710,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
 
+
+        if (proxyId == null) {
+            throw new BizException("proxyId.error", "代理商id错误");
+        }
         if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
             throw new BizException("phone.error", "电话号码错误");
         }
-        if (!StringUtils.isBlank(refId)) {
+        if (StringUtils.isBlank(refId)) {
             throw new BizException("refId.error", "参考账户不能为空");
         }
         if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
@@ -731,7 +735,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         entity.setPhone(phone);
         entity.setNickName(nick);
         entity.setSexType(sexEnum.getValue());
-        entity.setStatus(YesOrNoEnum.YES.getValue());
+        entity.setStatus(UserStatusEnum.Normal.getValue());
         entity.setPasswd(MD5.MD5Str(pass, passKey));
         entity.setBirthDay(date);
         entity.setEmail(email);
@@ -749,6 +753,20 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
         return dto;
+    }
+
+    @Override
+    public Long insert(ClientUserInfo entity) {
+        if(entity.getSexType() == null){
+            entity.setSexType(SexEnum.MALE.getValue());
+        }
+        if(entity.getStatus() == null){
+            entity.setStatus(UserStatusEnum.Normal.getValue());
+        }
+        if(entity.getQq() == null){
+            entity.setQq(0L);
+        }
+        return super.insert(entity);
     }
 
     @Override
