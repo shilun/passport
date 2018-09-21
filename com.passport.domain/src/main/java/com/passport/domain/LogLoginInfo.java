@@ -108,4 +108,24 @@ public class LogLoginInfo extends AbstractBaseEntity {
     public void setIp(String ip) {
         this.ip = ip;
     }
+
+    public Date getLoginStartTime() {
+        return loginStartTime;
+    }
+
+    public Date getLoginEndTime() {
+        return loginEndTime;
+    }
+
+    public Date getRegStartTime() {
+        return regStartTime;
+    }
+
+    public Date getRegEndTime() {
+        return regEndTime;
+    }
+
+    public String getIp() {
+        return ip;
+    }
 }

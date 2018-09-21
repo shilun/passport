@@ -21,7 +21,6 @@ public interface UserRPCService {
     RPCResult<UserDTO> verfiyToken(String token);
 
     RPCResult<Page<UserDTO>> query(UserDTO dto);
-
     /**
      * 棋牌服务器校验token
      * @param token
