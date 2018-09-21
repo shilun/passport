@@ -151,14 +151,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public void regist(Long proxyId, String account) {
         if (StringUtils.isBlank(account)) {
-            return;
+            throw new BizException("账号不能为空");
         }
-        if (!StringUtils.isMobileNO(account)) {
-            return;
+        if (!StringUtils.isMobileNO(account) && !StringUtils.isEmail(account)) {
+            throw new BizException("账号格式不正确");
         }
         ClientUserInfo entity = findByPhone(proxyId, account);
         if (entity != null) {
-            return;
+            throw new BizException("该账号已存在");
         }
         String code = AliyunMnsUtil.randomSixCode();
         String redisKey = MessageFormat.format(PASS_USER_REG, account, proxyId);
@@ -183,8 +183,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public void loginCodeBuild(Long proxyId, String account) {
         try {
-            if (!StringUtils.isMobileNO(account)) {
-                return;
+            if (!StringUtils.isMobileNO(account) && !StringUtils.isEmail(account)) {
+                throw new BizException("账号格式不正确");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
@@ -250,20 +250,20 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public UserDTO login(String ip, Long proxyId, String account, String passwrd) {
         try {
             if (StringUtils.isBlank(passwrd)) {
-                return null;
+                throw new BizException("参数不能为空");
             }
             if (!StringUtils.isMobileNO(account)) {
-                return null;
+                throw new BizException("手机号格式不正确");
             }
 
             ClientUserInfo userInfo = findByPhone(proxyId, account);
             if (userInfo == null) {
-                return null;
+                throw new BizException("无法找到该用户");
             }
 
             passwrd = MD5.MD5Str(passwrd, passKey);
             if (!passwrd.equals(userInfo.getPasswd())) {
-                return null;
+                throw new BizException("密码错误");
             }
 
             ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
@@ -305,15 +305,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public void initPass(Long proxyId, String pin, String passwd) {
         try {
-            if (StringUtils.isBlank(pin)) {
-                return;
-            }
-            if (StringUtils.isBlank(passwd)) {
-                return;
+            if (StringUtils.isBlank(pin) || StringUtils.isBlank(passwd)) {
+                throw new BizException("参数不能为空");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             userInfo.setPasswd(MD5.MD5Str(passwd, passKey));
             save(userInfo);
@@ -327,14 +324,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeMobileBuildMsg(Long proxyId, String pin, String mobile) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
@@ -349,14 +346,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeMobile(Long proxyId, String pin, String mobile) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_BIND, mobile);
@@ -372,19 +369,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void bindMobile(Long proxyId, String pin, String mobile) {
         try {
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
-            String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                return;
-            }
-            userInfo.setPhone(mobile);
-            save(userInfo);
+
+            String code = AliyunMnsUtil.randomSixCode();
+            String redisKey = MessageFormat.format(MOBILE_USER_BIND, mobile);
+            sendSMSCode(mobile, redisKey, code);
         } catch (Exception e) {
             logger.error(MessageConstant.BIND_MOBILE_FAIL, e);
             new BizException(MessageConstant.BIND_MOBILE_FAIL, e.getMessage());
@@ -395,24 +389,24 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void bindMobile(Long proxyId, String pin, String mobile, String msg) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(msg)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
 
             String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return;
+                throw new BizException("验证码错误");
             }
 
             if (!o.equals(msg)) {
-                return;
+                throw new BizException("验证码错误");
             }
             userInfo.setPhone(mobile);
             save(userInfo);
@@ -426,25 +420,22 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeMobile(Long proxyId, String pin, String mobile, String msg) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(msg)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
-            if (userInfo == null) {
-                return;
-            }
+            if (userInfo == null)
+                throw new BizException("无法找到该用户");
 
             String key = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                return;
-            }
+            if (o == null)
+                throw new BizException("验证码错误");
 
-            if (!o.equals(msg)) {
-                return;
-            }
+            if (!o.equals(msg))
+                throw new BizException("验证码错误");
 
             userInfo.setPhone(mobile);
             save(userInfo);
@@ -458,16 +449,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changePass(Long proxyId, String pin, String oldPass, String newPass) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
 
             oldPass = MD5.MD5Str(oldPass, passKey);
             if (!oldPass.equals(userInfo.getPasswd())) {
-                return;
+                throw new BizException("密码错误");
             }
 
             userInfo.setPasswd(MD5.MD5Str(newPass, passKey));
@@ -483,30 +474,30 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changePassByMobile(Long proxyId, String pin, String mobile, String msg, String password) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return;
+                throw new BizException("参数不能为空");
             }
 
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             if (!mobile.equals(userInfo.getPhone())) {
-                return;
+                throw new BizException("手机号错误");
             }
             String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return;
+                throw new BizException("验证码错误");
             }
             if (!o.equals(msg)) {
-                return;
+                throw new BizException("验证码错误");
             }
             password = MD5.MD5Str(password, passKey);
             if (!password.equals(userInfo.getPasswd())) {
-                return;
+                throw new BizException("密码错误");
             }
             userInfo.setPasswd(password);
             save(userInfo);
@@ -520,17 +511,18 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changePassByMobileBuildMsg(Long proxyId, String pin, String mobile) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return;
+                throw new BizException("参数不能为空");
             }
+
             if (!StringUtils.isMobileNO(mobile)) {
-                return;
+                throw new BizException("手机号格式不正确");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             if (!mobile.equals(userInfo.getPhone())) {
-                return;
+                throw new BizException("手机号错误");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
@@ -545,11 +537,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void forgetPass(Long proxyId, String pin) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String mobile = userInfo.getPhone();
@@ -565,19 +557,19 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public UserDTO forgetPassCodeVerification(Long proxyId, String pin, String code, String pass) {
         try {
             if (StringUtils.isBlank(pin)) {
-                return null;
+                throw new BizException("参数不能为空");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return null;
+                throw new BizException("无法找到该用户");
             }
             String key = MessageFormat.format(FORGET_PASS, pin);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
-                return null;
+                throw new BizException("验证码错误");
             }
             if (!o.equals(code)) {
-                return null;
+                throw new BizException("验证码错误");
             }
             pass = MD5.MD5Str(pass, passKey);
             userInfo.setPasswd(pass);
@@ -597,11 +589,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeNickName(Long proxyId, String pin, String nickName) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(nickName)) {
-                return;
+                throw new BizException("参数不能为空");
             }
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             userInfo.setNickName(nickName);
             save(userInfo);
@@ -615,12 +607,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeSex(Long proxyId, String pin, Integer sexType) {
         try {
             if (StringUtils.isBlank(pin) || (sexType != SexEnum.MALE.getValue() && sexType != SexEnum.FEMALE.getValue())) {
-                return;
+                throw new BizException("参数错误");
             }
 
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             userInfo.setSexType(sexType);
             save(userInfo);
@@ -634,12 +626,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public void changeBirthday(Long proxyId, String pin, String date) {
         try {
             if (StringUtils.isBlank(pin) || StringUtils.isBlank(date)) {
-                return;
+                throw new BizException("参数不能为空");
             }
 
             ClientUserInfo userInfo = findByPin(proxyId, pin);
             if (userInfo == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date d = sdf.parse(date);
@@ -710,10 +702,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
 
+
+        if (proxyId == null) {
+            throw new BizException("proxyId.error", "代理商id错误");
+        }
         if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
             throw new BizException("phone.error", "电话号码错误");
         }
-        if (!StringUtils.isBlank(refId)) {
+        if (StringUtils.isBlank(refId)) {
             throw new BizException("refId.error", "参考账户不能为空");
         }
         if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
@@ -731,7 +727,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         entity.setPhone(phone);
         entity.setNickName(nick);
         entity.setSexType(sexEnum.getValue());
-        entity.setStatus(YesOrNoEnum.YES.getValue());
+        entity.setStatus(UserStatusEnum.Normal.getValue());
         entity.setPasswd(MD5.MD5Str(pass, passKey));
         entity.setBirthDay(date);
         entity.setEmail(email);
@@ -752,15 +748,29 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
+    public Long insert(ClientUserInfo entity) {
+        if(entity.getSexType() == null){
+            entity.setSexType(SexEnum.MALE.getValue());
+        }
+        if(entity.getStatus() == null){
+            entity.setStatus(UserStatusEnum.Normal.getValue());
+        }
+        if(entity.getQq() == null){
+            entity.setQq(0L);
+        }
+        return super.insert(entity);
+    }
+
+    @Override
     public void proxyChangeUserInfo(Long proxyId, String userAccount, ChangeType type, String value) {
         try {
             if (proxyId == null || StringUtils.isBlank(userAccount) || StringUtils.isBlank(value)) {
-                return;
+                throw new BizException("参数不能为空");
             }
 
             ClientUserInfo user = findByPhone(proxyId, userAccount);
             if (user == null) {
-                return;
+                throw new BizException("无法找到该用户");
             }
 
             switch (type) {
@@ -794,7 +804,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public Page<ClientUserInfo> proxyGetUsers(Long proxyId, Integer pageNum) {
         try {
             if (proxyId == null) {
-                return null;
+                throw new BizException("参数不能为空");
             }
             if (pageNum == null || pageNum < 0) {
                 pageNum = 0;

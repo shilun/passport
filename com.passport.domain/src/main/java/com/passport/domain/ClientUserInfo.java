@@ -3,8 +3,11 @@ package com.passport.domain;
 import com.common.annotation.QueryField;
 import com.common.mongo.QueryType;
 import com.common.util.AbstractBaseEntity;
+import com.common.util.model.SexEnum;
+import com.common.util.model.YesOrNoEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.passport.domain.module.UserStatusEnum;
 import com.passport.domain.serializer.DateJsonSerializer;
 import org.springframework.data.annotation.Transient;
 
@@ -233,5 +236,13 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     public void setEndLastTime(Date endLastTime) {
         this.endLastTime = endLastTime;
+    }
+
+    public Date getStartLastTime() {
+        return startLastTime;
+    }
+
+    public Date getEndLastTime() {
+        return endLastTime;
     }
 }
