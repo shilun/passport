@@ -169,4 +169,12 @@ public interface ProxyRpcService {
      * @return
      */
     RPCResult<ProxyDto> queryUsersSuperior(Long proxyId, String phone);
+
+    /**
+     * 根据pin查询用户信息
+     * @param proxyId
+     * @param pin
+     * @return
+     */
+    RPCResult<ProxyDto> findByPin(Long proxyId, String pin);
 }

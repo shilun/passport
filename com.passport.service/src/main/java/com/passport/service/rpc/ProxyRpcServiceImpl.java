@@ -547,4 +547,29 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<ProxyDto> findByPin(Long proxyId, String pin) {
+        RPCResult<ProxyDto> result = null;
+        try {
+            result = new RPCResult<>();
+            if(proxyId == null || !StringUtils.isBlank(pin)){
+                result.setSuccess(false);
+                return result;
+            }
+            ProxyInfo proxyInfo = new ProxyInfo();
+            proxyInfo.setPin(pin);
+            proxyInfo = proxyInfoService.findByOne(proxyInfo);
+            ProxyDto dto = new ProxyDto();
+            BeanCoper.copyProperties(dto,proxyInfo);
+            result.setSuccess(true);
+            result.setData(dto);
+        }catch (Exception e){
+            logger.error("查询用户信息异常", e);
+            result.setSuccess(false);
+            result.setCode("find.users.Superior.info.error");
+            result.setMessage("查询用户信息异常");
+        }
+        return null;
+    }
 }
