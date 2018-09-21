@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @com.alibaba.dubbo.config.annotation.Service(timeout = 1000)
@@ -118,6 +119,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
                 return rpcResult;
             }
+            redisTemplate.expire(tokenKey,7, TimeUnit.DAYS);
             rpcResult.setSuccess(true);
             rpcResult.setCode("find.userDTO.dto.success");
             rpcResult.setMessage("获取用户成功");
