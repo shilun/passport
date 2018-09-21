@@ -560,6 +560,10 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             ProxyInfo proxyInfo = new ProxyInfo();
             proxyInfo.setPin(pin);
             proxyInfo = proxyInfoService.findByOne(proxyInfo);
+            if(proxyInfo == null){
+                result.setSuccess(false);
+                return result;
+            }
             ProxyDto dto = new ProxyDto();
             BeanCoper.copyProperties(dto,proxyInfo);
             result.setSuccess(true);
@@ -570,6 +574,6 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setCode("find.users.Superior.info.error");
             result.setMessage("查询用户信息异常");
         }
-        return null;
+        return result;
     }
 }
