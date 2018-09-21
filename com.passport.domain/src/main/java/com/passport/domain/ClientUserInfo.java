@@ -234,4 +234,12 @@ public class ClientUserInfo extends AbstractBaseEntity {
     public void setEndLastTime(Date endLastTime) {
         this.endLastTime = endLastTime;
     }
+
+    public Date getStartLastTime() {
+        return startLastTime;
+    }
+
+    public Date getEndLastTime() {
+        return endLastTime;
+    }
 }

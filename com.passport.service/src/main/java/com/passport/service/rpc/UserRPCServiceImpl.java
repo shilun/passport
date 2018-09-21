@@ -184,19 +184,17 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
 
             String tokenKey = MessageFormat.format(LOGIN_TOKEN, token);
-            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(tokenKey);
+            QipaiUserDTO dto = (QipaiUserDTO) redisTemplate.opsForValue().get(tokenKey);
             if (dto == null) {
                 result.setSuccess(false);
                 result.setCode("token.error");
                 return result;
             }
             dto.setToken(token);
-            QipaiUserDTO qipaiDTO = new QipaiUserDTO();
-            qipaiDTO.setUserDTO(dto);
             RPCResult<UserExtendDTO> extendResult = this.findByUserCode(dto.getProxyId(), dto.getId().intValue());
-            qipaiDTO.setUserExtendDTO(extendResult.getData());
+            dto.setUserExtendDTO(extendResult.getData());
             result.setSuccess(true);
-            result.setData(qipaiDTO);
+            result.setData(dto);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("qipaiVerfiyToken.error");
