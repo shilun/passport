@@ -1,5 +1,6 @@
 package com.passport.service.rpc;
 
+import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
@@ -103,7 +104,7 @@ public class UserRPCServiceImpl implements UserRPCService {
 
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
-            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+            token = DesDecrypter.decryptString(token, appTokenEncodeKey);
             token = token.split(":")[2];
             if (StringUtils.isBlank(token)) {
                 rpcResult.setSuccess(false);
@@ -173,7 +174,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token) {
         RPCResult<QipaiUserDTO> result = new RPCResult<>();
         try {
-            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+            token = DesDecrypter.decryptString(token, appTokenEncodeKey);
             token = token.split(":")[2];
             if (StringUtils.isBlank(token)) {
                 result.setSuccess(false);
