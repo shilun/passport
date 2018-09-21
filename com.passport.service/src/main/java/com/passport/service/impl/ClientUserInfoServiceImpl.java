@@ -283,10 +283,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 String oldTokenKey = o.toString();
                 dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
                 redisTemplate.delete(oldTokenKey);
-            } else {
-                dto = new UserDTO();
-                BeanCoper.copyProperties(dto, userInfo);
             }
+            dto = new UserDTO();
+            BeanCoper.copyProperties(dto, userInfo);
             dto.setToken(newToken);
             String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
             redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
