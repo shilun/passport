@@ -238,8 +238,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     public RPCResult<Boolean> changePass(String account, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            boolean flag = proxyInfoService.changePass(account, oldPass, newPass);
-            result.setSuccess(flag);
+            proxyInfoService.changePass(account, oldPass, newPass);
+            result.setSuccess(true);
         } catch (Exception e) {
             logger.error("修改密码失败", e);
             result.setSuccess(false);
@@ -258,13 +258,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 result.setMessage("时间错误");
                 return result;
             }
-
             if (proxyId == null) {
                 result.setSuccess(false);
                 result.setMessage("代理错误");
                 return result;
             }
-
             Long count = logLoginService.QueryActiveUsers(proxyId, startTime, endTime);
             result.setSuccess(true);
             result.setData(count);

@@ -10,5 +10,5 @@ public interface ProxyInfoService extends MongoService<ProxyInfo> {
 
     ProxyInfo findByLoginName(String loginName,String pass);
 
-    Boolean changePass(String loginName,String oldPass,String newPass);
+    void changePass(String loginName,String oldPass,String newPass);
 }

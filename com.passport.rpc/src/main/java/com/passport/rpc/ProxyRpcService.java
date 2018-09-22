@@ -1,7 +1,10 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
-import com.passport.rpc.dto.*;
+import com.passport.rpc.dto.ConditionType;
+import com.passport.rpc.dto.DateType;
+import com.passport.rpc.dto.ProxyDto;
+import com.passport.rpc.dto.UserDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.Date;
