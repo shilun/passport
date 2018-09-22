@@ -54,6 +54,20 @@ public interface ProxyRpcService {
     RPCResult<ProxyDto> login(String account,String pass);
 
     /**
+     * 登出
+     * @param loginToken
+     * @return
+     */
+    RPCResult logOut(String loginToken);
+
+    /**
+     * 验证token
+     * @param loginToken
+     * @return
+     */
+    RPCResult<ProxyDto> verfiyToken(String loginToken);
+
+    /**
      * 登录密码
      * @param account
      * @param oldPass

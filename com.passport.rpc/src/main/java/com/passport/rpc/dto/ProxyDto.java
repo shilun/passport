@@ -40,6 +40,8 @@ public class ProxyDto implements Serializable {
      */
     private String token;
 
+    private String loginToken;
+
     /**
      * 接入加密key uuid生成
      */
@@ -51,6 +53,14 @@ public class ProxyDto implements Serializable {
     private String headImgUrl;
     private String realName;
     private transient String account;
+
+    public String getLoginToken() {
+        return loginToken;
+    }
+
+    public void setLoginToken(String loginToken) {
+        this.loginToken = loginToken;
+    }
 
     public Integer[] getGames() {
         return games;
