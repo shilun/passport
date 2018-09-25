@@ -181,12 +181,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
         try {
-            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+            return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+            /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
 
-                return regist(proxydto, account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-            }
+                return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+            }*/
         } catch (Exception e) {
             logger.error(MessageConstant.REG_FAIL, e);
             new BizException(MessageConstant.REG_FAIL, e.getMessage());
@@ -699,7 +700,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO regist(ProxyDto proxydto, String refId, String pass, String phone, String nick, String email,
+    public UserDTO regist(ProxyDto proxydto,Integer recommendId, String refId, String pass, String phone, String nick, String email,
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
 
@@ -743,6 +744,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         clientUserExtendInfo.setUserCode(entity.getId().intValue());
         clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
         clientUserExtendInfoService.save(clientUserExtendInfo);
+
+        //初始化推荐人
+
 
         String imgFolder = "/QRCodeImg/";//图片文件夹
         String fileName = String.valueOf(entity.getId());
