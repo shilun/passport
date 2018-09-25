@@ -2,7 +2,10 @@ package com.passport.service.impl;
 
 import com.common.mongo.AbstractMongoService;
 import com.common.util.StringUtils;
+import com.common.util.model.YesOrNoEnum;
+import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
@@ -10,6 +13,9 @@ import com.passport.service.LogLoginService;
 import org.apache.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -56,11 +62,20 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
             info.setProxyId(proxyId);
             info.setLoginStartTime(startTime);
             info.setLoginEndTime(endTime);
-            //TODO  去重
-            /*DBObject query = new BasicDBObject();
-            query.put("proxyId",proxyId);
-            this.template.getCollection("logLoginInfo").count(query);*/
-            return queryCount(info);
+            info.setDelStatus(YesOrNoEnum.NO.getValue());
+
+            BasicDBObject[] arr = {
+                                    new BasicDBObject("loginDay",new BasicDBObject("$gte",startTime)),
+                                    new BasicDBObject("loginDay",new BasicDBObject("$lte",endTime))
+                                    };
+            DBObject cond = new BasicDBObject("$and",arr);
+            DBObject match = new BasicDBObject("$match",cond);
+            DBObject groupFields = new BasicDBObject("_id","$pin");
+            groupFields.put("count",new BasicDBObject("$sum",1));
+            DBObject group = new BasicDBObject("$group",groupFields);
+            ((BasicDBObject) match).append("$group",groupFields);
+
+            return this.template.getCollection(info.getClass().getSimpleName()).count(match);
         } catch (Exception e) {
             logger.error("",e);
         }

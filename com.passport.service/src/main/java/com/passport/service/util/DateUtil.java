@@ -19,6 +19,15 @@ public class DateUtil {
      */
     public static Date setZero(Date date){
         Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return setZero(cal);
+    }
+    /**
+     * 将时分秒置为0
+     * @param cal
+     * @return
+     */
+    public static Date setZero(Calendar cal){
         cal.set(Calendar.HOUR_OF_DAY,0);
         cal.set(Calendar.MINUTE,0);
         cal.set(Calendar.SECOND,0);
@@ -72,11 +81,7 @@ public class DateUtil {
                 startTime = sdf.parse(str);
                 break;
             case DAY:
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                startTime = cal.getTime();
+                startTime = setZero(cal);
                 break;
             case WEEK:
                 int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
@@ -84,7 +89,7 @@ public class DateUtil {
                     dayofweek += 7;
                 }
                 cal.add(Calendar.DATE, 2 - dayofweek);
-                startTime = cal.getTime();
+                startTime = setZero(cal);
                 break;
             case MONTH:
                 cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);

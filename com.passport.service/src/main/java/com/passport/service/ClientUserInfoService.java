@@ -3,6 +3,7 @@ package com.passport.service;
 import com.common.mongo.MongoService;
 import com.common.util.model.SexEnum;
 import com.passport.domain.ClientUserInfo;
+import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.constant.ChangeType;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 客户用户接口
@@ -66,7 +68,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param vcode   验证码
      * @return
      */
-    UserDTO registVerification(Long proxyId, String account, String vcode, String pass,String ip);
+    UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip);
 
 
 
@@ -91,10 +93,10 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /***
      *密码登录
      * @param account 手机或邮箱
-     * @param passwrd
+     * @param password
      * @return
      */
-    UserDTO login(String ip,Long proxyId,String account, String passwrd);
+    UserDTO login(String ip,Long proxyId,String account, String password);
 
 
     /**
@@ -249,7 +251,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param
      * @return
      */
-    UserDTO regist(Long proxyId, String refId, String pass, String phone, String nick, String email,
+    UserDTO regist(ProxyDto proxydto, String refId, String pass, String phone, String nick, String email,
                    SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
                    String realName,Long qq);
 
@@ -286,28 +288,23 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     Long queryCountByRegTime(Long proxyId,Date startRegTime,Date endRegTime);
+    /**
+     * 获取验证码
+     * @param proxyId
+     * @param phone
+     * @param codeType
+     */
+    Map<String,Object> getValidateCode(Long proxyId, String phone, String codeType);
 
-    /**
-     * 根据最后登陆ip查询用户列表
-     * @param proxyId
-     * @param ip
-     * @return
-     */
-    Page<ClientUserInfo> queryByLastLoginIP(Long proxyId,String ip,Pageable pageable);
-    /**
-     * 根据注册ip查询用户列表
-     * @param proxyId
-     * @param ip
-     * @return
-     */
-    Page<ClientUserInfo> queryByRegIP(Long proxyId,String ip,Pageable pageable);
-    /**
-     * 根据最后登陆时间查询用户列表
-     * @param proxyId
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    Page<ClientUserInfo> queryByLastLoginTime(Long proxyId,Date startTime,Date endTime,Pageable pageable);
+    Map<String,Object> oldUpdatePwd(Long proxyId,String account,String pwd,String newPwd);
 
+    Map<String,Object> oldForgetPass(Long proxyId, String account, String code,String pwd);
+
+    Map<String,Object> oldFindByUserCode(Long proxyId, Integer userCode);
+
+    Map<String,Object> oldFindByAccount(Long proxyId, String account);
+
+    Map<String,Object> oldEditUserInfo(Long proxyId, Integer userId,String nick,Long qq,String wechat,Integer sex,String sign);
+
+    Map<String,Object> OldCertification(Long proxyId, Integer userId,String realName,String idCard);
 }

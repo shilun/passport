@@ -137,33 +137,6 @@ public interface ProxyRpcService {
     RPCResult<Page<UserDTO>> queryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto);
 
     /**
-     * 根据登陆IP筛选用户
-     * @param proxyId
-     * @param ip
-     * @param dto
-     * @return
-     */
-    RPCResult<Page<UserDTO>> queryUsersByLoginIp(Long proxyId, String ip, UserDTO dto);
-    /**
-     * 根据注册IP筛选用户
-     * @param proxyId
-     * @param ip
-     * @param dto
-     * @return
-     */
-    RPCResult<Page<UserDTO>> queryUsersByRegIp(Long proxyId, String ip, UserDTO dto);
-
-
-    /**
-     * 根据最后登陆时间筛选用户
-     * @param proxyId
-     * @param startTime
-     * @param endTime
-     * @param dto
-     * @return
-     */
-    RPCResult<Page<UserDTO>> queryUsersByLastLoginTime(Long proxyId, Date startTime,Date endTime,UserDTO dto);
-    /**
      * 根据条件查询用户详细信息
      * @param proxyId
      * @param type

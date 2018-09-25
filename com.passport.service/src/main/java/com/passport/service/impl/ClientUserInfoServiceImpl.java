@@ -13,13 +13,17 @@ import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
+import com.passport.rpc.dto.ProxyDto;
 import com.passport.service.*;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.constant.ChangeType;
+import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
+import com.passport.service.util.OldPackageMapUtil;
+import com.passport.service.util.Tool;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,11 +33,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -125,6 +131,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return this.findByOne(clientUserInfo);
     }
 
+    public ClientUserInfo findByUserCode(Long proxyId, Integer userCode) {
+        ClientUserInfo clientUserInfo = new ClientUserInfo();
+        clientUserInfo.setProxyId(proxyId);
+        clientUserInfo.setId(userCode.longValue());
+        return this.findByOne(clientUserInfo);
+    }
+
     @Override
     public Page<ClientUserInfo> queryByNick(Long proxyId, String nickName, Pageable pageable) {
         ClientUserInfo clientUserInfo = new ClientUserInfo();
@@ -166,12 +179,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO registVerification(Long proxyId, String account, String vcode, String pass, String ip) {
+    public UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
         try {
-            String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
+            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o.equalsIgnoreCase(vcode)) {
-                return regist(proxyId, account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+
+                return regist(proxydto, account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
             }
         } catch (Exception e) {
             logger.error(MessageConstant.REG_FAIL, e);
@@ -223,15 +237,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             UserDTO dto = null;
             if (o1 != null) {
                 String oldTokenKey = o1.toString();
-                dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
                 redisTemplate.delete(oldTokenKey);
-            } else {
-                dto = new UserDTO();
-                BeanCoper.copyProperties(dto, userInfo);
             }
-            userInfo.setLastLoginIp(ip);
-            userInfo.setLastLoginTime(new Date());
-            save(userInfo);
+            dto = new UserDTO();
+            BeanCoper.copyProperties(dto, userInfo);
+
             String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
             redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
             redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
@@ -248,58 +258,49 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Override
     public UserDTO login(String ip, Long proxyId, String account, String passwrd) {
-        try {
-            if (StringUtils.isBlank(passwrd)) {
-                throw new BizException("参数不能为空");
-            }
-            if (!StringUtils.isMobileNO(account)) {
-                throw new BizException("手机号格式不正确");
-            }
-
-            ClientUserInfo userInfo = findByPhone(proxyId, account);
-            if (userInfo == null) {
-                throw new BizException("无法找到该用户");
-            }
-
-            passwrd = MD5.MD5Str(passwrd, passKey);
-            if (!passwrd.equals(userInfo.getPasswd())) {
-                throw new BizException("密码错误");
-            }
-
-            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-            if (clientUserExtendInfo == null) {
-                clientUserExtendInfo = new ClientUserExtendInfo();
-                clientUserExtendInfo.setId(clientUserExtendInfo.getId());
-                clientUserExtendInfoService.save(clientUserExtendInfo);
-            }
-            userInfo.setLastLoginIp(ip);
-            userInfo.setLastLoginTime(new Date());
-            save(userInfo);
-            String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
-            Object o = redisTemplate.opsForValue().get(login_pin_key);
-            String newToken = StringUtils.getUUID();
-            UserDTO dto = null;
-            if (o != null) {
-                String oldTokenKey = o.toString();
-                dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
-                redisTemplate.delete(oldTokenKey);
-            }
-            dto = new UserDTO();
-            BeanCoper.copyProperties(dto, userInfo);
-            dto.setToken(newToken);
-            String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
-            redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
-            logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
-            String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
-            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
-            dto.setToken(token);
-            return dto;
-        } catch (Exception e) {
-            logger.error(MessageConstant.FIND_USER_FAIL, e);
-            new BizException(MessageConstant.FIND_USER_FAIL, e.getMessage());
+        if (StringUtils.isBlank(passwrd)) {
+            throw new BizException("参数不能为空");
         }
-        return null;
+        if (!StringUtils.isMobileNO(account)) {
+            throw new BizException("手机号格式不正确");
+        }
+
+        ClientUserInfo userInfo = findByPhone(proxyId, account);
+        if (userInfo == null) {
+            throw new BizException("无法找到该用户");
+        }
+
+        passwrd = MD5.MD5Str(passwrd, passKey);
+        if (!passwrd.equals(userInfo.getPasswd())) {
+            throw new BizException("密码错误");
+        }
+
+        ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
+        if (clientUserExtendInfo == null) {
+            clientUserExtendInfo = new ClientUserExtendInfo();
+            clientUserExtendInfo.setId(clientUserExtendInfo.getId());
+            clientUserExtendInfoService.save(clientUserExtendInfo);
+        }
+        String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+        Object o = redisTemplate.opsForValue().get(login_pin_key);
+        String newToken = StringUtils.getUUID();
+        UserDTO dto = null;
+        if (o != null) {
+            String oldTokenKey = o.toString();
+            dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
+            redisTemplate.delete(oldTokenKey);
+        }
+        dto = new UserDTO();
+        BeanCoper.copyProperties(dto, userInfo);
+        dto.setToken(newToken);
+        String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
+        redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
+        logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
+        String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
+        token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+        dto.setToken(token);
+        return dto;
     }
 
     @Override
@@ -698,12 +699,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO regist(Long proxyId, String refId, String pass, String phone, String nick, String email,
+    public UserDTO regist(ProxyDto proxydto, String refId, String pass, String phone, String nick, String email,
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
 
 
-        if (proxyId == null) {
+        if (proxydto == null) {
             throw new BizException("proxyId.error", "代理商id错误");
         }
         if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
@@ -721,7 +722,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
 
         ClientUserInfo entity = new ClientUserInfo();
-        entity.setProxyId(proxyId);
+        entity.setProxyId(proxydto.getId());
         entity.setRefId(refId);
         entity.setPin(StringUtils.getUUID());
         entity.setPhone(phone);
@@ -731,17 +732,29 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         entity.setPasswd(MD5.MD5Str(pass, passKey));
         entity.setBirthDay(date);
         entity.setEmail(email);
-        entity.setRegisterIp(ip);
         entity.setHeadUrl(headUrl);
         entity.setWechat(wechat);
         entity.setIdCard(idCard);
         entity.setRealName(realName);
         entity.setQq(qq);
+        entity.setRegisterIp(ip);
         save(entity);
         ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
         clientUserExtendInfo.setUserCode(entity.getId().intValue());
         clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
         clientUserExtendInfoService.save(clientUserExtendInfo);
+
+        String imgFolder = "/QRCodeImg/";//图片文件夹
+        String fileName = String.valueOf(entity.getId());
+        File folder = new File(imgFolder);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        try {
+            Tool.generateQRCode(proxydto.getDomain()+ "/login/regByQr?recommendId=" + entity.getId(), imgFolder, fileName);
+        }catch (Exception e){
+            logger.error("生成二维码异常",e);
+        }
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
         return dto;
@@ -845,40 +858,204 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return null;
     }
 
+
+    /************************************以下是兼容以前的接口**********************************************/
+
     @Override
-    public Page<ClientUserInfo> queryByLastLoginIP(Long proxyId, String ip, Pageable pageable) {
-        try {
-            ClientUserInfo info = new ClientUserInfo();
-            info.setLastLoginIp(ip);
-            return queryByPage(info, pageable);
-        } catch (Exception e) {
+    public Map<String,Object> getValidateCode(Long proxyId, String phone, String codeType) {
+        try{
+            if (codeType.equals("1")) { //注册验证码
+                regist(proxyId,phone);
+            } else if (codeType.equals("2")) {  //更改密码验证码
+                ClientUserInfo info = findByPhone(proxyId, phone);
+                if(info == null){
+                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"用户不存在");
+                }
+                changePassByMobileBuildMsg(proxyId,info.getPin(),phone);
+            }else {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"没有此类型的验证码");
+            }
+        }catch (Exception e){
             logger.error("", e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
         }
-        return null;
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_ACCEPTED,"短信已发送");
     }
 
     @Override
-    public Page<ClientUserInfo> queryByRegIP(Long proxyId, String ip, Pageable pageable) {
-        try {
-            ClientUserInfo info = new ClientUserInfo();
-            info.setRegisterIp(ip);
-            return queryByPage(info, pageable);
-        } catch (Exception e) {
+    public Map<String,Object> oldUpdatePwd(Long proxyId, String account, String pwd, String newPwd) {
+        try{
+            if (proxyId == null) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
+            }
+            if (!StringUtils.isMobileNO(account)) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号格式不正确");
+            }
+            ClientUserInfo user = findByPhone(proxyId, account);
+            if(user == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
+            pwd = MD5.MD5Str(pwd, passKey);
+            if(!pwd.equals(user.getPasswd())){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"密码校验失败");
+            }
+            this.changePass(proxyId,user.getPin(),newPwd);
+        }catch (Exception e){
             logger.error("", e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"修改密码异常");
         }
-        return null;
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_ACCEPTED,"修改秘密码成功");
     }
 
     @Override
-    public Page<ClientUserInfo> queryByLastLoginTime(Long proxyId, Date startTime, Date endTime, Pageable pageable) {
-        try {
-            ClientUserInfo info = new ClientUserInfo();
-            info.setStartLastTime(startTime);
-            info.setEndLastTime(endTime);
-            return queryByPage(info, pageable);
-        } catch (Exception e) {
-            logger.error("", e);
+    public Map<String, Object> oldForgetPass(Long proxyId, String account, String code,String pwd) {
+        try{
+            if (proxyId == null) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
+            }
+            if (!StringUtils.isMobileNO(account)) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号格式不正确");
+            }
+
+
+            String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, account);
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if (o == null) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
+            }
+            if (!o.equals(code)) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
+            }
+
+            ClientUserInfo user = findByPhone(proxyId, account);
+            if(user == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
+            pwd = MD5.MD5Str(pwd, passKey);
+            user.setPasswd(pwd);
+            save(user);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"修改密码异常");
         }
-        return null;
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_ACCEPTED,"修改秘密码成功");
+    }
+
+    @Override
+    public Map<String, Object> oldFindByUserCode(Long proxyId, Integer userCode) {
+        try{
+            if (proxyId == null || userCode == null) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
+            }
+            ClientUserInfo info = findByUserCode(proxyId, userCode);
+            if(info == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("userId", info.getId());
+            dataMap.put("accessName", info.getPhone());
+            dataMap.put("gender", info.getSexType());
+            dataMap.put("nick", info.getNickName());
+            dataMap.put("headUrl", info.getHeadUrl());
+            ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(userCode);
+            if(extend != null){
+                dataMap.put("sign", extend.getSign());
+            }
+            return OldPackageMapUtil.toMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK,true,dataMap);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"获取用户信息异常");
+        }
+    }
+
+    @Override
+    public Map<String, Object> oldFindByAccount(Long proxyId, String account) {
+        try{
+            if (proxyId == null || account == null) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
+            }
+            if(!StringUtils.isMobileNO(account)){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"账号格式错误");
+            }
+            ClientUserInfo info = findByPhone(proxyId,account);
+            if(info == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("userId", info.getId());
+            dataMap.put("accessName", info.getPhone());
+            dataMap.put("gender", info.getSexType());
+            dataMap.put("nick", info.getNickName());
+            dataMap.put("headUrl", info.getHeadUrl());
+            ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(info.getId().intValue());
+            if(extend != null){
+                dataMap.put("sign", extend.getSign());
+            }
+            return OldPackageMapUtil.toMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK,true,dataMap);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"获取用户信息异常");
+        }
+    }
+
+    @Override
+    public Map<String, Object> oldEditUserInfo(Long proxyId, Integer userId, String nick, Long qq, String wechat, Integer sex, String sign) {
+        try{
+            if (proxyId == null || userId == null) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
+            }
+
+            ClientUserInfo userInfo = findByUserCode(proxyId, userId);
+            if(userInfo == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
+
+            if(StringUtils.isNotBlank(nick)){
+                userInfo.setNickName(nick);
+            }
+            if(qq != null){
+                userInfo.setQq(qq);
+            }
+            if(StringUtils.isNotBlank(wechat)){
+                userInfo.setWechat(wechat);
+            }
+            if(sex != null){
+                userInfo.setSexType(sex);
+            }
+
+            if(StringUtils.isNotBlank(sign)){
+                ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
+                if(extend != null){
+                    extend.setSign(sign);
+                }
+                clientUserExtendInfoService.save(extend);
+            }
+            save(userInfo);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"编辑用户信息异常");
+        }
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK);
+    }
+
+    @Override
+    public Map<String, Object> OldCertification(Long proxyId, Integer userId, String realName, String idCard) {
+        try{
+            if (proxyId == null || userId == null || StringUtils.isBlank(realName) || StringUtils.isBlank(idCard)) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
+            }
+
+            ClientUserInfo userInfo = findByUserCode(proxyId, userId);
+            if(userInfo == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
+            userInfo.setRealName(realName);
+            userInfo.setIdCard(idCard);
+            save(userInfo);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"实名认证异常");
+        }
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK);
     }
 }

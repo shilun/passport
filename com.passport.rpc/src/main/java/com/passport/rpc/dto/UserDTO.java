@@ -34,6 +34,10 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String idCard;
     //qq
     private Long qq;
+    /**
+     * 用户状态
+     */
+    private Integer status;
 
 
     public String getToken() {
@@ -171,5 +175,13 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setQq(Long qq) {
         this.qq = qq;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

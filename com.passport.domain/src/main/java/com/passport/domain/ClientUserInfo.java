@@ -72,8 +72,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
     // 头像URL
     private String headUrl;
 
-    //最后登陆IP
-    private String lastLoginIp;
     //微信
     private String wechat;
     //身份证号
@@ -82,16 +80,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
     private String realName;
     //qq
     private Long qq;
-    //最后登陆时间
-    private Date lastLoginTime;
-    @Transient
-    @QueryField(name = "lastLoginTime", type = QueryType.GTE)
-    @JsonIgnore
-    private Date startLastTime;
-    @QueryField(name = "lastLoginTime", type = QueryType.LTE)
-    @Transient
-    @JsonIgnore
-    private Date endLastTime;
 
     public Long getProxyId() {
         return proxyId;
@@ -182,14 +170,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
         this.headUrl = headUrl;
     }
 
-    public String getLastLoginIp() {
-        return lastLoginIp;
-    }
-
-    public void setLastLoginIp(String lastLoginIp) {
-        this.lastLoginIp = lastLoginIp;
-    }
-
     public String getWechat() {
         return wechat;
     }
@@ -222,27 +202,4 @@ public class ClientUserInfo extends AbstractBaseEntity {
         this.qq = qq;
     }
 
-    public Date getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(Date lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    public void setStartLastTime(Date startLastTime) {
-        this.startLastTime = startLastTime;
-    }
-
-    public void setEndLastTime(Date endLastTime) {
-        this.endLastTime = endLastTime;
-    }
-
-    public Date getStartLastTime() {
-        return startLastTime;
-    }
-
-    public Date getEndLastTime() {
-        return endLastTime;
-    }
 }

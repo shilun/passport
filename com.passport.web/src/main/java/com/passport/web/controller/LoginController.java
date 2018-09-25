@@ -5,6 +5,7 @@ import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
 import com.common.web.IExecute;
 import com.passport.rpc.UserRPCService;
+import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserInfoService;
@@ -31,10 +32,6 @@ public class LoginController extends AbstractClientController {
 
     @Resource
     private ClientUserInfoService loginService;
-
-
-    @Resource
-    private UserRPCService userRPCService;
 
     @Value("${app.cookie.encode.key}")
     private String cookieEncodeKey;
@@ -93,7 +90,21 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return loginService.registVerification(getDomain().getId(), dto.getAccount(), dto.getCode(), dto.getPass(),getIP());
+                return loginService.registVerification(getDomain(),dto.getAccount(), dto.getCode(), dto.getPass(),getIP());
+            }
+        });
+    }
+
+    @RequestMapping("regByQr")
+    @ResponseBody
+    @ApiOperation(value = "二维码注册")
+    public Map<String, Object> regByQr(@RequestBody OldQRRegDto dto, HttpServletResponse response) {
+        return buildMessage(new IExecute() {
+            @Override
+            public Object getData() {
+                return loginService.regist(getDomain(),dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),
+                        dto.getEmail(),dto.getSexType(),dto.getBirthDay(),getIP(),dto.getHeadUrl(),dto.getWechat(),dto.getIdCard(),
+                        dto.getRealName(),dto.getQq());
             }
         });
     }
