@@ -1,6 +1,7 @@
 package com.passport.web.controller.dto;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @ApiModel(description = "获取用户")
 public class OldGetUserByIdDto implements Serializable {
     private static final long serialVersionUID = 1334578772178555738L;
+    @ApiModelProperty(value = "userCode")
     private Integer userCode;
 
     public Integer getUserCode() {

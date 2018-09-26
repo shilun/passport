@@ -1,6 +1,7 @@
 package com.passport.web.controller.dto;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @ApiModel(description = "获取验证码")
 public class OldGetUserByAccountDto implements Serializable {
     private static final long serialVersionUID = -4461961812160558123L;
+    @ApiModelProperty(value = "账号")
     private String accessName;
 
     public String getAccessName() {

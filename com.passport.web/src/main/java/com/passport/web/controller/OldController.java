@@ -7,6 +7,7 @@ import com.passport.service.util.OldPackageMapUtil;
 import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.*;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,15 @@ import java.util.Map;
 public class OldController extends AbstractClientController {
     @Resource
     private ClientUserInfoService clientService;
+
+    @Value("${qipai.server.id}")
+    private String server_id;
+    @Value("${qipai.safe.ips}")
+    private String safe_ips;
+    @Value("${qipai.evironment}")
+    private String evironment;
+    @Value("${qipai.tcpport}")
+    private String tcpport;
 
 
 
@@ -64,15 +74,15 @@ public class OldController extends AbstractClientController {
             map.put("playerId",userDto.getId());
             Object[] arr = new Object[1];
             Map<String, Object> hallMap = new HashMap<>();
-            hallMap.put("server_id","200001");
+            hallMap.put("server_id",server_id);
             hallMap.put("server_type",2);
-            hallMap.put("safe_ips","192.168.31.47");
-            hallMap.put("evironment","development");
+            hallMap.put("safe_ips",safe_ips);
+            hallMap.put("evironment",evironment);
             hallMap.put("server_name","Gate服务");
             hallMap.put("isopen",1);
             hallMap.put("game_id",-1);
             hallMap.put("webport",8019);
-            hallMap.put("tcpport",34100);
+            hallMap.put("tcpport",tcpport);
             arr[0] = hallMap;
             map.put("hall_list",arr);
         }catch (Exception e){
