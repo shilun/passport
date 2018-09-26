@@ -251,7 +251,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param
      * @return
      */
-    UserDTO regist(ProxyDto proxydto, String refId, String pass, String phone, String nick, String email,
+    UserDTO regist(ProxyDto proxydto, Integer recommendId,String refId, String pass, String phone, String nick, String email,
                    SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
                    String realName,Long qq);
 

@@ -28,6 +28,12 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
+            <groupId>platform</groupId>
+            <artifactId>com.platform.rpc</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
             <version>3.2.8</version>

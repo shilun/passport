@@ -180,19 +180,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Override
     public UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
-        try {
+        return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+        /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+        String o = (String) redisTemplate.opsForValue().get(key);
+        if (o.equalsIgnoreCase(vcode)) {
             return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-            /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o.equalsIgnoreCase(vcode)) {
-
-                return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-            }*/
-        } catch (Exception e) {
-            logger.error(MessageConstant.REG_FAIL, e);
-            new BizException(MessageConstant.REG_FAIL, e.getMessage());
-        }
-        return null;
+        }*/
     }
 
     @Override

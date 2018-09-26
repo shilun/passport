@@ -13,26 +13,28 @@ import java.io.Serializable;
 public class OldRegDto implements Serializable {
     private static final long serialVersionUID = 3929945176595567524L;
     @ApiModelProperty(value = "手机号")
-    private String account;
+    private String accessName;
     @ApiModelProperty(value = "密码")
-    private String pass;
+    private String accessToken;
     @ApiModelProperty(value = "验证码")
     private String validateCode;
+    @ApiModelProperty(value = "登陆方式")
+    private Integer loginType;
 
-    public String getAccount() {
-        return account;
+    public String getAccessName() {
+        return accessName;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setAccessName(String accessName) {
+        this.accessName = accessName;
     }
 
-    public String getPass() {
-        return pass;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public String getValidateCode() {
@@ -41,5 +43,13 @@ public class OldRegDto implements Serializable {
 
     public void setValidateCode(String validateCode) {
         this.validateCode = validateCode;
+    }
+
+    public Integer getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(Integer loginType) {
+        this.loginType = loginType;
     }
 }

@@ -39,7 +39,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginByPassDto dto, HttpServletResponse response) {
+    public Map<String, Object> login(@RequestBody LoginByPassDto dto,HttpServletRequest request, HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -102,7 +102,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return loginService.regist(getDomain(),dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),
+                return loginService.regist(getDomain(),dto.getRecommendId(),dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),
                         dto.getEmail(),dto.getSexType(),dto.getBirthDay(),getIP(),dto.getHeadUrl(),dto.getWechat(),dto.getIdCard(),
                         dto.getRealName(),dto.getQq());
             }

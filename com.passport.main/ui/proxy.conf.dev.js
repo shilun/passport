@@ -3,7 +3,7 @@
 
 const PROXY_CONFIG = {
   "/api": {
-    "target": "http://localhost:8000",
+    "target": "http://localhost:8002",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",

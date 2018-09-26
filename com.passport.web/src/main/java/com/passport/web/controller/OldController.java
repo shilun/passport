@@ -1,6 +1,5 @@
 package com.passport.web.controller;
 
-import com.common.exception.BizException;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.constant.HttpStatusCode;
@@ -43,7 +42,7 @@ public class OldController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "用户注册")
     public Map<String, Object> userRegister(@RequestBody OldRegDto dto, HttpServletResponse response) {
-        UserDTO userDTO = clientService.registVerification(getDomain(), dto.getAccount(), dto.getValidateCode(), dto.getPass(), getIP());
+        UserDTO userDTO = clientService.registVerification(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP());
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
         }
@@ -53,7 +52,7 @@ public class OldController extends AbstractClientController {
     @RequestMapping("user-login")
     @ResponseBody
     @ApiOperation(value = "用户登陆")
-    public Map<String, Object> userLogin(@RequestBody OldLoginDto dto, HttpServletResponse response) {
+    public Map<String, Object> userLogin(@RequestBody OldLoginDto dto,HttpServletResponse response) {
         if(dto.getType() != 1){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆类型错误");
         }
@@ -63,6 +62,19 @@ public class OldController extends AbstractClientController {
             map = new HashMap<>();
             map.put("gateServerTicket",userDto.getToken());
             map.put("playerId",userDto.getId());
+            Object[] arr = new Object[1];
+            Map<String, Object> hallMap = new HashMap<>();
+            hallMap.put("server_id","200001");
+            hallMap.put("server_type",2);
+            hallMap.put("safe_ips","192.168.31.47");
+            hallMap.put("evironment","development");
+            hallMap.put("server_name","Gate服务");
+            hallMap.put("isopen",1);
+            hallMap.put("game_id",-1);
+            hallMap.put("webport",8019);
+            hallMap.put("tcpport",34100);
+            arr[0] = hallMap;
+            map.put("hall_list",arr);
         }catch (Exception e){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
         }

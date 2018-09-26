@@ -5,6 +5,7 @@ import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.UserDTO;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,13 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
     }
 
     protected UserDTO getUserDto(HttpServletRequest request) {
+        request.getHeader("Accept");
+        try {
+            IOUtils.toString(request.getInputStream(), "utf-8");
+        }
+        catch (Exception e){
+            logger.error(e);
+        }
         String token = request.getHeader("c_token");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
