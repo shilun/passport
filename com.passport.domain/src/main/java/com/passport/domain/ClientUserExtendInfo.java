@@ -9,7 +9,7 @@ import com.common.util.AbstractBaseEntity;
 public class ClientUserExtendInfo extends AbstractBaseEntity {
     // 用户编码
     private Integer userCode;
-    //是否机器人  1.是  2.否
+    //是否机器人  1.否  2.是
     private Integer robot;
     //签名
     private String sign;

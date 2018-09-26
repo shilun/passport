@@ -283,7 +283,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         UserDTO dto = null;
         if (o != null) {
             String oldTokenKey = o.toString();
-            dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
+            //dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
             redisTemplate.delete(oldTokenKey);
         }
         dto = new UserDTO();

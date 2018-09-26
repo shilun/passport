@@ -1,6 +1,7 @@
 package com.passport.service.impl;
 
 import com.common.mongo.AbstractMongoService;
+import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserExtendInfo;
 import com.passport.service.ClientUserExtendInfoService;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class ClientUserExtendInfoServiceImpl extends AbstractMongoService<Client
     @Override
     public Long insert(ClientUserExtendInfo entity) {
         if(entity.getRobot() == null){
-            entity.setRobot(2);
+            entity.setRobot(YesOrNoEnum.NO.getValue());
         }
         return super.insert(entity);
     }

@@ -13,7 +13,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String email;
     private String pin;
     private String nickName;
-    private String mobile;
+    private String phone;
     private String birthday;
     private Integer sexType;
     private Boolean initPass;
@@ -72,12 +72,12 @@ public class UserDTO extends AbstractDTO implements Serializable {
         this.nickName = nickName;
     }
 
-    public String getMobile() {
-        return mobile;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getRealName() {
