@@ -743,7 +743,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         //初始化推荐人
 
 
-        String imgFolder = "/QRCodeImg/";//图片文件夹
+        /*String imgFolder = "/QRCodeImg/";//图片文件夹
         String fileName = String.valueOf(entity.getId());
         File folder = new File(imgFolder);
         if (!folder.exists()) {
@@ -753,7 +753,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             Tool.generateQRCode(proxydto.getDomain()+ "/login/regByQr?recommendId=" + entity.getId(), imgFolder, fileName);
         }catch (Exception e){
             logger.error("生成二维码异常",e);
-        }
+        }*/
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
         return dto;
