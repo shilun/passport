@@ -77,6 +77,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return ClientUserInfo.class;
     }
 
+
+
     public ClientUserInfo login(Long proxyId, String loginName, String passwd, String ip) {
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd) || proxyId == null) {
             return null;
