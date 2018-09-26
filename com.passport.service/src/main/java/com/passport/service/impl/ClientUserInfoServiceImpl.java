@@ -182,12 +182,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Override
     public UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
-        return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-        /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+        String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
         String o = (String) redisTemplate.opsForValue().get(key);
         if (o.equalsIgnoreCase(vcode)) {
             return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-        }*/
+        }
+        return null;
     }
 
     @Override
@@ -1056,5 +1056,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"实名认证异常");
         }
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK);
+    }
+
+    @Override
+    public UserDTO oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
+        String head = String.valueOf(1 + (int) (Math.random() * 20));
+        return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, head, null, null, null, null);
+        /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+        String o = (String) redisTemplate.opsForValue().get(key);
+        if (o.equalsIgnoreCase(vcode)) {
+            return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+        }*/
     }
 }

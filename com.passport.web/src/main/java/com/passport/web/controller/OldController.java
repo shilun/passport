@@ -52,7 +52,7 @@ public class OldController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "用户注册")
     public Map<String, Object> userRegister(@RequestBody OldRegDto dto, HttpServletResponse response) {
-        UserDTO userDTO = clientService.registVerification(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP());
+        UserDTO userDTO = clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP());
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
         }

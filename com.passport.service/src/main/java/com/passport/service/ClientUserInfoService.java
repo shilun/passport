@@ -71,8 +71,6 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip);
 
 
-
-
     /**
      * 构建手机或邮箱登录验证短信
      *
@@ -296,15 +294,75 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      */
     Map<String,Object> getValidateCode(Long proxyId, String phone, String codeType);
 
+
+    /**************以前得接口****************/
+    /**
+     * 修改密码
+     * @param proxyId
+     * @param account
+     * @param pwd
+     * @param newPwd
+     * @return
+     */
     Map<String,Object> oldUpdatePwd(Long proxyId,String account,String pwd,String newPwd);
 
+    /**
+     * 忘记密码
+     * @param proxyId
+     * @param account
+     * @param code
+     * @param pwd
+     * @return
+     */
     Map<String,Object> oldForgetPass(Long proxyId, String account, String code,String pwd);
 
+    /**
+     * 根据usercode获取用户
+     * @param proxyId
+     * @param userCode
+     * @return
+     */
     Map<String,Object> oldFindByUserCode(Long proxyId, Integer userCode);
 
+    /**
+     * 根据账号获取用户
+     * @param proxyId
+     * @param account
+     * @return
+     */
     Map<String,Object> oldFindByAccount(Long proxyId, String account);
 
+    /**
+     * 编辑信息
+     * @param proxyId
+     * @param userId
+     * @param nick
+     * @param qq
+     * @param wechat
+     * @param sex
+     * @param sign
+     * @return
+     */
     Map<String,Object> oldEditUserInfo(Long proxyId, Integer userId,String nick,Long qq,String wechat,Integer sex,String sign);
 
+    /**
+     * 实名认证
+     * @param proxyId
+     * @param userId
+     * @param realName
+     * @param idCard
+     * @return
+     */
     Map<String,Object> OldCertification(Long proxyId, Integer userId,String realName,String idCard);
+
+    /**
+     * 注册
+     * @param proxydto
+     * @param account
+     * @param vcode
+     * @param pass
+     * @param ip
+     * @return
+     */
+    UserDTO oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip);
 }
