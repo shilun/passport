@@ -65,6 +65,40 @@ public class UserRPCServiceImpl implements UserRPCService {
         return rpcResult;
     }
 
+
+    @Override
+    public RPCResult<UserDTO> findByMobile(Long proxyId, String mobile) {
+        RPCResult<UserDTO> rpcResult = new RPCResult<>();
+        try {
+            if (proxyId == null || StringUtils.isBlank(mobile)) {
+                rpcResult.setSuccess(false);
+                rpcResult.setCode("find.userDTO.null");
+                rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
+                return rpcResult;
+            }
+            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId,mobile);
+            if (userInfo == null) {
+                rpcResult.setSuccess(false);
+                rpcResult.setCode("find.userDTO.null");
+                rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
+                return rpcResult;
+            }
+            UserDTO dto = new UserDTO();
+            BeanCoper.copyProperties(dto, userInfo);
+            rpcResult.setSuccess(true);
+            rpcResult.setCode("find.userDTO.success");
+            rpcResult.setMessage("获取用户成功");
+            rpcResult.setData(dto);
+            return rpcResult;
+        } catch (Exception e) {
+            rpcResult.setSuccess(false);
+            rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
+            rpcResult.setCode("find.userDTO.error");
+            logger.error(MessageConstant.FIND_USER_FAIL, e);
+        }
+        return rpcResult;
+    }
+
     @Override
     public RPCResult<UserDTO> findByPin(Long proxyId, String pin) {
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
@@ -120,7 +154,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
                 return rpcResult;
             }
-            redisTemplate.expire(tokenKey,7, TimeUnit.DAYS);
+            redisTemplate.expire(tokenKey, 7, TimeUnit.DAYS);
             rpcResult.setSuccess(true);
             rpcResult.setCode("find.userDTO.dto.success");
             rpcResult.setMessage("获取用户成功");
@@ -192,7 +226,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
             dto.setToken(token);
             QipaiUserDTO qipaiUserDTO = new QipaiUserDTO();
-            BeanCoper.copyProperties(qipaiUserDTO,dto);
+            BeanCoper.copyProperties(qipaiUserDTO, dto);
             RPCResult<UserExtendDTO> extendResult = this.findByUserCode(dto.getProxyId(), dto.getId().intValue());
             qipaiUserDTO.setUserExtendDTO(extendResult.getData());
             result.setSuccess(true);

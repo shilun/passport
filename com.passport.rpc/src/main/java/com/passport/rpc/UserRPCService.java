@@ -16,8 +16,27 @@ public interface UserRPCService {
 
     RPCResult<UserExtendDTO> findByUserCode(Long proxyId,Integer userCode);
 
+    /**
+     * 根据用户pin查找用户
+     * @param proxyId
+     * @param pin
+     * @return
+     */
     RPCResult<UserDTO> findByPin(Long proxyId,String pin);
 
+    /**
+     * 根据电话查找用户
+     * @param proxyId
+     * @param mobile
+     * @return
+     */
+    RPCResult<UserDTO> findByMobile(Long proxyId,String mobile);
+
+    /**
+     * 验证用户token
+     * @param token
+     * @return
+     */
     RPCResult<UserDTO> verfiyToken(String token);
 
     RPCResult<Page<UserDTO>> query(UserDTO dto);
