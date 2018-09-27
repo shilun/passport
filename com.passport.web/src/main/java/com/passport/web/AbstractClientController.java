@@ -37,30 +37,11 @@ public abstract class AbstractClientController extends AbstractController {
     private Map<String, ProxyDto> proxyMap = new HashMap<>();
 
 
-    protected UserDTO getUserDto() {
-        String token = getRequest().getHeader("c_token");
-        if (StringUtils.isBlank(token)) {
-            Cookie tokenCookie = null;
-            for (Cookie item : getRequest().getCookies()) {
-                if (StringUtils.equals(item.getName(), "c_token")) {
-                    tokenCookie = item;
-                    break;
-                }
-            }
-            if (tokenCookie == null) {
-                return null;
-            }
-            token = tokenCookie.getValue();
-        }
-        if (StringUtils.isBlank(token)) {
-            return null;
-        }
-        RPCResult<UserDTO> userDTORPCResult = clientUserInfoService.verfiyToken(token);
-        if (!userDTORPCResult.getSuccess()) {
-            throw new BizException(userDTORPCResult.getCode(), userDTORPCResult.getMessage());
-        }
-        return userDTORPCResult.getData();
+
+    protected UserDTO getUserDto(){
+        return (UserDTO) getRequest().getSession().getAttribute("userDto");
     }
+
 
     /**
      * 获取代理商信息

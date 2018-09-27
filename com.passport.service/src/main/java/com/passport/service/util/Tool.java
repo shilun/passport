@@ -1,21 +1,33 @@
 package com.passport.service.util;
 
-import java.io.IOException;
+import com.common.upload.UploadUtil;
+import com.common.util.Result;
+import com.swetake.util.Qrcode;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 
 /**
  * @author Luo
  * @date 2018/9/25 15:04
  */
+@Component
 public class Tool {
+
+    @Resource
+    private UploadUtil uploadUtil;
     /**
      * 生成二维码
      * @param url
-     * @param filePath
      * @param fileName
      * @throws IOException
      */
-    public static void generateQRCode(String url, String filePath, String fileName) throws IOException {
-        //Qrcode qrcode = new Qrcode();
+    public Result<String> generateQRCode(String url,String fileName,String imgTempDir) throws Exception {
+        Qrcode qrcode = new Qrcode();
         //错误修正容量
         //L水平   7%的字码可被修正
         //M水平   15%的字码可被修正
@@ -23,7 +35,7 @@ public class Tool {
         //H水平   30%的字码可被修正
         //QR码有容错能力，QR码图形如果有破损，仍然可以被机器读取内容，最高可以到7%~30%面积破损仍可被读取。
         //相对而言，容错率愈高，QR码图形面积愈大。所以一般折衷使用15%容错能力。
-        /*qrcode.setQrcodeErrorCorrect('M');
+        qrcode.setQrcodeErrorCorrect('M');
         qrcode.setQrcodeEncodeMode('B');
         qrcode.setQrcodeVersion(13);
         byte[] d = url.getBytes("UTF-8");
@@ -50,9 +62,8 @@ public class Tool {
         g.dispose();
         bi.flush();
 
-        File qrCodeFile = new File(filePath + "/" + fileName + ".png");
-
-        ImageIO.write(bi, "png", qrCodeFile);*/
-
+        File qrCodeFile = new File(imgTempDir + fileName + ".jpg");
+        ImageIO.write(bi, "jpg", qrCodeFile);
+        return uploadUtil.uploadFile(qrCodeFile);
     }
 }

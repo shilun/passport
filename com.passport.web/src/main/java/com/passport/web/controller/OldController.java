@@ -38,8 +38,6 @@ public class OldController extends AbstractClientController {
     @Value("${qipai.tcpport}")
     private String tcpport;
 
-
-
     @RequestMapping("getValidateCode")
     @ResponseBody
     @ApiOperation(value = "获取验证码")
@@ -52,11 +50,7 @@ public class OldController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "用户注册")
     public Map<String, Object> userRegister(@RequestBody OldRegDto dto, HttpServletResponse response) {
-        UserDTO userDTO = clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP());
-        if(userDTO == null){
-            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
-        }
-        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK);
+        return clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP());
     }
 
     @RequestMapping("user-login")
@@ -69,6 +63,7 @@ public class OldController extends AbstractClientController {
         Map<String, Object> map = null;
         try{
             UserDTO userDto = clientService.login(getIP(), getDomain().getId(), dto.getLoginName(), dto.getPwd());
+            putCookie("cToken", userDto.getToken(), response);
             map = new HashMap<>();
             map.put("gateServerTicket",userDto.getToken());
             map.put("playerId",userDto.getId());
@@ -95,7 +90,11 @@ public class OldController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "修改登陆密码")
     public Map<String, Object> updateLoninPwd(@RequestBody OldUpdatePwdDto dto, HttpServletResponse response) {
-        return clientService.oldUpdatePwd(getDomain().getId(),dto.getAccessName(),dto.getPwd(),dto.getNewPwd());
+        UserDTO userDTO=getUserDto();
+        if(userDTO == null){
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
+        }
+        return clientService.oldUpdatePwd(userDTO.getProxyId(),userDTO.getPin(),dto.getPwd(),dto.getNewPwd());
     }
 
     @RequestMapping("forgetLoninPwd")
@@ -105,31 +104,36 @@ public class OldController extends AbstractClientController {
         return clientService.oldForgetPass(getDomain().getId(),dto.getAccessName(),dto.getValidateCode(),dto.getPwd());
     }
 
-    @RequestMapping("getUser")
-    @ResponseBody
-    @ApiOperation(value = "根据userId查询用户")
-    public Map<String, Object> getUserById(@RequestBody OldGetUserByIdDto dto, HttpServletResponse response) {
-        return clientService.oldFindByUserCode(getDomain().getId(),dto.getUserCode());
-    }
-
-    @RequestMapping("getUserByAccessName")
-    @ResponseBody
-    @ApiOperation(value = "根据Account查询用户")
-    public Map<String, Object> getUserByAccount(@RequestBody OldGetUserByAccountDto dto, HttpServletResponse response) {
-        return clientService.oldFindByAccount(getDomain().getId(),dto.getAccessName());
-    }
-
     @RequestMapping("editPlayerInfo")
     @ResponseBody
     @ApiOperation(value = "修改用户信息")
     public Map<String, Object> editUserInfo(@RequestBody OldEditUserInfoDto dto, HttpServletResponse response) {
-        return clientService.oldEditUserInfo(getDomain().getId(),dto.getUserId(),dto.getNick(),dto.getQq(),dto.getWechat(),dto.getGender(),dto.getSign());
+        UserDTO userDTO=getUserDto();
+        if(userDTO == null){
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
+        }
+        return clientService.oldEditUserInfo(getDomain().getId(),userDTO.getPin(),dto.getNick(),dto.getQq(),dto.getWechat(),dto.getGender(),dto.getSign());
     }
 
     @RequestMapping("certification")
     @ResponseBody
     @ApiOperation(value = "实名认证")
     public Map<String, Object> certification(@RequestBody OldCertificationDto dto, HttpServletResponse response) {
-        return clientService.OldCertification(getDomain().getId(),dto.getUserId(),dto.getRealName(),dto.getIdCard());
+        UserDTO userDTO=getUserDto();
+        if(userDTO == null){
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
+        }
+        return clientService.OldCertification(getDomain().getId(),userDTO.getPin(),dto.getRealName(),dto.getIdCard());
+    }
+
+    @RequestMapping("getUserQrCode")
+    @ResponseBody
+    @ApiOperation(value = "获取用户二维码")
+    public Map<String, Object> getUserQrCode(HttpServletResponse response){
+        UserDTO userDTO=getUserDto();
+        if(userDTO == null){
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
+        }
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,"查询成功",userDTO.getQrName());
     }
 }

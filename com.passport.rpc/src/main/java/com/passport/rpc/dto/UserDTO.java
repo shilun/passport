@@ -38,6 +38,8 @@ public class UserDTO extends AbstractDTO implements Serializable {
      * 用户状态
      */
     private Integer status;
+    //二维码图片地址
+    private String qrName;
 
 
     public String getToken() {
@@ -183,5 +185,13 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getQrName() {
+        return qrName;
+    }
+
+    public void setQrName(String qrName) {
+        this.qrName = qrName;
     }
 }

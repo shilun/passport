@@ -299,12 +299,12 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /**
      * 修改密码
      * @param proxyId
-     * @param account
+     * @param pin
      * @param pwd
      * @param newPwd
      * @return
      */
-    Map<String,Object> oldUpdatePwd(Long proxyId,String account,String pwd,String newPwd);
+    Map<String,Object> oldUpdatePwd(Long proxyId,String pin,String pwd,String newPwd);
 
     /**
      * 忘记密码
@@ -319,10 +319,10 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /**
      * 根据usercode获取用户
      * @param proxyId
-     * @param userCode
+     * @param pin
      * @return
      */
-    Map<String,Object> oldFindByUserCode(Long proxyId, Integer userCode);
+    Map<String,Object> oldFindByUserCode(Long proxyId, String pin);
 
     /**
      * 根据账号获取用户
@@ -335,7 +335,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /**
      * 编辑信息
      * @param proxyId
-     * @param userId
+     * @param pin
      * @param nick
      * @param qq
      * @param wechat
@@ -343,17 +343,17 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param sign
      * @return
      */
-    Map<String,Object> oldEditUserInfo(Long proxyId, Integer userId,String nick,Long qq,String wechat,Integer sex,String sign);
+    Map<String,Object> oldEditUserInfo(Long proxyId, String pin,String nick,String qq,String wechat,String sex,String sign);
 
     /**
      * 实名认证
      * @param proxyId
-     * @param userId
+     * @param pin
      * @param realName
      * @param idCard
      * @return
      */
-    Map<String,Object> OldCertification(Long proxyId, Integer userId,String realName,String idCard);
+    Map<String,Object> OldCertification(Long proxyId, String pin,String realName,String idCard);
 
     /**
      * 注册
@@ -364,5 +364,5 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param ip
      * @return
      */
-    UserDTO oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip);
+    Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip);
 }

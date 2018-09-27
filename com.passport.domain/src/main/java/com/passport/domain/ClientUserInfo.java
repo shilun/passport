@@ -53,7 +53,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
      */
     private Integer status;
 
-    @JsonSerialize(using = DateJsonSerializer.class)
     private Date birthDay;
 
     public String getRefId() {
@@ -80,6 +79,8 @@ public class ClientUserInfo extends AbstractBaseEntity {
     private String realName;
     //qq
     private Long qq;
+    //(推荐)二维码图片名字
+    private String qrName;
 
     public Long getProxyId() {
         return proxyId;
@@ -202,4 +203,11 @@ public class ClientUserInfo extends AbstractBaseEntity {
         this.qq = qq;
     }
 
+    public String getQrName() {
+        return qrName;
+    }
+
+    public void setQrName(String qrName) {
+        this.qrName = qrName;
+    }
 }

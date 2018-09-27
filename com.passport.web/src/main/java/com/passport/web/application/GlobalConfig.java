@@ -29,4 +29,6 @@ public class GlobalConfig {
         aliyunMnsUtil.setTemplateXml(resource);
         return aliyunMnsUtil;
     }
+
+
 }

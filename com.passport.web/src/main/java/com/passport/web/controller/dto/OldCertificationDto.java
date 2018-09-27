@@ -10,20 +10,10 @@ import java.io.Serializable;
  */
 public class OldCertificationDto implements Serializable {
     private static final long serialVersionUID = 6536827255666832678L;
-    @ApiModelProperty(value = "usercode")
-    private Integer userId;
     @ApiModelProperty(value = "真实姓名")
     private String realName;
     @ApiModelProperty(value = "身份证号")
     private String idCard;
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
 
     public String getRealName() {
         return realName;

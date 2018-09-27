@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
 
 @Component
 public class UserSessionHandlerInterceptor implements HandlerInterceptor {
@@ -40,18 +41,11 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
     }
 
     protected UserDTO getUserDto(HttpServletRequest request) {
-        request.getHeader("Accept");
-        try {
-            IOUtils.toString(request.getInputStream(), "utf-8");
-        }
-        catch (Exception e){
-            logger.error(e);
-        }
-        String token = request.getHeader("c_token");
+        String token = request.getHeader("cToken");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
             for (Cookie item : request.getCookies()) {
-                if (StringUtils.equals(item.getName(), "c_token")) {
+                if (StringUtils.equals(item.getName(), "cToken")) {
                     tokenCookie = item;
                     break;
                 }

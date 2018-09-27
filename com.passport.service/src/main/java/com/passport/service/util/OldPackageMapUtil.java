@@ -31,4 +31,12 @@ public class OldPackageMapUtil {
         resultMap.put("msg",httpStatusMsg);
         return resultMap;
     }
+    public static Map<String,Object> toSuccessMap(String httpStatusCode,String httpStatusMsg,Object object){
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("success",true);
+        resultMap.put("code",httpStatusCode);
+        resultMap.put("msg",httpStatusMsg);
+        resultMap.put("data",object);
+        return resultMap;
+    }
 }

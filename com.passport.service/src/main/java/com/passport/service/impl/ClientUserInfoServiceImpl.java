@@ -6,6 +6,7 @@ import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.DateUtil;
+import com.common.util.Result;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -41,12 +43,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 @Service
 public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserInfo> implements ClientUserInfoService {
     private static Logger logger = Logger.getLogger(ClientUserInfoServiceImpl.class);
 
-    private final static String CLIENT_USER_CACHE = "passport.cache.{0}";
+    private final String CLIENT_USER_CACHE = "passport.cache.{0}";
     private final String PASS_USER_REG = "passport.userrpc.reg.account.{0}.proxyid.{1}";
     private final String LOGIN_MOBILE_CODE = "passport.userrpc.login.account.{0}.proxyid.{1}";
     private final String LOGIN_PIN = "passport.login.{0}";
@@ -58,12 +61,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     /**
      * 用户session 时间时长
      */
-    public final static int USER_SESSION_TIME = 60 * 60 * 24 * 30;
+    public final static int USER_SESSION_TIME = 60 * 24 * 30;
     @Value("${app.passKey}")
     private String passKey;
 
     @Value("${app.token.encode.key}")
     private String appTokenEncodeKey;
+    @Value("${reg.recommend.url}")
+    private String recommendUrl;
+    @Value("${server.tomcat.basedir}")
+    private String imgTempDir;
     @Resource
     private SMSInfoService smsInfoService;
     @Resource
@@ -72,6 +79,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+    @Resource
+    private Tool tool;
 
     protected Class<ClientUserInfo> getEntityClass() {
         return ClientUserInfo.class;
@@ -716,11 +725,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if (!StringUtils.isBlank(birth)) {
             date = DateUtil.parseDate(birth);
         }
+        ClientUserInfo entity = findByPhone(proxydto.getId(),phone);
+        if(entity != null){
+            throw new BizException("该账号已经注册过了");
+        }
 
-        ClientUserInfo entity = new ClientUserInfo();
+        entity = new ClientUserInfo();
         entity.setProxyId(proxydto.getId());
         entity.setRefId(refId);
-        entity.setPin(StringUtils.getUUID());
+        String pin = StringUtils.getUUID();
+        entity.setPin(pin);
         entity.setPhone(phone);
         entity.setNickName(nick);
         entity.setSexType(sexEnum.getValue());
@@ -734,26 +748,25 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         entity.setRealName(realName);
         entity.setQq(qq);
         entity.setRegisterIp(ip);
+
+        String fileName = proxydto.getId() + "_" + phone;
+        try {
+            String domain = "http://www." + proxydto.getDomain();
+            String url = MessageFormat.format(recommendUrl,domain,pin);
+            Result<String> res = tool.generateQRCode(url, fileName, imgTempDir);
+            if(res.getSuccess()){
+                entity.setQrName(res.getModule());
+            }
+        }catch (Exception e){
+            throw new BizException("生成二维码异常");
+        }
+
         save(entity);
         ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
         clientUserExtendInfo.setUserCode(entity.getId().intValue());
         clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
         clientUserExtendInfoService.save(clientUserExtendInfo);
 
-        //初始化推荐人
-
-
-        /*String imgFolder = "/QRCodeImg/";//图片文件夹
-        String fileName = String.valueOf(entity.getId());
-        File folder = new File(imgFolder);
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
-        try {
-            Tool.generateQRCode(proxydto.getDomain()+ "/login/regByQr?recommendId=" + entity.getId(), imgFolder, fileName);
-        }catch (Exception e){
-            logger.error("生成二维码异常",e);
-        }*/
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
         return dto;
@@ -882,21 +895,22 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Map<String,Object> oldUpdatePwd(Long proxyId, String account, String pwd, String newPwd) {
+    public Map<String,Object> oldUpdatePwd(Long proxyId, String pin, String pwd, String newPwd) {
         try{
-            if (proxyId == null) {
+            if (proxyId == null || StringUtils.isBlank(pin)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
             }
-            if (!StringUtils.isMobileNO(account)) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号格式不正确");
-            }
-            ClientUserInfo user = findByPhone(proxyId, account);
+            ClientUserInfo user = findByPin(proxyId,pin);
             if(user == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
             }
             pwd = MD5.MD5Str(pwd, passKey);
             if(!pwd.equals(user.getPasswd())){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"密码校验失败");
+            }
+            int length = newPwd.trim().length();
+            if(length < 6 || length > 16){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"密码长度在6-16位");
             }
             this.changePass(proxyId,user.getPin(),newPwd);
         }catch (Exception e){
@@ -917,14 +931,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
 
 
-            String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, account);
+            /*String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, account);
             String o = (String) redisTemplate.opsForValue().get(key);
             if (o == null) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
             }
             if (!o.equals(code)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
-            }
+            }*/
 
             ClientUserInfo user = findByPhone(proxyId, account);
             if(user == null){
@@ -941,12 +955,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Map<String, Object> oldFindByUserCode(Long proxyId, Integer userCode) {
+    public Map<String, Object> oldFindByUserCode(Long proxyId, String pin) {
         try{
-            if (proxyId == null || userCode == null) {
+            if (proxyId == null || StringUtils.isBlank(pin)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
             }
-            ClientUserInfo info = findByUserCode(proxyId, userCode);
+            ClientUserInfo info = findByPin(proxyId, pin);
             if(info == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
             }
@@ -956,7 +970,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             dataMap.put("gender", info.getSexType());
             dataMap.put("nick", info.getNickName());
             dataMap.put("headUrl", info.getHeadUrl());
-            ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(userCode);
+            ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(info.getId().intValue());
             if(extend != null){
                 dataMap.put("sign", extend.getSign());
             }
@@ -998,53 +1012,63 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Map<String, Object> oldEditUserInfo(Long proxyId, Integer userId, String nick, Long qq, String wechat, Integer sex, String sign) {
+    public Map<String, Object> oldEditUserInfo(Long proxyId, String pin, String nick, String qq, String wechat, String sex, String sign) {
+        Map<String, Object> dataMap = null;
         try{
-            if (proxyId == null || userId == null) {
+            if (proxyId == null || StringUtils.isBlank(pin)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
             }
 
-            ClientUserInfo userInfo = findByUserCode(proxyId, userId);
+            ClientUserInfo userInfo = findByPin(proxyId,pin);
             if(userInfo == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
             }
 
+            dataMap = new HashMap<>();
             if(StringUtils.isNotBlank(nick)){
                 userInfo.setNickName(nick);
             }
-            if(qq != null){
-                userInfo.setQq(qq);
+            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+            if(StringUtils.isNotBlank(qq) && pattern.matcher(qq).matches()){
+                userInfo.setQq(Long.parseLong(qq));
             }
             if(StringUtils.isNotBlank(wechat)){
                 userInfo.setWechat(wechat);
             }
-            if(sex != null){
-                userInfo.setSexType(sex);
+            if(StringUtils.isBlank(sex) && pattern.matcher(sex).matches()){
+                int sexInt = Integer.parseInt(sex);
+                if(SexEnum.MALE.getValue() == sexInt || SexEnum.FEMALE.getValue() == sexInt){
+                    userInfo.setSexType(sexInt);
+                }
             }
-
             if(StringUtils.isNotBlank(sign)){
                 ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
                 if(extend != null){
                     extend.setSign(sign);
+                    dataMap.put("sign",extend.getSign());
+                    clientUserExtendInfoService.save(extend);
                 }
-                clientUserExtendInfoService.save(extend);
             }
             save(userInfo);
+            dataMap.put("nick",userInfo.getNickName());
+            dataMap.put("qq",userInfo.getQq());
+            dataMap.put("wechat",userInfo.getWechat());
+            dataMap.put("gender",userInfo.getSexType());
         }catch (Exception e){
             logger.error("",e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"编辑用户信息异常");
         }
-        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK);
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK,dataMap);
     }
 
     @Override
-    public Map<String, Object> OldCertification(Long proxyId, Integer userId, String realName, String idCard) {
+    public Map<String, Object> OldCertification(Long proxyId, String pin, String realName, String idCard) {
         try{
-            if (proxyId == null || userId == null || StringUtils.isBlank(realName) || StringUtils.isBlank(idCard)) {
+            if (proxyId == null || StringUtils.isBlank(pin) || StringUtils.isBlank(realName) || StringUtils.isBlank(idCard)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"参数不能为空");
             }
 
-            ClientUserInfo userInfo = findByUserCode(proxyId, userId);
+            ClientUserInfo userInfo = findByPin(proxyId,pin);
             if(userInfo == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
             }
@@ -1059,13 +1083,36 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
-        String head = String.valueOf(1 + (int) (Math.random() * 20));
-        return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, head, null, null, null, null);
-        /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
-        String o = (String) redisTemplate.opsForValue().get(key);
-        if (o.equalsIgnoreCase(vcode)) {
-            return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-        }*/
+    public Long save(ClientUserInfo entity) {
+        String userKey = MessageFormat.format(CLIENT_USER_CACHE, entity.getPin());
+        ClientUserInfo cacheUser = (ClientUserInfo) redisTemplate.opsForValue().get(userKey);
+        if (cacheUser != null) {
+            redisTemplate.delete(userKey);
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
+        try {
+            String head = String.valueOf(1 + (int) (Math.random() * 20));
+            int length = pass.trim().length();
+            if(length < 6 || length > 16){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"密码长度在6-16位");
+            }
+            UserDTO userDTO = regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, head, null, null, null, null);
+            if(userDTO == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
+            }
+            /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if (o.equalsIgnoreCase(vcode)) {
+                return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+            }*/
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
+        }
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.MSG_OK,"注册成功");
     }
 }

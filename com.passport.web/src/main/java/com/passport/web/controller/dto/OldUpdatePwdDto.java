@@ -12,20 +12,10 @@ import java.io.Serializable;
 @ApiModel(description = "修改登陆密码")
 public class OldUpdatePwdDto implements Serializable {
     private static final long serialVersionUID = 7001477580695569239L;
-    @ApiModelProperty(value = "账号")
-    private String accessName;
     @ApiModelProperty(value = "旧密码")
     private String pwd;
     @ApiModelProperty(value = "新密码")
     private String newPwd;
-
-    public String getAccessName() {
-        return accessName;
-    }
-
-    public void setAccessName(String accessName) {
-        this.accessName = accessName;
-    }
 
     public String getPwd() {
         return pwd;

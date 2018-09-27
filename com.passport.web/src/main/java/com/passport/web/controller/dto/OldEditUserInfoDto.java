@@ -12,26 +12,16 @@ import java.io.Serializable;
 @ApiModel(description = "编辑用户信息")
 public class OldEditUserInfoDto implements Serializable {
     private static final long serialVersionUID = -1745267016685487336L;
-    @ApiModelProperty(value = "userCode")
-    private Integer userId;
     @ApiModelProperty(value = "昵称")
     private String nick;
     @ApiModelProperty(value = "qq")
-    private Long qq;
+    private String qq;
     @ApiModelProperty(value = "微信")
     private String wechat;
     @ApiModelProperty(value = "性别")
-    private Integer gender;
+    private String gender;
     @ApiModelProperty(value = "签名")
     private String sign;
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
 
     public String getNick() {
         return nick;
@@ -41,13 +31,6 @@ public class OldEditUserInfoDto implements Serializable {
         this.nick = nick;
     }
 
-    public Long getQq() {
-        return qq;
-    }
-
-    public void setQq(Long qq) {
-        this.qq = qq;
-    }
 
     public String getWechat() {
         return wechat;
@@ -57,11 +40,19 @@ public class OldEditUserInfoDto implements Serializable {
         this.wechat = wechat;
     }
 
-    public Integer getGender() {
+    public String getQq() {
+        return qq;
+    }
+
+    public void setQq(String qq) {
+        this.qq = qq;
+    }
+
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
