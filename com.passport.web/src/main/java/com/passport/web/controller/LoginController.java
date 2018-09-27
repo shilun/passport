@@ -39,7 +39,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginByPassDto dto,HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> login(@RequestBody LoginByPassDto dto,HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -53,7 +53,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("buildLoginMobileCode")
     @ResponseBody
     @ApiOperation(value = "手机号登陆获取验证码")
-    public Map<String, Object> buildLoginMobileCode(@RequestBody LoginByCodeDto dto, HttpServletResponse response) {
+    public Map<String, Object> buildLoginMobileCode(@RequestBody LoginByCodeDto dto) {
         return buildMessage(() -> {
             loginService.loginCodeBuild(getDomain().getId(), dto.getAccount());
             return null;
@@ -64,7 +64,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     @ApiOperation(value = "手机号登陆校验")
 
-    public Map<String, Object> loginByCodeVer(@RequestBody LoginByCodeVerDto dto, HttpServletResponse response) {
+    public Map<String, Object> loginByCodeVer(@RequestBody LoginByCodeVerDto dto) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -76,7 +76,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("register")
     @ResponseBody
     @ApiOperation(value = "手机号注册获取验证码")
-    public Map<String, Object> register(@RequestBody RegisterDto dto, HttpServletResponse response) {
+    public Map<String, Object> register(@RequestBody RegisterDto dto) {
         return buildMessage(() -> {
             loginService.regist(getDomain().getId(), dto.getAccount());
             return null;
@@ -86,7 +86,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("registVerification")
     @ResponseBody
     @ApiOperation(value = "手机号注册校验")
-    public Map<String, Object> registVerification(@RequestBody RegisterVerDto dto, HttpServletResponse response) {
+    public Map<String, Object> registVerification(@RequestBody RegisterVerDto dto) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -98,7 +98,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("loginOut")
     @ResponseBody
     @ApiOperation(value = "登出")
-    public Map<String, Object> loginOut(HttpServletResponse response) {
+    public Map<String, Object> loginOut() {
         return buildMessage(() -> {
             try {
                 UserDTO dto = getUserDto();
@@ -132,7 +132,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("changeMobile")
     @ApiOperation(value = "修改手机号获取验证码")
-    public Map<String, Object> changeMobile(@RequestBody ChangeMobileDto dto, HttpServletResponse response) {
+    public Map<String, Object> changeMobile(@RequestBody ChangeMobileDto dto) {
         return buildMessage(() -> {
             loginService.changeMobile(getDomain().getId(),getUserDto().getPin(), dto.getMobile());
             return null;
@@ -141,7 +141,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("changeMobileVer")
     @ApiOperation(value = "修改手机号校验")
-    public Map<String, Object> changeMobileVer(@RequestBody ChangeMobileVerDto dto, HttpServletResponse response) {
+    public Map<String, Object> changeMobileVer(@RequestBody ChangeMobileVerDto dto) {
         return buildMessage(() ->{
             loginService.changeMobile(getDomain().getId(),getUserDto().getPin(), dto.getMobile(), dto.getCode());
             return null;
@@ -150,7 +150,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("bindMobile")
     @ApiOperation(value = "绑定手机号获取验证码")
-    public Map<String, Object> bindMobile(@RequestBody BindMobileDto dto, HttpServletResponse response) {
+    public Map<String, Object> bindMobile(@RequestBody BindMobileDto dto) {
         return buildMessage(() -> {
             loginService.bindMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile());
             return null;
@@ -159,7 +159,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("bindMobileVer")
     @ApiOperation(value = "绑定手机号校验")
-    public Map<String, Object> bindMobileVer(@RequestBody BindMobileVerDto dto, HttpServletResponse response) {
+    public Map<String, Object> bindMobileVer(@RequestBody BindMobileVerDto dto) {
         return buildMessage(() ->{
             loginService.bindMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
             return null;
@@ -168,7 +168,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("changePass")
     @ApiOperation(value = "修改密码")
-    public Map<String, Object> changePass(@RequestBody ChangePassDto dto, HttpServletResponse response) {
+    public Map<String, Object> changePass(@RequestBody ChangePassDto dto) {
         return buildMessage(() ->{
             loginService.changePass(getDomain().getId(),getUserDto().getPin(), dto.getOldPass(), dto.getNewPass());
             return null;
@@ -177,7 +177,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("changeNick")
     @ApiOperation(value = "修改昵称")
-    public Map<String, Object> changeNick(@RequestBody ChangeNickDto dto, HttpServletResponse response) {
+    public Map<String, Object> changeNick(@RequestBody ChangeNickDto dto) {
         return buildMessage(() ->{
             loginService.changeNickName(getDomain().getId(),getUserDto().getPin(), dto.getNick());
             return null;
@@ -186,7 +186,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("changeSex")
     @ApiOperation(value = "修改性别")
-    public Map<String, Object> changeSex(@RequestBody ChangeSexDto dto, HttpServletResponse response) {
+    public Map<String, Object> changeSex(@RequestBody ChangeSexDto dto) {
         return buildMessage(() ->{
             loginService.changeSex(getDomain().getId(),getUserDto().getPin(), dto.getSex());
             return null;
@@ -195,7 +195,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("changeBirthday")
     @ApiOperation(value = "修改生日")
-    public Map<String, Object> changeBirthday(@RequestBody String birthday, HttpServletResponse response) {
+    public Map<String, Object> changeBirthday(@RequestBody String birthday) {
         return buildMessage(() -> {
             loginService.changeBirthday(getDomain().getId(),getUserDto().getPin(), JSONObject.fromObject(birthday).getString("birthday"));
             return null;
@@ -213,7 +213,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("forgetPassVer")
     @ApiOperation(value = "忘记密码校验")
-    public Map<String, Object> forgetPassVer(@RequestBody ForgetPassVerDto dto, HttpServletResponse response) {
+    public Map<String, Object> forgetPassVer(@RequestBody ForgetPassVerDto dto) {
         return buildMessage(() -> {
             loginService.forgetPassCodeVerification(getDomain().getId(),dto.getAccount(), dto.getCode(), dto.getPass());
             return null;
@@ -222,7 +222,7 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping("saveExtendInfo")
     @ApiOperation(value = "保存扩展信息")
-    public Map<String, Object> saveExtendInfo(@RequestBody UserExtendDto dto, HttpServletResponse response) {
+    public Map<String, Object> saveExtendInfo(@RequestBody UserExtendDto dto) {
         UserExtendDTO userExtendDTO = new UserExtendDTO();
         BeanCoper.copyProperties(userExtendDTO, dto);
         return buildMessage(() -> {
