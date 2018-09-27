@@ -3,6 +3,7 @@ package com.passport.service.util;
 import com.common.upload.UploadUtil;
 import com.common.util.Result;
 import com.swetake.util.Qrcode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -18,7 +19,7 @@ import java.io.*;
 @Component
 public class Tool {
 
-    @Resource
+    @Autowired(required = false)
     private UploadUtil uploadUtil;
     /**
      * 生成二维码
