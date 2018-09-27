@@ -144,6 +144,7 @@ public class UserRPCServiceImpl implements UserRPCService {
 
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
+            String oldToken = token;
             token = DesDecrypter.decryptString(token, appTokenEncodeKey);
             token = token.split(":")[2];
             if (StringUtils.isBlank(token)) {
@@ -164,7 +165,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             rpcResult.setSuccess(true);
             rpcResult.setCode("find.userDTO.dto.success");
             rpcResult.setMessage("获取用户成功");
-            dto.setToken(token);
+            dto.setToken(oldToken);
             rpcResult.setData(dto);
             return rpcResult;
         } catch (Exception e) {
@@ -215,6 +216,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token) {
         RPCResult<QipaiUserDTO> result = new RPCResult<>();
         try {
+            String oldToken = token;
             token = DesDecrypter.decryptString(token, appTokenEncodeKey);
             String realToken = token.split(":")[2];
             if (StringUtils.isBlank(realToken)) {
@@ -230,7 +232,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setCode("token.error");
                 return result;
             }
-            dto.setToken(token);
+            dto.setToken(oldToken);
             QipaiUserDTO qipaiUserDTO = new QipaiUserDTO();
             BeanCoper.copyProperties(qipaiUserDTO, dto);
 
