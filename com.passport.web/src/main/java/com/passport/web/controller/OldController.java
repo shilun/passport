@@ -41,7 +41,7 @@ public class OldController extends AbstractClientController {
     @RequestMapping("getValidateCode")
     @ResponseBody
     @ApiOperation(value = "获取验证码")
-    public Map<String, Object> getValidateCode(@RequestBody OldGetCodeDto dto, HttpServletResponse response) {
+    public Map<String, Object> getValidateCode(@RequestBody OldGetCodeDto dto) {
         return clientService.getValidateCode(getDomain().getId(),dto.getPhoneNo(),dto.getCodeType());
     }
 
@@ -49,8 +49,8 @@ public class OldController extends AbstractClientController {
     @RequestMapping("user-reg")
     @ResponseBody
     @ApiOperation(value = "用户注册")
-    public Map<String, Object> userRegister(@RequestBody OldRegDto dto, HttpServletResponse response) {
-        return clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP());
+    public Map<String, Object> userRegister(@RequestBody OldRegDto dto) {
+        return clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP(),null);
     }
 
     @RequestMapping("user-login")
@@ -89,7 +89,7 @@ public class OldController extends AbstractClientController {
     @RequestMapping("updateLoninPwd")
     @ResponseBody
     @ApiOperation(value = "修改登陆密码")
-    public Map<String, Object> updateLoninPwd(@RequestBody OldUpdatePwdDto dto, HttpServletResponse response) {
+    public Map<String, Object> updateLoninPwd(@RequestBody OldUpdatePwdDto dto) {
         UserDTO userDTO=getUserDto();
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
@@ -100,14 +100,14 @@ public class OldController extends AbstractClientController {
     @RequestMapping("forgetLoninPwd")
     @ResponseBody
     @ApiOperation(value = "忘记密码")
-    public Map<String, Object> forgetPwd(@RequestBody OldForgetPwd dto, HttpServletResponse response) {
+    public Map<String, Object> forgetPwd(@RequestBody OldForgetPwd dto) {
         return clientService.oldForgetPass(getDomain().getId(),dto.getAccessName(),dto.getValidateCode(),dto.getPwd());
     }
 
     @RequestMapping("editPlayerInfo")
     @ResponseBody
     @ApiOperation(value = "修改用户信息")
-    public Map<String, Object> editUserInfo(@RequestBody OldEditUserInfoDto dto, HttpServletResponse response) {
+    public Map<String, Object> editUserInfo(@RequestBody OldEditUserInfoDto dto) {
         UserDTO userDTO=getUserDto();
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
@@ -118,7 +118,7 @@ public class OldController extends AbstractClientController {
     @RequestMapping("certification")
     @ResponseBody
     @ApiOperation(value = "实名认证")
-    public Map<String, Object> certification(@RequestBody OldCertificationDto dto, HttpServletResponse response) {
+    public Map<String, Object> certification(@RequestBody OldCertificationDto dto) {
         UserDTO userDTO=getUserDto();
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
@@ -129,11 +129,18 @@ public class OldController extends AbstractClientController {
     @RequestMapping("getUserQrCode")
     @ResponseBody
     @ApiOperation(value = "获取用户二维码")
-    public Map<String, Object> getUserQrCode(HttpServletResponse response){
+    public Map<String, Object> getUserQrCode(){
         UserDTO userDTO=getUserDto();
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
         }
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,"查询成功",userDTO.getQrName());
+    }
+
+    @RequestMapping("regByQr")
+    @ResponseBody
+    @ApiOperation(value = "二维码注册")
+    public Map<String, Object> regByQr(@RequestBody OldQRRegDto dto){
+        return clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP(),dto.getRecommendId());
     }
 }

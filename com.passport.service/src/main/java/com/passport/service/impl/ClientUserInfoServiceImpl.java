@@ -1093,7 +1093,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
+    public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,String recommendId) {
         try {
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();

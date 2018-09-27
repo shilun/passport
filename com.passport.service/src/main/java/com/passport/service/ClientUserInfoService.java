@@ -362,7 +362,8 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param vcode
      * @param pass
      * @param ip
+     * @param recommendId  推荐人pin
      * @return
      */
-    Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip);
+    Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,String recommendId);
 }

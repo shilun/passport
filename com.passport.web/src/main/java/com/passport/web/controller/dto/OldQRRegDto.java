@@ -1,6 +1,5 @@
 package com.passport.web.controller.dto;
 
-import com.common.util.model.SexEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -14,133 +13,53 @@ import java.io.Serializable;
 public class OldQRRegDto implements Serializable {
     private static final long serialVersionUID = 8894215864404639400L;
     @ApiModelProperty(value = "推荐人id")
-    private Integer recommendId;
-    @ApiModelProperty(value = "账号")
-    private String account;
-    @ApiModelProperty(value = "密码")
-    private String pass;
+    private String recommendId;
     @ApiModelProperty(value = "手机号")
-    private String phone;
-    @ApiModelProperty(value = "昵称")
-    private String nickName;
-    @ApiModelProperty(value = "邮箱")
-    private String email;
-    @ApiModelProperty(value = "性别")
-    private SexEnum sexType;
-    @ApiModelProperty(value = "生日")
-    private String birthDay;
-    @ApiModelProperty(value = "头像地址")
-    private String headUrl;
-    @ApiModelProperty(value = "微信")
-    private String wechat;
-    @ApiModelProperty(value = "身份证号")
-    private String idCard;
-    @ApiModelProperty(value = "真实姓名")
-    private String realName;
-    @ApiModelProperty(value = "qq")
-    private Long qq;
+    private String accessName;
+    @ApiModelProperty(value = "密码")
+    private String accessToken;
+    @ApiModelProperty(value = "验证码")
+    private String validateCode;
+    @ApiModelProperty(value = "登陆方式")
+    private Integer loginType;
 
-    public Integer getRecommendId() {
+    public String getRecommendId() {
         return recommendId;
     }
 
-    public void setRecommendId(Integer recommendId) {
+    public void setRecommendId(String recommendId) {
         this.recommendId = recommendId;
     }
 
-    public String getAccount() {
-        return account;
+    public String getAccessName() {
+        return accessName;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setAccessName(String accessName) {
+        this.accessName = accessName;
     }
 
-    public String getPass() {
-        return pass;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getValidateCode() {
+        return validateCode;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setValidateCode(String validateCode) {
+        this.validateCode = validateCode;
     }
 
-    public String getNickName() {
-        return nickName;
+    public Integer getLoginType() {
+        return loginType;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public SexEnum getSexType() {
-        return sexType;
-    }
-
-    public void setSexType(SexEnum sexType) {
-        this.sexType = sexType;
-    }
-
-    public String getBirthDay() {
-        return birthDay;
-    }
-
-    public void setBirthDay(String birthDay) {
-        this.birthDay = birthDay;
-    }
-
-    public String getHeadUrl() {
-        return headUrl;
-    }
-
-    public void setHeadUrl(String headUrl) {
-        this.headUrl = headUrl;
-    }
-
-    public String getWechat() {
-        return wechat;
-    }
-
-    public void setWechat(String wechat) {
-        this.wechat = wechat;
-    }
-
-    public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
-    }
-
-    public String getRealName() {
-        return realName;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
-    }
-
-    public Long getQq() {
-        return qq;
-    }
-
-    public void setQq(Long qq) {
-        this.qq = qq;
+    public void setLoginType(Integer loginType) {
+        this.loginType = loginType;
     }
 }

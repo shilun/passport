@@ -95,21 +95,6 @@ public class LoginController extends AbstractClientController {
         });
     }
 
-    @RequestMapping("regByQr")
-    @ResponseBody
-    @ApiOperation(value = "二维码注册")
-    public Map<String, Object> regByQr(@RequestBody OldQRRegDto dto, HttpServletResponse response) {
-        return buildMessage(new IExecute() {
-            @Override
-            public Object getData() {
-                return loginService.regist(getDomain(),dto.getRecommendId(),dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),
-                        dto.getEmail(),dto.getSexType(),dto.getBirthDay(),getIP(),dto.getHeadUrl(),dto.getWechat(),dto.getIdCard(),
-                        dto.getRealName(),dto.getQq());
-            }
-        });
-    }
-
-
     @RequestMapping("loginOut")
     @ResponseBody
     @ApiOperation(value = "登出")
