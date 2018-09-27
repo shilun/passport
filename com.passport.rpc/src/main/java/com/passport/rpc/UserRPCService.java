@@ -1,6 +1,7 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
+import com.passport.rpc.dto.LogLoginDto;
 import com.passport.rpc.dto.QipaiUserDTO;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
@@ -46,5 +47,13 @@ public interface UserRPCService {
      * @return
      */
     RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token);
+
+    /**
+     * 获取用户最近一次的登陆信息
+     * @param proxyId
+     * @param pin
+     * @return
+     */
+    RPCResult<LogLoginDto> getUserLastLoginInfo(Long proxyId,String pin);
 
 }

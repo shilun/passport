@@ -26,4 +26,6 @@ public interface LogLoginService {
      * @return
      */
     Page<LogLoginInfo> queryByIp(Long proxyId, String ip, Pageable pageable);
+
+    LogLoginInfo getUserLastLoginInfo(Long proxyId, String pin);
 }

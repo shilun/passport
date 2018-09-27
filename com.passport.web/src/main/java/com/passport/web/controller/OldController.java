@@ -37,14 +37,23 @@ public class OldController extends AbstractClientController {
     private String evironment;
     @Value("${qipai.tcpport}")
     private String tcpport;
+    @Value("${app.upload.scode}")
+    private String scode;
+    @Value("${app.upload.domain}")
+    private String uploadDomain;
 
-    @RequestMapping("getValidateCode")
+    @RequestMapping("forgetPassBuildCode")
     @ResponseBody
-    @ApiOperation(value = "获取验证码")
-    public Map<String, Object> getValidateCode(@RequestBody OldGetCodeDto dto) {
-        return clientService.getValidateCode(getDomain().getId(),dto.getPhoneNo(),dto.getCodeType());
+    @ApiOperation(value = "忘记密码获取验证码")
+    public Map<String, Object> forgetPassBuildCode(@RequestBody OldGetCodeDto dto) {
+        return clientService.oldForgetPassBuildCode(getDomain().getId(),dto.getPhoneNo());
     }
-
+    @RequestMapping("regBuildCode")
+    @ResponseBody
+    @ApiOperation(value = "注册获取验证码")
+    public Map<String, Object> regBuildCode(@RequestBody OldGetCodeDto dto) {
+        return clientService.oldRegistBuildCode(getDomain().getId(),dto.getPhoneNo());
+    }
 
     @RequestMapping("user-reg")
     @ResponseBody
@@ -134,7 +143,9 @@ public class OldController extends AbstractClientController {
         if(userDTO == null){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"登陆信息过期");
         }
-        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,"查询成功",userDTO.getQrName());
+        StringBuffer sb = new StringBuffer();
+        sb.append("http://").append(uploadDomain).append("/").append(scode).append("/").append(userDTO.getQrName());
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,"查询成功",sb.toString());
     }
 
     @RequestMapping("regByQr")

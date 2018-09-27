@@ -7,12 +7,15 @@ import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
+import com.passport.domain.LogLoginInfo;
 import com.passport.rpc.UserRPCService;
+import com.passport.rpc.dto.LogLoginDto;
 import com.passport.rpc.dto.QipaiUserDTO;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.LogLoginService;
 import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +43,8 @@ public class UserRPCServiceImpl implements UserRPCService {
     private ClientUserInfoService clientUserInfoService;
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
+    @Resource
+    private LogLoginService logLoginService;
 
     private final String LOGIN_TOKEN = "passport.login.token.{1}";
     @Value("${app.token.encode.key}")
@@ -227,6 +233,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             dto.setToken(token);
             QipaiUserDTO qipaiUserDTO = new QipaiUserDTO();
             BeanCoper.copyProperties(qipaiUserDTO, dto);
+
             RPCResult<UserExtendDTO> extendResult = this.findByUserCode(dto.getProxyId(), dto.getId().intValue());
             qipaiUserDTO.setUserExtendDTO(extendResult.getData());
             result.setSuccess(true);
@@ -234,6 +241,34 @@ public class UserRPCServiceImpl implements UserRPCService {
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("qipaiVerfiyToken.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<LogLoginDto> getUserLastLoginInfo(Long proxyId, String pin) {
+        RPCResult<LogLoginDto> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || StringUtils.isBlank(pin)){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            LogLoginInfo info = logLoginService.getUserLastLoginInfo(proxyId, pin);
+            if(info == null){
+                result.setSuccess(false);
+                result.setCode("find.result.null");
+                return result;
+            }
+            LogLoginDto dto = new LogLoginDto();
+            BeanCoper.copyProperties(dto,info);
+            result.setSuccess(true);
+            result.setData(dto);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("getUserLastLoginInfo.error");
             logger.error("", e);
         }
         return result;

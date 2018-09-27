@@ -26,8 +26,6 @@ public class UserDTO extends AbstractDTO implements Serializable {
     // 头像URL
     private String headUrl;
 
-    //最后登陆IP
-    private String lastLoginIp;
     //微信
     private String wechat;
     //身份证号
@@ -145,14 +143,6 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setHeadUrl(String headUrl) {
         this.headUrl = headUrl;
-    }
-
-    public String getLastLoginIp() {
-        return lastLoginIp;
-    }
-
-    public void setLastLoginIp(String lastLoginIp) {
-        this.lastLoginIp = lastLoginIp;
     }
 
     public String getWechat() {

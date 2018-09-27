@@ -14,8 +14,6 @@ public class OldGetCodeDto implements Serializable {
     private static final long serialVersionUID = 8946329497408251943L;
     @ApiModelProperty(value = "手机号")
     private String phoneNo;
-    @ApiModelProperty(value = "验证码类型")
-    private String codeType;
 
     public String getPhoneNo() {
         return phoneNo;
@@ -23,13 +21,5 @@ public class OldGetCodeDto implements Serializable {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
-    }
-
-    public String getCodeType() {
-        return codeType;
-    }
-
-    public void setCodeType(String codeType) {
-        this.codeType = codeType;
     }
 }

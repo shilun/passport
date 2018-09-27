@@ -286,13 +286,6 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     Long queryCountByRegTime(Long proxyId,Date startRegTime,Date endRegTime);
-    /**
-     * 获取验证码
-     * @param proxyId
-     * @param phone
-     * @param codeType
-     */
-    Map<String,Object> getValidateCode(Long proxyId, String phone, String codeType);
 
 
     /**************以前得接口****************/
@@ -366,4 +359,19 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,String recommendId);
+
+    /**
+     * 注册验证码
+     * @param proxyId
+     * @param phone
+     * @return
+     */
+    Map<String, Object> oldRegistBuildCode(Long proxyId,String phone);
+    /**
+     * 忘记密码验证码
+     * @param proxyId
+     * @param phone
+     * @return
+     */
+    Map<String, Object> oldForgetPassBuildCode(Long proxyId,String phone);
 }

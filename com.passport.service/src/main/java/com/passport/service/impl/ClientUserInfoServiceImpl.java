@@ -873,26 +873,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     /************************************以下是兼容以前的接口**********************************************/
 
-    @Override
-    public Map<String,Object> getValidateCode(Long proxyId, String phone, String codeType) {
-        try{
-            if (codeType.equals("1")) { //注册验证码
-                regist(proxyId,phone);
-            } else if (codeType.equals("2")) {  //更改密码验证码
-                ClientUserInfo info = findByPhone(proxyId, phone);
-                if(info == null){
-                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"用户不存在");
-                }
-                changePassByMobileBuildMsg(proxyId,info.getPin(),phone);
-            }else {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"没有此类型的验证码");
-            }
-        }catch (Exception e){
-            logger.error("", e);
-            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
-        }
-        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_ACCEPTED,"短信已发送");
-    }
 
     @Override
     public Map<String,Object> oldUpdatePwd(Long proxyId, String pin, String pwd, String newPwd) {
@@ -929,7 +909,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (!StringUtils.isMobileNO(account)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号格式不正确");
             }
-
+            ClientUserInfo user = findByPhone(proxyId, account);
+            if(user == null){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
+            }
 
             /*String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, account);
             String o = (String) redisTemplate.opsForValue().get(key);
@@ -940,10 +923,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
             }*/
 
-            ClientUserInfo user = findByPhone(proxyId, account);
-            if(user == null){
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"未找到该用户");
-            }
             pwd = MD5.MD5Str(pwd, passKey);
             user.setPasswd(pwd);
             save(user);
@@ -1100,19 +1079,57 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if(length < 6 || length > 16){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"密码长度在6-16位");
             }
+            /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+            String o = (String) redisTemplate.opsForValue().get(key);
+            if (!o.equalsIgnoreCase(vcode)){
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
+            }*/
             UserDTO userDTO = regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if(userDTO == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
             }
-            /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o.equalsIgnoreCase(vcode)) {
-                return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
-            }*/
         }catch (Exception e){
             logger.error("",e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
         }
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.MSG_OK,"注册成功");
+    }
+
+    @Override
+    public Map<String, Object> oldRegistBuildCode(Long proxyId, String phone) {
+        try{
+            String redisKey = MessageFormat.format(PASS_USER_REG, phone,proxyId);
+            return oldBuildCode(proxyId,phone,redisKey);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
+        }
+    }
+
+    @Override
+    public Map<String, Object> oldForgetPassBuildCode(Long proxyId, String phone) {
+        try{
+            String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, phone);
+            return oldBuildCode(proxyId,phone,redisKey);
+        }catch (Exception e){
+            logger.error("",e);
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
+        }
+    }
+
+    private Map<String, Object> oldBuildCode(Long proxyId, String phone,String redisKey){
+        if (!StringUtils.isMobileNO(phone)) {
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号格式不正确");
+        }
+        ClientUserInfo userInfo = findByPhone(proxyId, phone);
+        if (userInfo == null) {
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"无法找到该用户");
+        }
+        if (!phone.equals(userInfo.getPhone())) {
+            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号错误");
+        }
+        String code = AliyunMnsUtil.randomSixCode();
+        sendSMSCode(phone, redisKey, code);
+        return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,"发送验证码成功");
     }
 }

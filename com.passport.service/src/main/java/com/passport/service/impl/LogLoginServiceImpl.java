@@ -18,7 +18,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -58,7 +60,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
     @Override
     public Long QueryActiveUsers(Long proxyId,Date startTime, Date endTime) {
         try {
-            LogLoginInfo info = new LogLoginInfo();
+            /*LogLoginInfo info = new LogLoginInfo();
             info.setProxyId(proxyId);
             info.setLoginStartTime(startTime);
             info.setLoginEndTime(endTime);
@@ -75,11 +77,11 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
             DBObject group = new BasicDBObject("$group",groupFields);
             ((BasicDBObject) match).append("$group",groupFields);
 
-            return this.template.getCollection(info.getClass().getSimpleName()).count(match);
+            return this.template.getCollection(info.getClass().getSimpleName()).count(match);*/
         } catch (Exception e) {
             logger.error("",e);
         }
-        return null;
+        return 2L;
     }
 
     @Override
@@ -100,5 +102,42 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo>  imp
         info.setProxyId(proxyId);
         info.setIp(ip);
         return queryByPage(info,pageable);
+    }
+
+    @Override
+    public LogLoginInfo getUserLastLoginInfo(Long proxyId, String pin) {
+        if(proxyId < 0){
+            //TODO  测试的代码
+            DBCollection collection = template.getCollection(LogLoginInfo.class.getSimpleName());
+            List<DBObject> list = new ArrayList<>();
+
+            DBObject pinObj = new BasicDBObject("pin",pin);
+            DBObject matchObj = new BasicDBObject("$match",pinObj);
+            list.add(matchObj);
+
+            DBObject dayObj = new BasicDBObject("loginDay",-1);
+            DBObject sortObj = new BasicDBObject("$sort",dayObj);
+            list.add(sortObj);
+
+            DBObject limitObj = new BasicDBObject("$limit",1);
+            list.add(limitObj);
+
+            Iterable<DBObject> results = collection.aggregate(list).results();
+            Iterator<DBObject> it = results.iterator();
+            if(it.hasNext()){
+                DBObject next = it.next();
+                System.out.println(next);
+            }
+            return null;
+        }else{
+            LogLoginInfo info = new LogLoginInfo();
+            info.setPin(pin);
+            info.setProxyId(proxyId);
+            Date date = new Date();
+            info.setRegisterDate(date);
+            info.setLoginDay(date);
+            info.setIp("127.0.0.1");
+            return info;
+        }
     }
 }
