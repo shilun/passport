@@ -337,6 +337,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     public RPCResult<Double> queryRetention(Long proxyId, Date startTime, Date endTime) {
         RPCResult<Double> result = null;
         try {
+            result = new RPCResult<>();
             if (startTime.getTime() > endTime.getTime()) {
                 result.setSuccess(false);
                 result.setMessage("时间错误");

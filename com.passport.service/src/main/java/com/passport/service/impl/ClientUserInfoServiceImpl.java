@@ -194,7 +194,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
         String o = (String) redisTemplate.opsForValue().get(key);
         if (o.equalsIgnoreCase(vcode)) {
-            return regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+            return regist(proxydto, null,account, pass, account, null, null, SexEnum.MALE, null, ip, null, null, null, null, null);
         }
         return null;
     }
@@ -729,6 +729,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if(entity != null){
             throw new BizException("该账号已经注册过了");
         }
+        if(StringUtils.isBlank(nick)){
+            nick = "玩家" + phone.substring(7);
+        }
 
         entity = new ClientUserInfo();
         entity.setProxyId(proxydto.getId());
@@ -1084,7 +1087,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (!o.equalsIgnoreCase(vcode)){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
             }*/
-            UserDTO userDTO = regist(proxydto, null,account, pass, account, account, null, SexEnum.MALE, null, ip, head, null, null, null, null);
+            UserDTO userDTO = regist(proxydto, null,account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if(userDTO == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
             }
