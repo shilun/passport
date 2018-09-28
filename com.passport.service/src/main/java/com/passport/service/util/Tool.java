@@ -65,6 +65,10 @@ public class Tool {
 
         File qrCodeFile = new File(imgTempDir + fileName + ".jpg");
         ImageIO.write(bi, "jpg", qrCodeFile);
-        return uploadUtil.uploadFile(qrCodeFile);
+        Result<String> res = uploadUtil.uploadFile(qrCodeFile);
+        if(res.getSuccess()){
+            qrCodeFile.delete();
+        }
+        return res;
     }
 }
