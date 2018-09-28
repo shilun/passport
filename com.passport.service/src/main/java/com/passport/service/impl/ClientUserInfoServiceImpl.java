@@ -299,7 +299,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         BeanCoper.copyProperties(dto, userInfo);
         dto.setToken(newToken);
         String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
-        redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
         logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
         String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
