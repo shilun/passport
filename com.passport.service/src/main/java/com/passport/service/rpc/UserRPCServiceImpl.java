@@ -46,7 +46,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Resource
     private LogLoginService logLoginService;
 
-    private final String LOGIN_TOKEN = "passport.login.token.{1}";
+    private final String LOGIN_TOKEN = "passport.login.token.{0}";
     @Value("${app.token.encode.key}")
     private String appTokenEncodeKey;
 

@@ -53,7 +53,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private final String PASS_USER_REG = "passport.userrpc.reg.account.{0}.proxyid.{1}";
     private final String LOGIN_MOBILE_CODE = "passport.userrpc.login.account.{0}.proxyid.{1}";
     private final String LOGIN_PIN = "passport.login.{0}";
-    private final String LOGIN_TOKEN = "passport.login.token.{1}";
+    private final String LOGIN_TOKEN = "passport.login.token.{0}";
     private final String MOBILE_USER_CHANGE = "passport.userrpc.change.mobile.{0}";
     private final String MOBILE_USER_BIND = "passport.userrpc.bind.mobile.{0}";
     private final String PASS_USER_CHANGE_BY_MOBILE = "passport.userrpc.changepass.mobile.{0}";
