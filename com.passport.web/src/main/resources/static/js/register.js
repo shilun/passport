@@ -152,7 +152,7 @@ $(document).ready(function(){
             type: 'POST',
             url: 'http://passport.jiahou.com/appinterface/user-reg',
             data: '{ "accessName":'+phone+',"accessToken":'+password+',"loginType":1'+',"recommendId":'+id+',"validateCode":'+code+'}',
-            dataType: 'text',
+            headers:{'Content-Type': 'application/json'},
             success: function (data) {
                 console.log(data);
                 // if (dataJson.ErrorNum === '0') {
