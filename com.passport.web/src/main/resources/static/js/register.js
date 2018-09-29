@@ -102,6 +102,7 @@ $(document).ready(function(){
         }
     }
     //发送验证码
+    var url='http://passport.jiahou.com:8019/appinterface';
     function sendCode(obj) {
         var phone = $('#inputPhone').val();
         console.log(typeof(phone));
@@ -109,7 +110,7 @@ $(document).ready(function(){
         if (result) {
             $.ajax({
                 type: 'POST',
-                url: 'http://passport.jiahou.com/appinterface/regBuildCode',
+                url: url+'/regBuildCode',
                 data: '{"phoneNo":'+phone+'}',
                 headers:{'Content-Type': 'application/json'},
                 success: function (data) {
@@ -150,9 +151,9 @@ $(document).ready(function(){
     function submitForm(phone, code, password,id) {
         $.ajax({
             type: 'POST',
-            url: 'http://passport.jiahou.com/appinterface/regByQr',
-            data: '{ "accessName":'+phone+',"accessToken":'+password+',"loginType":1'+',"recommendId":'+id+',"validateCode":'+code+'}',
-            headers:{'Content-Type': 'application/json'},
+            url: url+'/regByQr',
+            data: '{ "accessName":"'+phone+'","accessToken":"'+password+'","loginType":1'+',"recommendId":"'+id+'","validateCode":"'+code+'"}',
+            headers:{'Content-Type': 'application/json','Accept': 'application/json'},
             success: function (data) {
                 console.log(data);
                 // if (dataJson.ErrorNum === '0') {
@@ -160,7 +161,13 @@ $(document).ready(function(){
                 // } else {
                 //     $.toast(dataJson.ErrorDescribe, 'cancel');
                 // }
-            },
+                if(data.success){
+                    // $.toast(data.msg,'cancel');
+                    $(".cover").show();
+                }else{
+                    $.toast(data.msg,'cancel');
+
+                }            },
             error: function (responseText) {
                 console.log(responseText);
             }

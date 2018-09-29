@@ -29,6 +29,7 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
                "/appinterface/user-reg",
                "/appinterface/forgetPassBuildCode",
                "/appinterface/regBuildCode",
-                "/appinterface/reg"});
+                "/appinterface/reg",
+               "/appinterface/regByQr"});
     }
 }

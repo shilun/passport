@@ -249,7 +249,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param
      * @return
      */
-    UserDTO regist(ProxyDto proxydto, Long recommendId,String refId, String pass, String phone, String nick, String email,
+    UserDTO regist(ProxyDto proxydto, String recommendId,String refId, String pass, String phone, String nick, String email,
                    SexEnum sexEnum, String birth,String ip,String headUrl,String wechat,String idCard,
                    String realName,Long qq);
 
@@ -358,7 +358,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param recommendId  推荐人pin
      * @return
      */
-    Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,Long recommendId);
+    Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,String recommendId);
 
     /**
      * 注册验证码
