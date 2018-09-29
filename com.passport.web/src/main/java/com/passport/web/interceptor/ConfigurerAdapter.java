@@ -23,12 +23,12 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
        registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns(new String[]{"/error",
                "/login/*",
                "/appinterface/user-login",
                "/appinterface/user-reg",
                "/appinterface/forgetPassBuildCode",
-               "/appinterface/regBuildCode"});
+               "/appinterface/regBuildCode",
+                "/appinterface/reg"});
     }
 }

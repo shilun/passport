@@ -9,6 +9,7 @@ import com.passport.web.controller.dto.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,6 +62,15 @@ public class OldController extends AbstractClientController {
     public Map<String, Object> userRegister(@RequestBody OldRegDto dto) {
         return clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP(),null);
     }
+
+
+    @RequestMapping(value = "/reg", method = {RequestMethod.GET})
+    @ApiOperation(value = "用户注册")
+    public String reg(Model model) {
+
+        return "register";
+    }
+
 
     @RequestMapping("user-login")
     @ResponseBody

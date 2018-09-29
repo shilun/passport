@@ -1,0 +1,112 @@
+html{
+    margin: 0 auto;
+    background: url(../imgs/bg.png) no-repeat;
+    background-size: 100% 100%;
+}
+body{
+    height: 100%;
+}
+input::-webkit-input-placeholder { /* WebKit browsers */
+    color:#96a6f7;
+}
+input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:#96a6f7;
+}
+input::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:#96a6f7;
+}
+input:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:#96a6f7;
+}
+.register-box{
+    width: 100%;
+}
+.register-box .register-top{
+    width: 100%;
+    height: 1.4rem;
+    position: relative;
+}
+.logo{
+    width: 1.3rem;
+    height: 1.3rem;
+    background: url("../imgs/icon.png") no-repeat;
+    background-size:100% ;
+    margin-left: 0.1rem;
+}
+.downGame{
+    width: 3.1rem;
+    height: 1.2rem;
+    background: url(../imgs/btn_xiazaiyouxi.png) no-repeat;
+    background-size: 100% 100%;
+    position: absolute;
+    top: 0.17rem;
+    right: 0.3rem;
+}
+.register-container{
+    width: 6rem;
+    margin: 0.75rem auto 0;
+    font-size: 0.38rem;
+}
+.register-title{
+    width: 2.63rem;
+    height: 0.63rem;
+    margin: 0 auto;
+    background: url(../imgs/yonghuzhuce.png) no-repeat;
+    background-size: 100% 100%;
+}
+.register-group{
+    margin-top: 0.25rem;
+}
+.register-group label{
+    width: 1.6rem;
+    color: #edf0fe;
+    font-weight: 600;
+    text-shadow: 2px 2px 0.5px rgba(23,13,71,0.85);
+    display: inline-block;
+    text-align: right;
+    font-size: 0.34rem;
+    letter-spacing: 0.03rem;
+}
+.register-group input{
+    width: 4rem;
+    height: 0.6rem;
+    border-radius: 5px;
+    background: rgba(17,15,82,0.3);
+    /*box-shadow: 1px 1px 6px #000721 inset;*/
+    box-shadow:2px 0 2px rgba(0,7,33,0.3) inset, 0 2px 2px rgba(0,7,33,0.3) inset, 0 2px 2px rgba(146,171,255,0.3),2px 0 2px rgba(0,7,33,0.3) inset;
+    /*background: url(../imgs/input.png) no-repeat;*/
+    /*background-size: 100% 100%;*/
+    padding: 0 0.1rem 0;
+    color: #96a6f7;
+    letter-spacing: 0.01rem;
+
+}
+.register-group input.code{
+    width: 2rem;
+}
+.register-group span{
+    display: inline-block;
+    width: 1.9rem;
+    height: 0.8rem;
+    background: url(../imgs/btn_yanzhengma.png) no-repeat;
+    background-size: 100% 100%;
+    text-align: center;
+    line-height: 0.75rem;
+    font-size: 0.34rem;
+    color: #004b90;
+    font-weight: bold;
+    letter-spacing: 0.02rem;
+}
+.register-btn{
+    width: 3.2rem;
+    background: url(../imgs/btn_querenzhuce.png) no-repeat;
+    background-size: 100% 100%;
+    height: 1rem;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 1rem;
+    color: #753a2e;
+    font-weight: bold;
+    letter-spacing: 0.02rem;
+    margin-top: 0.45rem;
+}
