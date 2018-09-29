@@ -25,18 +25,16 @@ import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
+import jdk.nashorn.internal.ir.annotations.Reference;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -704,7 +702,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO regist(ProxyDto proxydto,Integer recommendId, String refId, String pass, String phone, String nick, String email,
+    public UserDTO regist(ProxyDto proxydto,Long recommendId, String refId, String pass, String phone, String nick, String email,
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
 
@@ -765,6 +763,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
 
         save(entity);
+
         ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
         clientUserExtendInfo.setUserCode(entity.getId().intValue());
         clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
@@ -1075,7 +1074,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,String recommendId) {
+    public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip,Long recommendId) {
         try {
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();
@@ -1087,7 +1086,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (!o.equalsIgnoreCase(vcode)){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
             }*/
-            UserDTO userDTO = regist(proxydto, null,account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
+            UserDTO userDTO = regist(proxydto, recommendId,account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if(userDTO == null){
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"注册失败");
             }
@@ -1123,13 +1122,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private Map<String, Object> oldBuildCode(Long proxyId, String phone,String redisKey){
         if (!StringUtils.isMobileNO(phone)) {
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号格式不正确");
-        }
-        ClientUserInfo userInfo = findByPhone(proxyId, phone);
-        if (userInfo == null) {
-            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"无法找到该用户");
-        }
-        if (!phone.equals(userInfo.getPhone())) {
-            return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"手机号错误");
         }
         String code = AliyunMnsUtil.randomSixCode();
         sendSMSCode(phone, redisKey, code);
