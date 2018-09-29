@@ -66,8 +66,8 @@ public class OldController extends AbstractClientController {
 
     @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")
-    public String reg(@RequestBody String rec,Model model) {
-        model.addAttribute("recommendId",rec);
+    public String reg(@RequestBody String recommendId,Model model) {
+        model.addAttribute("recommendId",recommendId);
         return "/register";
     }
 
