@@ -1,50 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" data-ng-app="app" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>用户注册</title>
-    <link rel="stylesheet" href="/static/css/public.css"/>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/weiUI.css">
+    <link rel="stylesheet" href="css/jquery-weiUi.css">
+    <link rel="stylesheet" href="css/public.css">
 </head>
 <body>
-<div class="register-box">
-    <div class="register-top">
-        <div class="logo"></div>
-        <a href="#" class="downGame"></a>
+    <div class="register-box">
+        <div class="register-top">
+            <div class="logo"></div>
+            <a href="#" class="downGame"></a>
+        </div>
+        <div class="register-container">
+            <div class="register-title">
+            </div>
+            <div class="register-group">
+                <label for="inputId">上线ID</label>
+                <input type="tel" class="form-control" placeholder="1234567" id="inputId" maxlength="6" th:value="${aaa}">
+            </div>
+            <div class="register-group">
+                <label for="inputPhone">手机号</label>
+                <input type="tel" placeholder="请输入手机号" id="inputPhone" maxlength="11">
+            </div>
+            <div class="register-group">
+                <label for="inputCode">验证码</label>
+                <input type="number" placeholder="获取验证码" id="inputCode" class="code" maxlength="6">
+                <span class="getCode">验证码</span>
+            </div>
+            <div class="register-group">
+                <label for="inputPwd">密码</label>
+                <input type="password" placeholder="请输入密码" id="inputPwd">
+            </div>
+            <div class="register-group">
+                <label for="inputRepwd">确认密码</label>
+                <input type="password" placeholder="再次输入密码" id="inputRepwd">
+            </div>
+            <div class="register-btn">
+                确认注册
+            </div>
+        </div>
     </div>
-    <div class="register-container">
-        <div class="register-title">
-        </div>
-        <div class="register-group">
-            <label for="inputId">上线ID</label>
-            <input type="tel" class="form-control" placeholder="1234567" id="inputId" maxlength="6"/>
-        </div>
-        <div class="register-group">
-            <label for="inputPhone">手机号</label>
-            <input type="tel" placeholder="请输入手机号" id="inputPhone" maxlength="11"/>
-        </div>
-        <div class="register-group">
-            <label for="inputCode">验证码</label>
-            <input type="number" placeholder="获取验证码" id="inputCode" class="code" maxlength="6"/>
-            <span class="getCode">验证码</span>
-        </div>
-        <div class="register-group">
-            <label for="inputPwd">密码</label>
-            <input type="password" placeholder="请输入密码" id="inputPwd"/>
-        </div>
-        <div class="register-group">
-            <label for="inputRepwd">确认密码</label>
-            <input type="text" placeholder="再次输入密码" id="inputRepwd"/>
-        </div>
-        <div class="register-btn">
-            确认注册
+    <div class="cover" id="cover">
+        <div class="modal" id="modal">
+            <div class="success-box">
+                <div class="title">恭喜您注册成功！</div>
+                <p>
+                    注&nbsp;册&nbsp;账&nbsp;号&nbsp;:
+                    <label id="regAccount"></label>
+                </p>
+                <div class="btn-group actions" id="actions">
+                    <a href="#" class="btn btn-apple">下载安装</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<script src="/static/js/jquery-1.11.3.min.js"></script>
-<script src="/static/js/jqeuryUI.js"></script>
-<script src="/static/js/public.js"></script>
-<script src="/static/js/register.js"></script>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/jqeuryUI.js"></script>
+    <script src="js/public.js"></script>
+
 </body>
 </html>

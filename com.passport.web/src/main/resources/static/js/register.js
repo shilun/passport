@@ -1,25 +1,18 @@
 $(document).ready(function(){
-    var $phone = '';
-    $(".getCode").click(function () {
-        // $phone=$("#inputPhone").val();
-        // if(!/^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$/.test($phone)){
-        //     alert('请输入正确的手机号');
-        //     return false;
-        // }else{
-        //     alert('号码正确');
-        // }
+    var $phone='';
+    $(".getCode").click(function(){
         if (!$(this).hasClass('disabled')) {
             sendCode($(this));
         }
     })
-    $(".register-btn").click(function () {
+    $(".register-btn").click(function(){
         var phone = $('#inputPhone').val(),
             code = $('#inputCode').val(),
             password = $('#inputPwd').val(),
-            rePassword = $('#inputRePwd').val(),
+            rePassword = $('#inputRepwd').val(),
             inputId = $('#inputId').val();
         inputName = $("#inputName").val();
-        if (inputId == '') {
+        if(inputId == ''){
             $.toast('请输入Id', 'cancel');
             return false;
         }
@@ -40,13 +33,15 @@ $(document).ready(function(){
             $.toast('请输入确认密码', 'cancel');
             return false;
         } else if (rePassword != password) {
+            console.log('确认密码：'+rePassword);
+            console.log('密码：'+password);
             $.toast('两次密码不一致', 'cancel');
             return false;
         } else {
-            console.log("11");
+            submitForm(phone, code, password, inputId);
         }
     })
-
+    //校验手机号是否合法
     function isPhoneNum(phonenum) {
         var phoneReg = /^(((19[0-9]{1})|(13[0-9]{1})|(14[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(166)|(18[0-9]{1}))+\d{8})$/;
         if (!phoneReg.test(phonenum)) {
@@ -56,9 +51,10 @@ $(document).ready(function(){
             return true;
         }
     }
-
+    //校验密码是否合法
     function isRightPassword(password) {
-        if (password.length < 6) {
+        if (password.length < 6)
+        {
             $.toast('密码长度不能小于6位', 'cancel');
             return false;
         }
@@ -70,6 +66,7 @@ $(document).ready(function(){
             return true;
         }
     }
+    //发送验证码时添加cookie
     function addCookie(name, value, expiresHours) {
         var cookieString = name + "=" + escape(value);
         if (expiresHours > 0) {
@@ -79,8 +76,7 @@ $(document).ready(function(){
         }
         document.cookie = cookieString;
     }
-
-//修改cookie的值
+    //修改cookie的值
     function editCookie(name, value, expiresHours) {
         var cookieString = name + "=" + escape(value);
         if (expiresHours > 0) {
@@ -90,8 +86,7 @@ $(document).ready(function(){
         }
         document.cookie = cookieString;
     }
-
-//根据名字获取cookie的值
+    //根据名字获取cookie的值
     function getCookieValue(name) {
         var strCookie = document.cookie;
         var arrCookie = strCookie.split("; ");
@@ -106,24 +101,22 @@ $(document).ready(function(){
             }
         }
     }
-
-//发送验证码
+    //发送验证码
     function sendCode(obj) {
         var phone = $('#inputPhone').val();
+        console.log(typeof(phone));
         var result = isPhoneNum(phone);
         if (result) {
             $.ajax({
                 type: 'POST',
-                url: 'http://passport:jiahou.com/appinterface/regBuildCode',
-                data: '{"phoneNo":'+ phone+'}',
-                contentType: "application/json",
-                dataType: 'json',
+                url: 'http://passport.jiahou.com/appinterface/regBuildCode',
+                data: '{"phoneNo":'+phone+'}',
+                headers:{'Content-Type': 'application/json'},
                 success: function (data) {
-                    console.log(data);
                     if (data.code === '200') {
                         $.toast(data.msg, 'success');
                     } else {
-                        $.toast(data.msg, 'cancel');
+                        $.toast(dataJson.msg, 'cancel');
                     }
                 },
                 error: function (responseText) {
@@ -134,10 +127,8 @@ $(document).ready(function(){
             setTime(obj);
         }
     }
-
-//开始倒计时
+    //开始倒计时
     var countdown;
-
     function setTime(obj) {
         countdown = getCookieValue('secondsremained');
         if (countdown == 0) {
@@ -154,5 +145,25 @@ $(document).ready(function(){
             setTime(obj);
         }, 1000);
     }
-})
 
+    //提交表单信息
+    function submitForm(phone, code, password,id) {
+        $.ajax({
+            type: 'POST',
+            url: 'http://passport.jiahou.com/appinterface/user-reg',
+            data: '{ "accessName":'+phone+',"accessToken":'+password+',"loginType":1'+',"recommendId":'+id+',"validateCode":'+code+'}',
+            dataType: 'text',
+            success: function (data) {
+                console.log(data);
+                // if (dataJson.ErrorNum === '0') {
+                //     $.toast('注册成功', 'cancel');
+                // } else {
+                //     $.toast(dataJson.ErrorDescribe, 'cancel');
+                // }
+            },
+            error: function (responseText) {
+                console.log(responseText);
+            }
+        });
+    }
+})

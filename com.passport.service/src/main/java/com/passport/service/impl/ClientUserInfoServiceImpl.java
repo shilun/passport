@@ -752,7 +752,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         String fileName = proxydto.getId() + "_" + phone;
         try {
-            String domain = "http://www." + proxydto.getDomain();
+            String domain = "http://passport." + proxydto.getDomain();
             String url = MessageFormat.format(recommendUrl,domain,pin);
             Result<String> res = tool.generateQRCode(url, fileName, imgTempDir);
             if(res.getSuccess()){
