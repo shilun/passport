@@ -80,6 +80,7 @@ public class OldController extends AbstractClientController {
         }
         Map<String, Object> map = null;
         try{
+            getRequest().getSession().removeAttribute("userDto");
             UserDTO userDto = clientService.login(getIP(), getDomain().getId(), dto.getLoginName(), dto.getPwd());
             putCookie("cToken", userDto.getToken(), response);
             map = new HashMap<>();
