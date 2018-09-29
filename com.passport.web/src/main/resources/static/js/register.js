@@ -150,7 +150,7 @@ $(document).ready(function(){
     function submitForm(phone, code, password,id) {
         $.ajax({
             type: 'POST',
-            url: 'http://passport.jiahou.com/appinterface/user-reg',
+            url: 'http://passport.jiahou.com/appinterface/regByQr',
             data: '{ "accessName":'+phone+',"accessToken":'+password+',"loginType":1'+',"recommendId":'+id+',"validateCode":'+code+'}',
             headers:{'Content-Type': 'application/json'},
             success: function (data) {
