@@ -102,7 +102,7 @@ $(document).ready(function(){
         }
     }
     //发送验证码
-    var url='http://passport.jiahou.com:8019/appinterface';
+    var url='http://passport.jiahou.com/appinterface';
     function sendCode(obj) {
         var phone = $('#inputPhone').val();
         console.log(typeof(phone));
