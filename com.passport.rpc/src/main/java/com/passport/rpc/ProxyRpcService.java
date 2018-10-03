@@ -32,7 +32,7 @@ public interface ProxyRpcService {
      * @param proxyId
      * @return
      */
-    public RPCResult refreshToken(Long proxyId);
+    public RPCResult<String> refreshToken(Long proxyId);
 
     /**
      * 修改加密串

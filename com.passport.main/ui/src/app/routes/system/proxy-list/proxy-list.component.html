@@ -26,6 +26,7 @@
       <th>域名</th>
       <th>结束时间</th>
       <th>创建时间</th>
+      <th>操作</th>
     </tr>
     </thead>
     <tbody>
@@ -38,6 +39,7 @@
         <th>{{item.domain}}</th>
         <th>{{item.endTime}}</th>
         <td>{{item.createTime}}</td>
+        <td><a routerLink="/system/proxy/changePass" [queryParams]="{id:item.id}">修改</a></td>
       </tr>
     </ng-container>
     </tbody>

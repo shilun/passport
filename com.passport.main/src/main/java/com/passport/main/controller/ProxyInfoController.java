@@ -2,7 +2,9 @@ package com.passport.main.controller;
 
 import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
+import com.common.util.StringUtils;
 import com.passport.domain.ProxyInfo;
+import com.passport.main.controller.dto.IdChangePassDto;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyInfoService;
 import com.passport.main.AbstractClientController;
@@ -20,8 +22,6 @@ import java.util.Map;
 public class ProxyInfoController extends AbstractClientController {
     @Resource
     private ProxyInfoService proxyInfoService;
-    @Resource
-    private ClientUserInfoService userInfoService;
 
     /**
      * 查询
@@ -48,7 +48,10 @@ public class ProxyInfoController extends AbstractClientController {
     @RoleResource(resource = "passport")
     @RequestMapping("/proxy/view")
     public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(() -> proxyInfoService.findById(getIdByJson(content)));
+        return buildMessage(() ->{
+            ProxyInfo byId = proxyInfoService.findById(getIdByJson(content));
+            return byId;
+        } );
     }
 
     /**
@@ -64,6 +67,15 @@ public class ProxyInfoController extends AbstractClientController {
             ProxyInfo entity = new ProxyInfo();
             BeanCoper.copyProperties(entity, info);
             return proxyInfoService.save(entity);
-    });
-}
+        });
+    }
+
+    @RoleResource(resource = "passport")
+    @RequestMapping("/proxy/changePass")
+    public Map<String, Object> changePass(@RequestBody IdChangePassDto dto) {
+        return buildMessage(() -> {
+            proxyInfoService.changePass(dto.getId(), dto.getPassword());
+            return null;
+        });
+    }
 }

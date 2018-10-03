@@ -45,6 +45,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     @Resource
     private ClientUserInfoService clientUserInfoService;
 
+    private final String loginTokenKey="passport.proxy.token.{0}";
     @Resource
     private RedisTemplate redisTemplate;
 
@@ -74,14 +75,12 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult refreshToken(Long proxyId) {
-        RPCResult result = new RPCResult();
+    public RPCResult<String> refreshToken(Long proxyId) {
+        RPCResult<String> result = new RPCResult();
         try {
-            ProxyInfo entity = new ProxyInfo();
-            entity.setId(proxyId);
-            entity.setToken(StringUtils.getUUID());
-            proxyInfoService.save(entity);
+            String s = proxyInfoService.refreshToken(proxyId);
             result.setSuccess(true);
+            result.setData(s);
             return result;
         } catch (Exception e) {
             logger.error("刷新代理商token失败", e);
@@ -167,16 +166,15 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             ProxyDto dto = new ProxyDto();
             BeanCoper.copyProperties(dto, proxyInfo);
             dto.setAccount(account);
+            dto.setToken(proxyInfo.getToken());
+            dto.setEncodingKey(proxyInfo.getEncodingKey());
             dto.setLoginToken(StringUtils.getUUID());
-            String loginPinToken = MessageFormat.format("passport.proxy.token.{0}", dto.getLoginToken());
+            String loginPinToken = MessageFormat.format(loginTokenKey, dto.getLoginToken());
             Object o = redisTemplate.opsForValue().get(loginPinToken);
             if (o != null) {
                 redisTemplate.delete(loginPinToken);
             }
-            redisTemplate.opsForValue().set(loginPinToken, dto, 1, TimeUnit.HOURS);
-            String loginToken = proxyInfo.getPin() + ":" + dto.getLoginToken();
-            loginToken = DesEncrypter.cryptString(loginToken, appTokenEncodeKey);
-            dto.setLoginToken(loginToken);
+            redisTemplate.opsForValue().set(loginPinToken, dto, 1, TimeUnit.DAYS);
             result.setData(dto);
             result.setSuccess(true);
         } catch (Exception e) {
@@ -195,7 +193,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         try {
             token = DesDecrypter.decryptString(token, appTokenEncodeKey);
             token = token.split(":")[2];
-            token = MessageFormat.format("passport.proxy.token.{0}", token);
+            token = MessageFormat.format(loginTokenKey, token);
             redisTemplate.delete(token);
             rpcResult.setSuccess(true);
             return rpcResult;
@@ -211,18 +209,14 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     public RPCResult<ProxyDto> verfiyToken(String token) {
         RPCResult<ProxyDto> rpcResult = new RPCResult<>();
         try {
-            String fullToken = token;
-            token = DesDecrypter.decryptString(token, appTokenEncodeKey);
-            token = token.split(":")[2];
-            String loginPinToken = MessageFormat.format("passport.proxy.token.{0}", token);
+            String loginPinToken = MessageFormat.format(loginTokenKey, token);
             ProxyDto o = (ProxyDto) redisTemplate.opsForValue().get(loginPinToken);
-            Boolean expire = redisTemplate.expire(loginPinToken, 1, TimeUnit.HOURS);
+            Boolean expire = redisTemplate.expire(loginPinToken, 1, TimeUnit.DAYS);
             if (!expire.booleanValue()) {
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("token.error");
                 rpcResult.setMessage("验证登录失效");
             }
-            o.setToken(fullToken);
             rpcResult.setData(o);
             rpcResult.setSuccess(true);
             return rpcResult;

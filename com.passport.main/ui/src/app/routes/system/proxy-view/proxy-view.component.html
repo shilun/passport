@@ -20,6 +20,27 @@
                 </div>
               </div>
             </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">代理商token</label>
+                <div class="col-sm-4">
+                  <span class="form-control">{{entity.token}}</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">客户</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="encodingKey" formControlName="encodingKey"
+                         [formControl]="valForm.controls['encodingKey']" [(ngModel)]="entity.encodingKey"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['encodingKey'].hasError('required') && (valForm.controls['encodingKey'].dirty || valForm.controls['encodingKey'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">名称</label>
