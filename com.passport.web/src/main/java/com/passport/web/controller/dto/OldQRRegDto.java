@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class OldQRRegDto implements Serializable {
     private static final long serialVersionUID = 8894215864404639400L;
     @ApiModelProperty(value = "推荐人id")
-    private Long recommendId;
+    private String recommendId;
     @ApiModelProperty(value = "手机号")
     private String accessName;
     @ApiModelProperty(value = "密码")
@@ -23,11 +23,11 @@ public class OldQRRegDto implements Serializable {
     @ApiModelProperty(value = "登陆方式")
     private Integer loginType;
 
-    public Long getRecommendId() {
+    public String getRecommendId() {
         return recommendId;
     }
 
-    public void setRecommendId(Long recommendId) {
+    public void setRecommendId(String recommendId) {
         this.recommendId = recommendId;
     }
 

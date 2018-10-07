@@ -64,13 +64,12 @@ public class OldController extends AbstractClientController {
     }
 
 
-    @RequestMapping(value = "/reg", method = {RequestMethod.GET})
+    @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")
-    public String reg(Model model) {
-
-        return "register";
+    public String reg(String recommendId,Model model) {
+        model.addAttribute("recommendId",recommendId);
+        return "/register";
     }
-
 
     @RequestMapping("user-login")
     @ResponseBody
@@ -81,6 +80,7 @@ public class OldController extends AbstractClientController {
         }
         Map<String, Object> map = null;
         try{
+            getRequest().getSession().removeAttribute("userDto");
             UserDTO userDto = clientService.login(getIP(), getDomain().getId(), dto.getLoginName(), dto.getPwd());
             putCookie("cToken", userDto.getToken(), response);
             map = new HashMap<>();

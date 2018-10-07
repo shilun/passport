@@ -6,6 +6,7 @@ html{
 }
 body{
     height: 100%;
+    margin: 0;
 }
 input::-webkit-input-placeholder { /* WebKit browsers */
     color:#96a6f7;
@@ -28,8 +29,8 @@ input:-ms-input-placeholder { /* Internet Explorer 10+ */
     position: relative;
 }
 .logo{
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 1.2rem;
+    height: 1.2rem;
     background: url("../imgs/icon.png") no-repeat;
     background-size:100% ;
     margin-left: 0.1rem;
@@ -69,14 +70,11 @@ input:-ms-input-placeholder { /* Internet Explorer 10+ */
     letter-spacing: 0.03rem;
 }
 .register-group input{
-    width: 4rem;
+    width: 4.2rem;
     height: 0.6rem;
     border-radius: 5px;
     background: rgba(17,15,82,0.3);
-    /*box-shadow: 1px 1px 6px #000721 inset;*/
     box-shadow:2px 0 2px rgba(0,7,33,0.3) inset, 0 2px 2px rgba(0,7,33,0.3) inset, 0 2px 2px rgba(146,171,255,0.3),2px 0 2px rgba(0,7,33,0.3) inset;
-    /*background: url(../imgs/input.png) no-repeat;*/
-    /*background-size: 100% 100%;*/
     padding: 0 0.1rem 0;
     color: #96a6f7;
     letter-spacing: 0.01rem;
@@ -87,13 +85,13 @@ input:-ms-input-placeholder { /* Internet Explorer 10+ */
 }
 .register-group span{
     display: inline-block;
-    width: 1.8rem;
+    width: 2.1rem;
     height: 0.8rem;
     background: url(../imgs/btn_yanzhengma.png) no-repeat;
     background-size: 100% 100%;
     text-align: center;
     line-height: 0.75rem;
-    font-size: 0.34rem;
+    font-size: 0.28rem;
     color: #004b90;
     font-weight: bold;
     letter-spacing: 0.02rem;
@@ -110,4 +108,68 @@ input:-ms-input-placeholder { /* Internet Explorer 10+ */
     font-weight: bold;
     letter-spacing: 0.02rem;
     margin-top: 0.45rem;
+}
+/*弹窗*/
+.cover {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+     display: none;
+}
+.modal {
+    position: absolute;
+    left: calc(50% - 2.17rem);
+    top: calc(50% - 1.27rem);
+    width: 4.355rem;
+    height: 2.575rem;
+    background-image: url(../imgs/tanchukuang.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.success-box {
+    width: 100%;
+}
+.success-box .title {
+    width: 2.88rem;
+    height: 0.485rem;
+    margin: 0 auto;
+    margin-top: 0.300rem;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 0.02rem;
+}
+.success-box p {
+    margin-top: 0.20rem;
+    font-size: 0.26rem;
+    color: #ffeba7;
+    text-align: center;
+}
+.success-box .btn-group {
+    width: 100%;
+    margin-top: 0.300rem;
+    text-align: center;
+}
+.success-box .btn-group a {
+    display: block;
+    width: 2.05rem;
+    height: 0.715rem;
+    line-height: 0.715rem;
+    color: #753a2e;
+    font-weight: bold;
+    letter-spacing: 0.02rem;
+}
+.success-box .btn-group .btn-apple {
+    margin: 0 auto;
+    background-image: url(../imgs/btn_querenzhuce.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
