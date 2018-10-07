@@ -44,8 +44,7 @@ public class ProxyInfoServiceImpl extends AbstractMongoService<ProxyInfo> implem
     public ProxyInfo findByLoginName(String loginName, String pass) {
         ProxyInfo query = new ProxyInfo();
         query.setStatus(YesOrNoEnum.YES.getValue());
-        pass = MD5.MD5Str(pass, passKey);
-        query.setPass(pass);
+
         boolean setLoginName = false;
         if (StringUtils.isMobileNO(loginName)) {
             setLoginName = true;
@@ -55,6 +54,10 @@ public class ProxyInfoServiceImpl extends AbstractMongoService<ProxyInfo> implem
             query.setPin(loginName);
         }
         query = findByOne(query);
+        pass = MD5.MD5Str(pass, passKey);
+        if (!pass.equals(query.getPass())) {
+            return null;
+        }
         return query;
     }
 
