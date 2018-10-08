@@ -26,9 +26,9 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
       'name': [null, Validators.required],
       'pin': [null,Validators.required],
       'endTime': [null,Validators.required],
-      'token': [null,Validators.required],
-      'encodingKey': [null,Validators.required],
+      'token': [null],
       'domain': [null],
+      'encodingKey': [null],
       'remark': [null],
       'status': [null, Validators.required],
       'phone': [null, Validators.required],
@@ -46,7 +46,11 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
       this.games = result.data.list;
     }
     await this.viewById();
-
+    let domains="";
+    for(let domainItem of this.entity.domain){
+      domains=domains+domainItem+";";
+    }
+    this.entity.domain=domains;
     for (let gameItem of this.games) {
       gameItem.checked = '';
       for (let role of this.entity.games) {
@@ -80,6 +84,7 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
     }
   }
   public save() {
+    this.entity.domain=this.entity.domain.split(";");
     this.saveData('/system/proxy/list');
   }
 

@@ -11,6 +11,18 @@
           <div class="panel-body">
             <fieldset>
               <div class="form-group">
+                <label class="col-sm-2 control-label">名称</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="name" formControlName="name"
+                         [formControl]="valForm.controls['name']" [(ngModel)]="entity.name"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['name'].hasError('required') && (valForm.controls['name'].dirty || valForm.controls['name'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
                 <label class="col-sm-2 control-label">pin</label>
                 <div class="col-sm-6">
                   <input class="form-control" type="text" id="pin" formControlName="pin"
@@ -20,7 +32,6 @@
                 </div>
               </div>
             </fieldset>
-
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">代理商token</label>
@@ -29,7 +40,6 @@
                 </div>
               </div>
             </fieldset>
-
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">客户</label>
@@ -41,17 +51,7 @@
                 </div>
               </div>
             </fieldset>
-            <fieldset>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">名称</label>
-                <div class="col-sm-6">
-                  <input class="form-control" type="text" id="name" formControlName="name"
-                         [formControl]="valForm.controls['name']" [(ngModel)]="entity.name"/>
-                  <span class="text-danger"
-                        *ngIf="valForm.controls['name'].hasError('required') && (valForm.controls['name'].dirty || valForm.controls['name'].touched)">必选项</span>
-                </div>
-              </div>
-            </fieldset>
+
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">电话</label>
@@ -79,8 +79,9 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">域名</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="domain" formControlName="domain"
-                         [formControl]="valForm.controls['domain']" [(ngModel)]="entity.domain"/>
+                    <input class="form-control" type="text" id="domain" formControlName="domain"
+                           [formControl]="valForm.controls['domain']" [(ngModel)]="entity.domain"/>
+
                 </div>
               </div>
             </fieldset>
