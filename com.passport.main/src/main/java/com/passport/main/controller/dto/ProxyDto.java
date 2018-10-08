@@ -51,7 +51,7 @@ public class ProxyDto  extends AbstractDTO {
     /**
      * 网站
      */
-    private String domain;
+    private String[] domain;
     /**
      * 备注
      */
@@ -127,11 +127,11 @@ public class ProxyDto  extends AbstractDTO {
         this.encodingKey = encodingKey;
     }
 
-    public String getDomain() {
+    public String[] getDomain() {
         return domain;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(String[] domain) {
         this.domain = domain;
     }
 

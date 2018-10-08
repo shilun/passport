@@ -1,6 +1,10 @@
 package com.passport.domain;
 
+import com.common.annotation.QueryField;
+import com.common.mongo.QueryType;
 import com.common.util.AbstractBaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
 
@@ -49,7 +53,10 @@ public class ProxyInfo extends AbstractBaseEntity {
     /**
      * 网站
      */
-    private String domain;
+    private String[] domain;
+    @Transient
+    @QueryField(name = "domain", type = QueryType.IN)
+    private String[] inDomain;
     /**
      * 备注
      */
@@ -119,12 +126,20 @@ public class ProxyInfo extends AbstractBaseEntity {
         this.linkMan = linkMan;
     }
 
-    public String getDomain() {
+    public String[] getDomain() {
         return domain;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(String[] domain) {
         this.domain = domain;
+    }
+
+    public String[] getInDomain() {
+        return inDomain;
+    }
+
+    public void setInDomain(String[] inDomain) {
+        this.inDomain = inDomain;
     }
 
     public String getRemark() {

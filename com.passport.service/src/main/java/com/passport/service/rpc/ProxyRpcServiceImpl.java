@@ -136,7 +136,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         RPCResult<ProxyDto> result = new RPCResult<>();
         try {
             ProxyInfo query = new ProxyInfo();
-            query.setDomain(domain);
+            String[] arr = new String[]{domain};
+            query.setInDomain(arr);
             query = proxyInfoService.findByOne(query);
             ProxyDto dto = new ProxyDto();
             BeanCoper.copyProperties(dto, query);
