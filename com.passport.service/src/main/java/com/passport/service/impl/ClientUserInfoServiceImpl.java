@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 @Service
 public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserInfo> implements ClientUserInfoService {
@@ -1009,14 +1008,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if(StringUtils.isNotBlank(nick)){
                 userInfo.setNickName(nick);
             }
-            Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-            if(StringUtils.isNotBlank(qq) && pattern.matcher(qq).matches()){
+            if(StringUtils.isNotBlank(qq) && tool.isNo(qq)){
                 userInfo.setQq(Long.parseLong(qq));
             }
             if(StringUtils.isNotBlank(wechat)){
                 userInfo.setWechat(wechat);
             }
-            if(StringUtils.isBlank(sex) && pattern.matcher(sex).matches()){
+            if(StringUtils.isBlank(sex) && tool.isNo(sex)){
                 int sexInt = Integer.parseInt(sex);
                 if(SexEnum.MALE.getValue() == sexInt || SexEnum.FEMALE.getValue() == sexInt){
                     userInfo.setSexType(sexInt);

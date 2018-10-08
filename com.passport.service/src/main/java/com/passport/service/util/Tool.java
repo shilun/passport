@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Pattern;
 
 /**
  * @author Luo
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 @Component
 public class Tool {
+    private static Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
 
     @Autowired(required = false)
     private UploadUtil uploadUtil;
@@ -100,5 +102,9 @@ public class Tool {
 
         }
         return bean;
+    }
+
+    public boolean isNo(String str){
+        return pattern.matcher(str).matches();
     }
 }

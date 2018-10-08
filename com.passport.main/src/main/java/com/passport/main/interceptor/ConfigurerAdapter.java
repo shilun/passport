@@ -13,6 +13,7 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-       registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns("/login/*");
+       registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns(new String[]{
+               "/login/*"});
     }
 }
