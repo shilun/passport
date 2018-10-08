@@ -56,7 +56,7 @@ public abstract class AbstractClientController extends AbstractController {
         RPCResult<ProxyDto> result = proxyRpcService.findByDomain(domain);
         if (result.getSuccess()) {
             ProxyDto dto = result.getData();
-            proxyMap.put(dto.getDomain(), dto);
+            proxyMap.put(domain, dto);
             return dto;
         }
         throw new BizException("server.domain.error", "服务器域名错误");

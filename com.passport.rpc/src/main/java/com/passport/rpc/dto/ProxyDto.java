@@ -29,7 +29,7 @@ public class ProxyDto implements Serializable {
     /**
      * 网站
      */
-    private String domain;
+    private String[] domain;
     /**
      * 备注
      */
@@ -102,11 +102,11 @@ public class ProxyDto implements Serializable {
         this.linkMan = linkMan;
     }
 
-    public String getDomain() {
+    public String[] getDomain() {
         return domain;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(String[] domain) {
         this.domain = domain;
     }
 
