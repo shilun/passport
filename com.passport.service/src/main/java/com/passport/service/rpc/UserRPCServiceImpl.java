@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -185,24 +186,31 @@ public class UserRPCServiceImpl implements UserRPCService {
      * @return
      */
     @Override
-    public RPCResult<Page<UserDTO>> query(UserDTO dto) {
-        RPCResult<Page<UserDTO>> result = new RPCResult<>();
+    public RPCResult<List<UserDTO>> query(UserDTO dto) {
+        RPCResult<List<UserDTO>> result = new RPCResult<>();
         try {
-            List<UserDTO> userDTOs = new ArrayList<>();
             ClientUserInfo entity = new ClientUserInfo();
-            BeanCoper.copyProperties(entity, dto);
-            Page<ClientUserInfo> page = clientUserInfoService.queryByPage(entity, dto.getPageinfo().getPage());
-            for (ClientUserInfo clientUserInfo : page) {
-                UserDTO userDTO = new UserDTO();
-                BeanCoper.copyProperties(userDTO, clientUserInfo);
-                userDTOs.add(userDTO);
+            BeanCoper.copyProperties(entity,dto);
+            if(dto.getPageinfo().getSize()==null){
+                dto.getPageinfo().setSize(10);
             }
-            Page<UserDTO> users = new PageImpl<>(userDTOs, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
+            Page<ClientUserInfo> pages = clientUserInfoService.queryByPage(entity,dto.getPageinfo().getPage());
+            List<ClientUserInfo> list = pages.getContent();
+            result.setTotalPage(pages.getTotalPages());
+            result.setPageSize(dto.getPageinfo().getPage().getPageSize());
+            result.setPageIndex(dto.getPageinfo().getPage().getPageNumber());
+            result.setTotalCount((int) pages.getTotalElements());
 
+            List<UserDTO> userDTOs = new ArrayList<>();
+            for (ClientUserInfo item : list) {
+                UserDTO dto1 = new UserDTO();
+                BeanCoper.copyProperties(dto1, item);
+                userDTOs.add(dto1);
+            }
             result.setSuccess(true);
             result.setCode("find.userDTO.dto.success");
             result.setMessage("获取用户成功");
-            result.setData(users);
+            result.setData(userDTOs);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("find.userDTO.dto.error");
