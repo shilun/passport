@@ -17,7 +17,7 @@
         <repository>
             <id>releases</id>
             <name>releases</name>
-            <url>http://192.168.31.150:8081/repository/maven-releases/</url>
+            <url>http://maven.jiahou.com/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
