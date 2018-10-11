@@ -9,10 +9,7 @@ import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
 import com.passport.rpc.UserRPCService;
-import com.passport.rpc.dto.LogLoginDto;
-import com.passport.rpc.dto.QipaiUserDTO;
-import com.passport.rpc.dto.UserDTO;
-import com.passport.rpc.dto.UserExtendDTO;
+import com.passport.rpc.dto.*;
 import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.LogLoginService;
@@ -279,6 +276,41 @@ public class UserRPCServiceImpl implements UserRPCService {
         }catch (Exception e){
             result.setSuccess(false);
             result.setCode("getUserLastLoginInfo.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> changeInfo(Long proxyId, String pin, ChangeType type, String value) {
+        RPCResult<Boolean> result = null;
+        try{
+            result = new RPCResult<>();
+            if(proxyId == null || StringUtils.isBlank(pin) || StringUtils.isBlank(value)){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+
+            ClientUserInfo info = clientUserInfoService.findByPin(proxyId, pin);
+            if(info == null){
+                result.setSuccess(false);
+                result.setCode("find.result.null");
+                return result;
+            }
+            switch (type){
+                case NICK:
+                    info.setNickName(value);
+                    break;
+                    default:
+                        result.setSuccess(false);
+                        result.setCode("type.error");
+            }
+            clientUserInfoService.save(info);
+            result.setSuccess(true);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("changeInfo.error");
             logger.error("", e);
         }
         return result;
