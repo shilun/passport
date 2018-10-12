@@ -1,10 +1,7 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
-import com.passport.rpc.dto.LogLoginDto;
-import com.passport.rpc.dto.QipaiUserDTO;
-import com.passport.rpc.dto.UserDTO;
-import com.passport.rpc.dto.UserExtendDTO;
+import com.passport.rpc.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -40,7 +37,7 @@ public interface UserRPCService {
      */
     RPCResult<UserDTO> verfiyToken(String token);
 
-    RPCResult<Page<UserDTO>> query(UserDTO dto);
+    RPCResult<List<UserDTO>> query(UserDTO dto);
     /**
      * 棋牌服务器校验token
      * @param token
@@ -56,4 +53,14 @@ public interface UserRPCService {
      */
     RPCResult<LogLoginDto> getUserLastLoginInfo(Long proxyId,String pin);
 
+
+    /**
+     * 修改基本信息
+     * @param proxyId
+     * @param pin
+     * @param type
+     * @param value
+     * @return
+     */
+    RPCResult<Boolean> changeInfo(Long proxyId,String pin,ChangeType type,String value);
 }

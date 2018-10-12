@@ -1,5 +1,6 @@
 package com.passport.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.common.exception.BizException;
 import com.common.mongo.AbstractMongoService;
 import com.common.security.DesEncrypter;
@@ -25,7 +26,7 @@ import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
-import jdk.nashorn.internal.ir.annotations.Reference;
+import com.platform.rpc.RecommendRPCService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -74,6 +75,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LogLoginService logLoginService;
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
+    @Reference
+    private RecommendRPCService recommendRPCService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
@@ -722,7 +725,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if (!StringUtils.isBlank(birth)) {
             date = DateUtil.parseDate(birth);
         }
-        ClientUserInfo entity = findByPhone(proxydto.getId(),phone);
+        Long proxyId = proxydto.getId();
+
+        ClientUserInfo entity = findByPhone(proxyId,phone);
         if(entity != null){
             throw new BizException("该账号已经注册过了");
         }
@@ -731,7 +736,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
 
         entity = new ClientUserInfo();
-        entity.setProxyId(proxydto.getId());
+        entity.setProxyId(proxyId);
         entity.setRefId(refId);
         String pin = StringUtils.getUUID();
         entity.setPin(pin);
@@ -770,6 +775,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
+        recommendRPCService.init(pin,recommendId,proxyId);
         return dto;
     }
 
