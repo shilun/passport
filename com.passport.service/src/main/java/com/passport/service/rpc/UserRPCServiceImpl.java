@@ -80,7 +80,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
                 return rpcResult;
             }
-            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId,mobile);
+            ClientUserInfo userInfo = clientUserInfoService.findByPhone(proxyId, mobile);
             if (userInfo == null) {
                 rpcResult.setSuccess(false);
                 rpcResult.setCode("find.userDTO.null");
@@ -136,6 +136,11 @@ public class UserRPCServiceImpl implements UserRPCService {
         return rpcResult;
     }
 
+    public static void main(String[] args) {
+        String text = "RJ73VLB6IN2NF7W4PH26GS3ZNNMMN2GYSOR6PUBXPPSMYJTTETGAJEKQ53GBL66L45TZJZ6HRROCDLEZ4FQVKP3VCXSH7BK6UQPZTVPV42Q2SOBXUMOQ";
+        text = DesDecrypter.decryptString(text, "");
+        System.out.println(text);
+    }
 
     @Override
     public RPCResult<UserDTO> verfiyToken(String token) {
@@ -159,7 +164,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
                 return rpcResult;
             }
-            redisTemplate.expire(tokenKey, 7, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(tokenKey, dto, 7, TimeUnit.DAYS);
             rpcResult.setSuccess(true);
             rpcResult.setCode("find.userDTO.dto.success");
             rpcResult.setMessage("获取用户成功");
@@ -187,11 +192,11 @@ public class UserRPCServiceImpl implements UserRPCService {
         RPCResult<List<UserDTO>> result = new RPCResult<>();
         try {
             ClientUserInfo entity = new ClientUserInfo();
-            BeanCoper.copyProperties(entity,dto);
-            if(dto.getPageinfo().getSize()==null){
+            BeanCoper.copyProperties(entity, dto);
+            if (dto.getPageinfo().getSize() == null) {
                 dto.getPageinfo().setSize(10);
             }
-            Page<ClientUserInfo> pages = clientUserInfoService.queryByPage(entity,dto.getPageinfo().getPage());
+            Page<ClientUserInfo> pages = clientUserInfoService.queryByPage(entity, dto.getPageinfo().getPage());
             List<ClientUserInfo> list = pages.getContent();
             result.setTotalPage(pages.getTotalPages());
             result.setPageSize(dto.getPageinfo().getPage().getPageSize());
@@ -256,24 +261,24 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Override
     public RPCResult<LogLoginDto> getUserLastLoginInfo(Long proxyId, String pin) {
         RPCResult<LogLoginDto> result = null;
-        try{
+        try {
             result = new RPCResult<>();
-            if(proxyId == null || StringUtils.isBlank(pin)){
+            if (proxyId == null || StringUtils.isBlank(pin)) {
                 result.setSuccess(false);
                 result.setCode("param.null");
                 return result;
             }
             LogLoginInfo info = logLoginService.getUserLastLoginInfo(proxyId, pin);
-            if(info == null){
+            if (info == null) {
                 result.setSuccess(false);
                 result.setCode("find.result.null");
                 return result;
             }
             LogLoginDto dto = new LogLoginDto();
-            BeanCoper.copyProperties(dto,info);
+            BeanCoper.copyProperties(dto, info);
             result.setSuccess(true);
             result.setData(dto);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("getUserLastLoginInfo.error");
             logger.error("", e);
@@ -284,31 +289,31 @@ public class UserRPCServiceImpl implements UserRPCService {
     @Override
     public RPCResult<Boolean> changeInfo(Long proxyId, String pin, ChangeType type, String value) {
         RPCResult<Boolean> result = null;
-        try{
+        try {
             result = new RPCResult<>();
-            if(proxyId == null || StringUtils.isBlank(pin) || StringUtils.isBlank(value)){
+            if (proxyId == null || StringUtils.isBlank(pin) || StringUtils.isBlank(value)) {
                 result.setSuccess(false);
                 result.setCode("param.null");
                 return result;
             }
 
             ClientUserInfo info = clientUserInfoService.findByPin(proxyId, pin);
-            if(info == null){
+            if (info == null) {
                 result.setSuccess(false);
                 result.setCode("find.result.null");
                 return result;
             }
-            switch (type){
+            switch (type) {
                 case NICK:
                     info.setNickName(value);
                     break;
-                    default:
-                        result.setSuccess(false);
-                        result.setCode("type.error");
+                default:
+                    result.setSuccess(false);
+                    result.setCode("type.error");
             }
             clientUserInfoService.save(info);
             result.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("changeInfo.error");
             logger.error("", e);
