@@ -1,7 +1,10 @@
 package com.passport.web.controller;
 
+import com.passport.domain.ProxyServerInfo;
+import com.passport.domain.module.GameTypeEnum;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.ProxyServerInfoService;
 import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.web.AbstractClientController;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,15 +33,9 @@ import java.util.Map;
 public class OldController extends AbstractClientController {
     @Resource
     private ClientUserInfoService clientService;
+    @Resource
+    private ProxyServerInfoService proxyServerInfoService;
 
-    @Value("${qipai.server.id}")
-    private String server_id;
-    @Value("${qipai.safe.ips}")
-    private String safe_ips;
-    @Value("${qipai.evironment}")
-    private String evironment;
-    @Value("${qipai.tcpport}")
-    private String tcpport;
     @Value("${app.upload.scode}")
     private String scode;
     @Value("${app.upload.domain}")
@@ -81,23 +79,32 @@ public class OldController extends AbstractClientController {
         Map<String, Object> map = null;
         try{
             getRequest().getSession().removeAttribute("userDto");
-            UserDTO userDto = clientService.login(getIP(), getDomain().getId(), dto.getLoginName(), dto.getPwd());
+            Long proxyId = getDomain().getId();
+            UserDTO userDto = clientService.login(getIP(), proxyId, dto.getLoginName(), dto.getPwd());
             putCookie("cToken", userDto.getToken(), response);
             map = new HashMap<>();
             map.put("gateServerTicket",userDto.getToken());
             map.put("playerId",userDto.getId());
-            Object[] arr = new Object[1];
-            Map<String, Object> hallMap = new HashMap<>();
-            hallMap.put("server_id",server_id);
-            hallMap.put("server_type",2);
-            hallMap.put("safe_ips",safe_ips);
-            hallMap.put("evironment",evironment);
-            hallMap.put("server_name","Gate服务");
-            hallMap.put("isopen",1);
-            hallMap.put("game_id",-1);
-            hallMap.put("webport",8019);
-            hallMap.put("tcpport",tcpport);
-            arr[0] = hallMap;
+            ProxyServerInfo proxyServerInfo = new ProxyServerInfo();
+            proxyServerInfo.setProxyId(proxyId);
+            proxyServerInfo.setGameType(GameTypeEnum.Qipai.getValue());
+            List<ProxyServerInfo> list = proxyServerInfoService.query(proxyServerInfo);
+            int len = list.size();
+            Object[] arr = new Object[len];
+            for(int i=0;i<len;i++){
+                Map<String, Object> hallMap = new HashMap<>();
+                ProxyServerInfo info = list.get(i);
+                hallMap.put("server_id",info.getServerId());
+                hallMap.put("server_type",2);
+                hallMap.put("safe_ips",info.getIp());
+                hallMap.put("evironment",info.getEvironment());
+                hallMap.put("server_name","Gate服务");
+                hallMap.put("isopen",info.getIsClose());
+                hallMap.put("game_id",-1);
+                hallMap.put("webport",8019);
+                hallMap.put("tcpport",info.getPort());
+                arr[i] = hallMap;
+            }
             map.put("hall_list",arr);
         }catch (Exception e){
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
