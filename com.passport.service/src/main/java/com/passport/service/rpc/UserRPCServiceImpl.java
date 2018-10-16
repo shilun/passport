@@ -1,7 +1,6 @@
 package com.passport.service.rpc;
 
 import com.common.security.DesDecrypter;
-import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
@@ -17,15 +16,12 @@ import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -282,7 +278,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<Boolean> changeInfo(Long proxyId, String pin, ChangeType type, String value) {
+    public RPCResult<Boolean> changeInfo(Long proxyId, String pin, ChangeInfoType type, String value) {
         RPCResult<Boolean> result = null;
         try{
             result = new RPCResult<>();
