@@ -288,14 +288,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
         Object o = redisTemplate.opsForValue().get(login_pin_key);
-        String newToken = StringUtils.getUUID();
-        UserDTO dto = null;
+
         if (o != null) {
             String oldTokenKey = o.toString();
-            //dto = (UserDTO) redisTemplate.opsForValue().get(oldTokenKey);
+            oldTokenKey=MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
             redisTemplate.delete(oldTokenKey);
+            redisTemplate.delete(login_pin_key);
         }
-        dto = new UserDTO();
+        String newToken = StringUtils.getUUID();
+        UserDTO dto  = new UserDTO();
         BeanCoper.copyProperties(dto, userInfo);
         dto.setToken(newToken);
         String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
@@ -307,6 +308,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         dto.setToken(token);
         return dto;
     }
+
+
+
 
     @Override
     public void initPass(Long proxyId, String pin, String passwd) {
