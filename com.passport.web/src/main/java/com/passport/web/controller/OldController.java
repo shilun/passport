@@ -99,7 +99,7 @@ public class OldController extends AbstractClientController {
                 hallMap.put("safe_ips",info.getIp());
                 hallMap.put("evironment",info.getEvironment());
                 hallMap.put("server_name","Gate服务");
-                hallMap.put("isopen",info.getIsClose());
+                hallMap.put("isopen",info.getStatus());
                 hallMap.put("game_id",-1);
                 hallMap.put("webport",8019);
                 hallMap.put("tcpport",info.getPort());
