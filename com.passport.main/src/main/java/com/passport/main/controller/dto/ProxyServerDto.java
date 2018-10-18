@@ -1,13 +1,13 @@
-package com.passport.domain;
+package com.passport.main.controller.dto;
 
-import com.common.util.AbstractBaseEntity;
+import com.common.util.AbstractDTO;
 
 /**
- * @author Luo
- * @date 2018/10/8 9:27
+ * @Author: CSL
+ * @Date: 2018/10/18 14:28
  */
-public class ProxyServerInfo extends AbstractBaseEntity {
-    private static final long serialVersionUID = 8203740421024362219L;
+public class ProxyServerDto extends AbstractDTO {
+
     /**
      * 1 棋牌 2 彩票 3 小游戏
      */
@@ -104,4 +104,5 @@ public class ProxyServerInfo extends AbstractBaseEntity {
     public void setGameId(Integer gameId) {
         this.gameId = gameId;
     }
+
 }

@@ -43,7 +43,7 @@ export abstract class AbstractBaseService {
   }
 
   protected doExec(url: string, data: any): Promise<any> {
-    return this.http.post(this.buildUrl(url), data, this.buildHeader()).toPromise();
+      return this.http.post(this.buildUrl(url), data, this.buildHeader()).toPromise();
   }
 
   protected buildHeader(): any {

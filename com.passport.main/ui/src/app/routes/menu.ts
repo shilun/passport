@@ -27,9 +27,14 @@ export const menu = [
       text: '客户管理',
       link: '/system/user/list'
     },
-      {
-        text: '代理商管理',
-        link: '/system/proxy/list'
-      }]
+    {
+      text: '代理商管理',
+      link: '/system/proxy/list'
+    },
+    {
+      text: '服务器配置管理',
+      link: '/system/server/list'
+    }
+    ]
   }
 ];

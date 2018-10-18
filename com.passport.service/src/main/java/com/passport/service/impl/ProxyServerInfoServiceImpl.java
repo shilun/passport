@@ -25,7 +25,6 @@ public class ProxyServerInfoServiceImpl extends AbstractMongoService<ProxyServer
         info.setPort(port);
         info.setEvironment(evironment);
         info.setServerId(serverId);
-        info.setIsClose(isClose);
         return this.insert(info);
     }
 
@@ -59,7 +58,6 @@ public class ProxyServerInfoServiceImpl extends AbstractMongoService<ProxyServer
     public void close(Long id,Integer isClose) {
         ProxyServerInfo info = new ProxyServerInfo();
         info.setId(id);
-        info.setIsClose(isClose);
         this.up(info);
     }
 }

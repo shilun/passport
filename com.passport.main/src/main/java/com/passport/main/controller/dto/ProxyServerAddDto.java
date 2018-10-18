@@ -24,7 +24,7 @@ public class ProxyServerAddDto implements Serializable {
     private String evironment;
     private String serverId;
     @ApiModelProperty(value = "是否关闭  1.否  2.是")
-    private Integer isClose;
+    private Integer status;
 
     public Integer getGameType() {
         return gameType;
@@ -74,11 +74,11 @@ public class ProxyServerAddDto implements Serializable {
         this.serverId = serverId;
     }
 
-    public Integer getIsClose() {
-        return isClose;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setIsClose(Integer isClose) {
-        this.isClose = isClose;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
