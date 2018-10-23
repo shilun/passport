@@ -129,12 +129,11 @@ public interface ProxyRpcService {
 
     /**
      * 根据注册时间段筛选用户
-     * @param proxyId
      * @param startTime
      * @param endTime
      * @return
      */
-    RPCResult<Page<UserDTO>> queryUsersByRegTime(Long proxyId, Date startTime, Date endTime,UserDTO dto);
+    RPCResult<List<UserDTO>> queryUsersByRegTime(Date startTime, Date endTime,UserDTO dto);
 
     /**
      * 根据条件查询用户详细信息
@@ -146,11 +145,9 @@ public interface ProxyRpcService {
     RPCResult<UserDTO> queryUsersByCondition(Long proxyId, ConditionType type, String data);
     /**
      * 根据昵称查询用户列表
-     * @param proxyId
-     * @param nick
      * @return
      */
-    RPCResult<Page<UserDTO>> queryUsersByNick(Long proxyId, String nick,UserDTO userDTO);
+    RPCResult<List<UserDTO>> queryUsersByNick(UserDTO dto);
 
     /**
      * 查询用户的上级信息

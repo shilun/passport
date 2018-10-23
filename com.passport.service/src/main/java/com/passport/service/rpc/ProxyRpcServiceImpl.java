@@ -393,10 +393,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Page<UserDTO>> queryUsersByRegTime(Long proxyId, Date startTime, Date endTime, UserDTO dto) {
-        RPCResult<Page<UserDTO>> result = null;
+    public RPCResult<List<UserDTO>> queryUsersByRegTime(Date startTime, Date endTime,UserDTO dto) {
+        RPCResult<List<UserDTO>> result = null;
         try {
             result = new RPCResult<>();
+            Long proxyId = dto.getProxyId();
             if (proxyId == null) {
                 result.setSuccess(false);
                 return result;
@@ -412,9 +413,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 BeanCoper.copyProperties(userDTO, clientUserInfo);
                 listResult.add(userDTO);
             }
-            Page<UserDTO> users = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
             result.setSuccess(true);
-            result.setData(users);
+            result.setData(listResult);
         } catch (Exception e) {
             logger.error("查询用户列表异常", e);
             result.setSuccess(false);
@@ -465,10 +465,12 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Page<UserDTO>> queryUsersByNick(Long proxyId, String nick, UserDTO dto) {
-        RPCResult<Page<UserDTO>> result = null;
+    public RPCResult<List<UserDTO>> queryUsersByNick(UserDTO dto) {
+        RPCResult<List<UserDTO>> result = null;
         try {
             result = new RPCResult<>();
+            Long proxyId = dto.getProxyId();
+            String nick = dto.getNickName();
             if (proxyId == null || StringUtils.isBlank(nick)) {
                 result.setSuccess(false);
                 return result;
@@ -480,9 +482,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 BeanCoper.copyProperties(userDTO, clientUserInfo);
                 listResult.add(userDTO);
             }
-            Page<UserDTO> users = new PageImpl<>(listResult, dto.getPageinfo().getPage(), dto.getPageinfo().getSize());
             result.setSuccess(true);
-            result.setData(users);
+            result.setData(listResult);
         } catch (Exception e) {
             logger.error("查询用户列表异常", e);
             result.setSuccess(false);

@@ -14,7 +14,9 @@ import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.SMSInfo;
+import com.passport.domain.LimitInfo;
 import com.passport.domain.module.UserStatusEnum;
+import com.passport.rpc.dto.LimitType;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.service.*;
 import com.passport.rpc.dto.UserDTO;
@@ -75,6 +77,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LogLoginService logLoginService;
     @Resource
     private ClientUserExtendInfoService clientUserExtendInfoService;
+    @Resource
+    private LimitInfoService limitInfoService;
     @Reference
     private RecommendRPCService recommendRPCService;
     @Resource
@@ -89,6 +93,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
 
     public ClientUserInfo login(Long proxyId, String loginName, String passwd, String ip) {
+        //查询此ip是否被限制登陆
+        if(isLoginLimit(ip,null,null)){
+            throw new BizException("login.error", "当前ip被限制登陆");
+        }
+
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd) || proxyId == null) {
             return null;
         }
@@ -110,10 +119,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             query.setPin(loginName);
         }
         query = findByOne(query);
-        if (query != null) {
-            logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip);
-            return query;
+        if (query == null) {
+            return null;
         }
+        //查询此用户是否被限制登陆
+        if(isLoginLimit(null,proxyId,query.getPin())){
+            throw new BizException("login.error", "当前用户被限制登陆");
+        }
+        logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip);
         return null;
     }
 
@@ -217,6 +230,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public UserDTO loginCodeBuildVerification(String ip, Long proxyId, String account, String vcode) {
         try {
+            //查询此ip是否被限制登陆
+            if(isLoginLimit(ip,null,null)){
+                throw new BizException("login.error", "当前ip被限制登陆");
+            }
+
             if (StringUtils.isBlank(vcode)) {
                 return null;
             }
@@ -234,6 +252,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             ClientUserInfo userInfo = findByPhone(proxyId, account);
             if (userInfo == null) {
                 return null;
+            }
+
+            //查询此用户是否被限制登陆
+            if(isLoginLimit(null,proxyId,userInfo.getPin())){
+                throw new BizException("login.error", "当前用户被限制登陆");
             }
 
             String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
@@ -263,6 +286,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Override
     public UserDTO login(String ip, Long proxyId, String account, String passwrd) {
+        //查询此ip是否被限制登陆
+        if(isLoginLimit(ip,null,null)){
+            throw new BizException("login.error", "当前ip被限制登陆");
+        }
+
+
         if (StringUtils.isBlank(passwrd)) {
             throw new BizException("参数不能为空");
         }
@@ -274,6 +303,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if (userInfo == null) {
             throw new BizException("无法找到该用户");
         }
+
+        //查询此用户是否被限制登陆
+        if(isLoginLimit(null,proxyId,userInfo.getPin())){
+            throw new BizException("login.error", "当前用户被限制登陆");
+        }
+
 
         passwrd = MD5.MD5Str(passwrd, passKey);
         if (!passwrd.equals(userInfo.getPasswd())) {
@@ -711,7 +746,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public UserDTO regist(ProxyDto proxydto,String recommendId, String refId, String pass, String phone, String nick, String email,
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
-
+        //查询此ip是否被限制注册
+        if(isRegisterLimit(ip)){
+            throw new BizException("regist.error", "当前ip被限制注册");
+        }
 
         if (proxydto == null) {
             throw new BizException("proxyId.error", "代理商id错误");
@@ -780,6 +818,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
         recommendRPCService.init(pin,recommendId,proxyId);
+        limitInfoService.addIpRegisterNum(ip);
         return dto;
     }
 
@@ -1134,5 +1173,90 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         String code = AliyunMnsUtil.randomSixCode();
         sendSMSCode(phone, redisKey, code);
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK,"发送验证码成功");
+    }
+
+    /**
+     * 是否被登陆限制
+     * @param ip
+     * @param proxyId
+     * @param pin
+     * @return
+     */
+    private Boolean isLoginLimit(String ip,Long proxyId,String pin){
+        LimitInfo userLimitInfo = null;
+        if(!StringUtils.isBlank(ip)){
+            userLimitInfo = limitInfoService.findByIp(ip);
+        }else if(proxyId != null && !StringUtils.isBlank(pin)){
+            userLimitInfo = limitInfoService.findByPin(proxyId, pin);
+        }else{
+            return false;
+        }
+
+        if(userLimitInfo == null){
+            return false;
+        }
+
+        if(userLimitInfo.getLimitType() != LimitType.Login.getValue()){
+            return false;
+        }
+
+        //比较时间
+        Long now = new Date().getTime();
+        Long limitStartTime = userLimitInfo.getLimitStartTime().getTime();
+        Long limitEndTime = userLimitInfo.getLimitEndTime().getTime();
+        if(now < limitStartTime || now > limitEndTime){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * ip是否被限制注册
+     * @param ip
+     * @return
+     */
+    private Boolean isRegisterLimit(String ip){
+        if(StringUtils.isBlank(ip)){
+            return false;
+        }
+
+        //获取被限制的总数量
+        LimitInfo allNumInfo = limitInfoService.findAllLimitNum();
+        Integer allNum = null;
+        if(allNumInfo != null){
+            allNum = allNumInfo.getAllNum();
+        }
+
+        //获取当前IP的限制信息
+        LimitInfo limitInfo = limitInfoService.findByIp(ip);
+        if(limitInfo == null){
+            return false;
+        }
+
+        //获取当前ip已经注册的数量,比较是否超过限制
+        Integer currenNum = limitInfo.getCurrentIpRegNum();
+        if(allNum != null && currenNum != null && currenNum >= allNum){
+            return true;
+        }
+
+        //如果没有超过，检查是否被系统限制注册
+        Integer limitType = limitInfo.getLimitType();
+        if(limitType == null || limitType != LimitType.Register.getValue()){
+            return false;
+        }
+
+        //比较时间
+        Long now = new Date().getTime();
+        Date limitStartDate = limitInfo.getLimitStartTime();
+        Date limitEndDate = limitInfo.getLimitEndTime();
+        if(limitStartDate == null || limitEndDate == null){
+            return false;
+        }
+        Long limitStartTime = limitStartDate.getTime();
+        Long limitEndTime = limitEndDate.getTime();
+        if(now < limitStartTime || now > limitEndTime){
+            return false;
+        }
+        return true;
     }
 }
