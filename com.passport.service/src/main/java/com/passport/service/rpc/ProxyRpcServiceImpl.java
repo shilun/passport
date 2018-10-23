@@ -356,15 +356,21 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             RPCResult<Long> result_1 = queryNewUsers(proxyId, startTime, endPreOne);
             if (!result_1.getSuccess()) {
                 result.setSuccess(false);
-                result.setMessage("查询注册人数失败");
+                result.setMessage("查询 " + startTime + " 至 " + endPreOne + "之间的新注册人数失败，故无法计算");
                 return result;
             }
             Long registerNum = result_1.getData();
+            //如果在startTime到endPreOne之间注册的人数为0
+            if(registerNum == 0){
+                result.setSuccess(false);
+                result.setMessage(startTime + " 至 " + endPreOne + "之间的新注册人数为0，故无法计算");
+                return result;
+            }
             //查询在endTime这一天的登陆人数(即endPreOne到endTime之间)，且注册时间在startTime到endPreOne之间
             Long loginNum = this.logLoginService.QueryLoginUsersByRegDate(proxyId, endPreOne, endTime, startTime, endPreOne);
             //计算
-            BigDecimal regBd = new BigDecimal(registerNum);
-            BigDecimal loginBd = new BigDecimal(loginNum);
+            BigDecimal regBd = BigDecimal.valueOf(registerNum);
+            BigDecimal loginBd = BigDecimal.valueOf(loginNum);
             Double res = loginBd.divide(regBd, 4, BigDecimal.ROUND_HALF_UP).doubleValue();
             result.setSuccess(true);
             result.setData(res);
