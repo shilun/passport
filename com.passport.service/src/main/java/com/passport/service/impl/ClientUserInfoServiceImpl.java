@@ -79,7 +79,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
     private LimitInfoService limitInfoService;
-    @Reference
+    @Reference(check = false)
     private RecommendRPCService recommendRPCService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
