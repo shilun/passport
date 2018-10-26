@@ -797,18 +797,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         entity.setRegisterIp(ip);
 
         String fileName = proxydto.getId() + "_" + phone;
-        String domain = null;
-        String url = null;
-        Result<String> res = null;
         try {
-            domain = "http://passport." + proxydto.getDomain();
-            url = MessageFormat.format(recommendUrl,domain,pin);
-            res = tool.generateQRCode(url, fileName, imgTempDir);
+            String domain = "http://passport." + proxydto.getDomain();
+            String url = MessageFormat.format(recommendUrl,domain,pin);
+            Result<String> res = tool.generateQRCode(url, fileName, imgTempDir);
             if(res.getSuccess()){
                 entity.setQrName(res.getModule());
             }
         }catch (Exception e){
-            logger.error("生成二维码异常, phone: " + phone + "  domain:" + domain + "  ,url: " + url + "  ,msg: " + res.getMessage());
+            logger.error("生成二维码异常");
         }
 
         save(entity);
