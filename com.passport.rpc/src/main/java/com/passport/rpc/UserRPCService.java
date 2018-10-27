@@ -128,4 +128,11 @@ public interface UserRPCService {
      * @return
      */
     RPCResult<List<LimitDto>> getLimitInfo(LimitDto dto);
+
+    /**
+     * 根据条件查询人数
+     * @param dto
+     * @return
+     */
+    RPCResult<Long> queryUsersCount(UserDTO dto);
 }

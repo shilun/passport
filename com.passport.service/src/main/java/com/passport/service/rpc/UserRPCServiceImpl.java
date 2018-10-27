@@ -528,4 +528,23 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<Long> queryUsersCount(UserDTO dto) {
+        RPCResult<Long> result = null;
+        try {
+            result = new RPCResult<>();
+            ClientUserInfo clientUserInfo = new ClientUserInfo();
+            BeanCoper.copyProperties(clientUserInfo,dto);
+            Long res = clientUserInfoService.queryCount(clientUserInfo);
+            result.setSuccess(true);
+            result.setData(res);
+        } catch (Exception e) {
+            logger.error("查询异常", e);
+            result.setSuccess(false);
+            result.setCode("query.user.count.error");
+            result.setMessage("查询异常");
+        }
+        return result;
+    }
 }
