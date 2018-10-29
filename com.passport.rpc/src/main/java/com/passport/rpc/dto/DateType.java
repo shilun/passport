@@ -21,6 +21,16 @@ public enum DateType implements IGlossary {
     private String name;
     private Integer value;
 
+    public DateType valueOf(Integer value) throws Exception{
+        switch (value){
+            case 1:return ALL;
+            case 2:return DAY;
+            case 3:return WEEK;
+            case 4:return MONTH;
+            case 5:return YEAY;
+            default: throw new Exception("DateType undefine. type=" + value);
+        }
+    }
 
     @Override
     public String getName() {
