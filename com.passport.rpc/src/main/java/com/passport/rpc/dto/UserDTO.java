@@ -22,6 +22,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private Date birthDay;
     private String realName;
     private String registerIp;
+    private String upPin;
 
     // 头像URL
     private String headUrl;
@@ -183,5 +184,13 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setQrName(String qrName) {
         this.qrName = qrName;
+    }
+
+    public String getUpPin() {
+        return upPin;
+    }
+
+    public void setUpPin(String upPin) {
+        this.upPin = upPin;
     }
 }
