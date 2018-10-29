@@ -1,10 +1,7 @@
 package com.passport.rpc;
 
 import com.common.util.RPCResult;
-import com.passport.rpc.dto.ConditionType;
-import com.passport.rpc.dto.DateType;
-import com.passport.rpc.dto.ProxyDto;
-import com.passport.rpc.dto.UserDTO;
+import com.passport.rpc.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.Date;
@@ -164,4 +161,73 @@ public interface ProxyRpcService {
      * @return
      */
     RPCResult<ProxyDto> findByPin(Long proxyId, String pin);
+
+    /**
+     * 获取限制信息
+     * @param ip
+     * @return
+     */
+    RPCResult<LimitDto> getLimitInfo(String ip);
+
+    /**
+     * 获取限制信息
+     * @param proxyId
+     * @param pin
+     * @return
+     */
+    RPCResult<LimitDto> getLimitInfo(Long proxyId, String pin);
+
+    /**
+     * 对用户登陆或注册时的IP进行限制
+     * @param ip
+     * @param type
+     * @param limitStartTime   开始限制时间
+     * @param limitEndTime      结束限制时间
+     * @param remarks   备注
+     * @return
+     */
+    RPCResult<Boolean> userlimitIp(String ip, LimitType type, Date limitStartTime, Date limitEndTime,String remarks);
+
+    /**
+     * 对用户的pin进行限制登陆
+     * @param proxyId
+     * @param pin
+     * @param limitStartTime
+     * @param limitEndTime
+     * @param remarks
+     * @return
+     */
+    RPCResult<Boolean> userlimitPin(Long proxyId, String pin,Date limitStartTime, Date limitEndTime,String remarks);
+
+
+    /**
+     * 限制单ip注册数量
+     * @param num
+     * @return
+     */
+    RPCResult<Boolean> setLimitRegisterNum(Integer num);
+
+    /**
+     * 查询单ip注册的最大数量
+     * @return
+     */
+    RPCResult<Integer> findAllLimitNum();
+
+    /**
+     * 查询在min与max之间的信息
+     * @param min  注册的数量
+     * @param max   注册的数量
+     * @return
+     */
+    RPCResult<List<LimitDto>> getLimitInfo(Integer min, Integer max, LimitDto dto);
+
+    /**
+     * 根据限制类型来查找信息
+     * @return
+     */
+    RPCResult<List<LimitDto>> getLimitInfo(LimitDto dto);
+
+    RPCResult<Long> queryRegNum(Long proxyId,DateType type);
+
+    RPCResult<Long> queryRegNum(Long proxyId,Date startDate,Date endDate);
 }

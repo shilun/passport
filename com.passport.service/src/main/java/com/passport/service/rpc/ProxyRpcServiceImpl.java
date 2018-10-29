@@ -4,13 +4,16 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
+import com.common.util.PageInfo;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
+import com.passport.domain.LimitInfo;
 import com.passport.domain.ProxyInfo;
 import com.passport.rpc.dto.*;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.LimitInfoService;
 import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.service.ProxyInfoService;
@@ -44,6 +47,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     private LogLoginService logLoginService;
     @Resource
     private ClientUserInfoService clientUserInfoService;
+    @Resource
+    private LimitInfoService limitInfoService;
 
     private final String loginTokenKey="passport.proxy.token.{0}";
     @Resource
@@ -557,6 +562,246 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setSuccess(false);
             result.setCode("find.users.Superior.info.error");
             result.setMessage("查询用户信息异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<LimitDto> getLimitInfo(String ip) {
+        RPCResult<LimitDto> result = null;
+        try {
+            result = new RPCResult<>();
+            if (StringUtils.isBlank(ip)) {
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            LimitInfo limitInfo = limitInfoService.findByIp(ip);
+            if(limitInfo == null){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            LimitDto limitDto = new LimitDto();
+            BeanCoper.copyProperties(limitDto, limitInfo);
+            result.setData(limitDto);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("getLimitInfoByIp.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<LimitDto> getLimitInfo(Long proxyId, String pin) {
+        RPCResult<LimitDto> result = null;
+        try {
+            result = new RPCResult<>();
+            if (StringUtils.isBlank(pin) || proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            LimitInfo limitInfo = limitInfoService.findByPin(proxyId,pin);
+            if(limitInfo == null){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            LimitDto limitDto = new LimitDto();
+            BeanCoper.copyProperties(limitDto, limitInfo);
+            result.setData(limitDto);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("getLimitInfoByPin.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> userlimitIp(String ip, LimitType type, Date limitStartTime, Date limitEndTime,String remarks) {
+        RPCResult<Boolean> result = null;
+        try {
+            result = new RPCResult<>();
+            limitInfoService.addLimitInfo(ip, type, limitStartTime, limitEndTime, remarks);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("userlimitIp.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> userlimitPin(Long proxyId, String pin, Date limitStartTime, Date limitEndTime,String remarks) {
+        RPCResult<Boolean> result = null;
+        try {
+            result = new RPCResult<>();
+            limitInfoService.addLimitInfo(proxyId, pin, limitStartTime, limitEndTime, remarks);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("userlimitPin.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> setLimitRegisterNum(Integer num) {
+        RPCResult<Boolean> result = null;
+        try {
+            result = new RPCResult<>();
+            if(num < 0){
+                result.setSuccess(false);
+                result.setCode("param.error");
+                return result;
+            }
+            limitInfoService.setLimitRegisterNum(num);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("ipLimitRegisterNum.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Integer> findAllLimitNum() {
+        RPCResult<Integer> result = null;
+        try {
+            result = new RPCResult<>();
+            LimitInfo limitInfo = limitInfoService.findAllLimitNum();
+            if(limitInfo == null){
+                result.setSuccess(false);
+                result.setCode("num.is.null");
+                return result;
+            }
+            result.setSuccess(true);
+            result.setData(limitInfo.getAllNum());
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("findAllLimitNum.error");
+            logger.error("", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<List<LimitDto>> getLimitInfo(Integer min, Integer max,LimitDto dto) {
+        RPCResult<List<LimitDto>> result = null;
+        try {
+            result = new RPCResult<>();
+            if(min < 0 || min <max){
+                result.setSuccess(false);
+                result.setCode("param.error");
+                return result;
+            }
+            PageInfo pageinfo = dto.getPageinfo();
+            if(pageinfo == null){
+                pageinfo = new PageInfo();
+                pageinfo.setSize(10);
+                dto.setPageinfo(pageinfo);
+            }
+            LimitInfo limitInfo = new LimitInfo();
+            limitInfo.setStartCurrentIpRegNum(min);
+            limitInfo.setEndCurrentIpRegNum(max);
+
+            Page<LimitInfo> infos = limitInfoService.queryByPage(limitInfo, pageinfo.getPage());
+            List<LimitDto> listResult = new ArrayList<>();
+            for (LimitInfo li : infos) {
+                LimitDto limitDto = new LimitDto();
+                BeanCoper.copyProperties(limitDto, li);
+                listResult.add(limitDto);
+            }
+            result.setSuccess(true);
+            result.setData(listResult);
+        } catch (Exception e) {
+            logger.error("查询列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.list.error");
+            result.setMessage("查询列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<List<LimitDto>> getLimitInfo(LimitDto dto) {
+        RPCResult<List<LimitDto>> result = null;
+        try {
+            result = new RPCResult<>();
+            Integer limitType = dto.getLimitType();
+            if(limitType == null || (limitType != LimitType.Login.getValue() && limitType != LimitType.Register.getValue())){
+                result.setSuccess(false);
+                result.setCode("param.error");
+                return result;
+            }
+            PageInfo pageinfo = dto.getPageinfo();
+            if(pageinfo == null){
+                pageinfo = new PageInfo();
+                pageinfo.setSize(10);
+                dto.setPageinfo(pageinfo);
+            }
+            LimitInfo limitInfo = new LimitInfo();
+            limitInfo.setLimitType(limitType);
+
+            Page<LimitInfo> infos = limitInfoService.queryByPage(limitInfo, pageinfo.getPage());
+            List<LimitDto> listResult = new ArrayList<>();
+            for (LimitInfo li : infos) {
+                LimitDto limitDto = new LimitDto();
+                BeanCoper.copyProperties(limitDto, li);
+                listResult.add(limitDto);
+            }
+            result.setSuccess(true);
+            result.setData(listResult);
+        } catch (Exception e) {
+            logger.error("查询列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.list.error");
+            result.setMessage("查询列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Long> queryRegNum(Long proxyId,DateType type) {
+        RPCResult<Long> result = null;
+        try {
+            result = new RPCResult<>();
+            Date[] arr = DateUtil.getStartAndEndDate(type);
+            result = queryRegNum(proxyId, arr[0], arr[1]);
+        } catch (Exception e) {
+            logger.error("查询列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.Reg.error");
+            result.setMessage("查询列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Long> queryRegNum(Long proxyId, Date startDate, Date endDate) {
+        RPCResult<Long> result = null;
+        try {
+            result = new RPCResult<>();
+            ClientUserInfo clientUserInfo = new ClientUserInfo();
+            clientUserInfo.setProxyId(proxyId);
+            clientUserInfo.setStartCreateTime(startDate);
+            clientUserInfo.setEndCreateTime(endDate);
+            Long res = clientUserInfoService.queryCount(clientUserInfo);
+            result.setSuccess(true);
+            result.setData(res);
+        } catch (Exception e) {
+            logger.error("查询列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.Reg.error");
+            result.setMessage("查询列表异常");
         }
         return result;
     }
