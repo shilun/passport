@@ -21,7 +21,7 @@ public enum DateType implements IGlossary {
     private String name;
     private Integer value;
 
-    public DateType valueOf(Integer value) throws Exception{
+    public static DateType valueOf(Integer value) throws Exception{
         switch (value){
             case 1:return ALL;
             case 2:return DAY;
