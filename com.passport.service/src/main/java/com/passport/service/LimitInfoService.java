@@ -26,26 +26,6 @@ public interface LimitInfoService extends MongoService<LimitInfo> {
     LimitInfo findByIp(String ip);
 
     /**
-     * 添加信息(对pin只能限制登陆)
-     * @param proxyId
-     * @param pin
-     * @param limitStartTime
-     * @param limitEndTime
-     * @return
-     */
-    void addLimitInfo(Long proxyId, String pin, Date limitStartTime, Date limitEndTime,String remarks);
-
-    /**
-     * 添加信息
-     * @param ip
-     * @param limitType
-     * @param limitStartTime
-     * @param limitEndTime
-     * @return
-     */
-    void addLimitInfo(String ip, LimitType limitType,Date limitStartTime, Date limitEndTime,String remarks);
-
-    /**
      * 查询单ip的注册限制数量
      * @return
      */

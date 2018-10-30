@@ -37,39 +37,6 @@ public class LimitInfoServiceImpl extends AbstractMongoService<LimitInfo> implem
     }
 
     @Override
-    public void addLimitInfo(Long proxyId, String pin, Date limitStartTime, Date limitEndTime,String remarks) {
-        LimitInfo limitInfo = new LimitInfo();
-        limitInfo.setProxyId(proxyId);
-        limitInfo.setPin(pin);
-        //先查询是否存在
-        LimitInfo res = this.findByOne(limitInfo);
-        if(res == null){
-            res = limitInfo;
-            res.setLimitType(LimitType.Login.getValue());
-        }
-        res.setLimitStartTime(limitStartTime);
-        res.setLimitEndTime(limitEndTime);
-        res.setRemarks(remarks);
-        save(res);
-    }
-
-    @Override
-    public void addLimitInfo(String ip, LimitType limitType, Date limitStartTime, Date limitEndTime,String remarks) {
-        LimitInfo limitInfo = new LimitInfo();
-        limitInfo.setIp(ip);
-        //先查询是否存在
-        LimitInfo res = this.findByOne(limitInfo);
-        if(res == null){
-            res = limitInfo;
-        }
-        res.setLimitType(limitType.getValue());
-        res.setLimitStartTime(limitStartTime);
-        res.setLimitEndTime(limitEndTime);
-        res.setRemarks(remarks);
-        save(res);
-    }
-
-    @Override
     public LimitInfo findAllLimitNum() {
         LimitInfo limitInfo = new LimitInfo();
         limitInfo.setName(SysContant.LIMIT_IP_REGISTER_NUM_NAME);

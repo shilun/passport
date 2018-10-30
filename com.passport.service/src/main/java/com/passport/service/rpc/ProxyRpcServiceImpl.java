@@ -568,30 +568,17 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
 
 
     @Override
-    public RPCResult<Boolean> userlimitIp(String ip, LimitType type, Date limitStartTime, Date limitEndTime,String remarks) {
+    public RPCResult<Boolean> userlimit(LimitDto dto) {
         RPCResult<Boolean> result = null;
         try {
             result = new RPCResult<>();
-            limitInfoService.addLimitInfo(ip, type, limitStartTime, limitEndTime, remarks);
+            LimitInfo limitInfo = new LimitInfo();
+            BeanCoper.copyProperties(limitInfo,dto);
+            limitInfoService.save(limitInfo);
             result.setSuccess(true);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("userlimitIp.error");
-            logger.error("", e);
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<Boolean> userlimitPin(Long proxyId, String pin, Date limitStartTime, Date limitEndTime,String remarks) {
-        RPCResult<Boolean> result = null;
-        try {
-            result = new RPCResult<>();
-            limitInfoService.addLimitInfo(proxyId, pin, limitStartTime, limitEndTime, remarks);
-            result.setSuccess(true);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("userlimitPin.error");
             logger.error("", e);
         }
         return result;

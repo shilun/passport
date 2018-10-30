@@ -164,26 +164,10 @@ public interface ProxyRpcService {
 
     /**
      * 对用户登陆或注册时的IP进行限制
-     * @param ip
-     * @param type
-     * @param limitStartTime   开始限制时间
-     * @param limitEndTime      结束限制时间
-     * @param remarks   备注
+     * @param dto
      * @return
      */
-    RPCResult<Boolean> userlimitIp(String ip, LimitType type, Date limitStartTime, Date limitEndTime,String remarks);
-
-    /**
-     * 对用户的pin进行限制登陆
-     * @param proxyId
-     * @param pin
-     * @param limitStartTime
-     * @param limitEndTime
-     * @param remarks
-     * @return
-     */
-    RPCResult<Boolean> userlimitPin(Long proxyId, String pin,Date limitStartTime, Date limitEndTime,String remarks);
-
+    RPCResult<Boolean> userlimit(LimitDto dto);
 
     /**
      * 限制单ip注册数量
