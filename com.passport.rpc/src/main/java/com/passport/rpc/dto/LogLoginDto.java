@@ -1,5 +1,7 @@
 package com.passport.rpc.dto;
 
+import com.common.util.AbstractDTO;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,7 +9,7 @@ import java.util.Date;
  * @author Luo
  * @date 2018/9/18 15:32
  */
-public class LogLoginDto implements Serializable {
+public class LogLoginDto extends AbstractDTO implements Serializable {
     private static final long serialVersionUID = -2539034226167580338L;
     /**
      * 用户pin

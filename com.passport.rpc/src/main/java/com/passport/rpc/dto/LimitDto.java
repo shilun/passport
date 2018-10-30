@@ -53,6 +53,10 @@ public class LimitDto extends AbstractDTO implements Serializable {
      */
     private String remarks;
 
+    private String field_1;
+
+    private String field_2;
+
     public String getName() {
         return name;
     }
@@ -131,6 +135,22 @@ public class LimitDto extends AbstractDTO implements Serializable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public String getField_1() {
+        return field_1;
+    }
+
+    public void setField_1(String field_1) {
+        this.field_1 = field_1;
+    }
+
+    public String getField_2() {
+        return field_2;
+    }
+
+    public void setField_2(String field_2) {
+        this.field_2 = field_2;
     }
 
     @Override

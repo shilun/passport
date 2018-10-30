@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
@@ -668,24 +669,25 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         RPCResult<List<LimitDto>> result = null;
         try {
             result = new RPCResult<>();
-            Integer limitType = dto.getLimitType();
-            if(limitType == null || (limitType != LimitType.Login.getValue() && limitType != LimitType.Register.getValue())){
-                result.setSuccess(false);
-                result.setCode("param.error");
-                return result;
-            }
             PageInfo pageinfo = dto.getPageinfo();
             if(pageinfo == null){
                 pageinfo = new PageInfo();
                 pageinfo.setSize(10);
                 dto.setPageinfo(pageinfo);
             }
+            Pageable page = pageinfo.getPage();
             LimitInfo limitInfo = new LimitInfo();
             BeanCoper.copyProperties(limitInfo,dto);
 
-            Page<LimitInfo> infos = limitInfoService.queryByPage(limitInfo, pageinfo.getPage());
+            Page<LimitInfo> pages = limitInfoService.queryByPage(limitInfo, pageinfo.getPage());
+            List<LimitInfo> list = pages.getContent();
+            result.setTotalPage(pages.getTotalPages());
+            result.setPageSize(page.getPageSize());
+            result.setPageIndex(page.getPageNumber());
+            result.setTotalCount((int) pages.getTotalElements());
+
             List<LimitDto> listResult = new ArrayList<>();
-            for (LimitInfo li : infos) {
+            for (LimitInfo li : list) {
                 LimitDto limitDto = new LimitDto();
                 BeanCoper.copyProperties(limitDto, li);
                 listResult.add(limitDto);
@@ -729,6 +731,28 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             Long res = clientUserInfoService.queryCount(clientUserInfo);
             result.setSuccess(true);
             result.setData(res);
+        } catch (Exception e) {
+            logger.error("查询列表异常", e);
+            result.setSuccess(false);
+            result.setCode("query.Reg.error");
+            result.setMessage("查询列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<LimitDto> findLimitInfoById(Long id) {
+        RPCResult<LimitDto> result = null;
+        try {
+            result = new RPCResult<>();
+            LimitInfo limitInfo = new LimitInfo();
+            limitInfo.setId(id);
+            limitInfo = limitInfoService.findByOne(limitInfo);
+            result.setSuccess(true);
+            LimitDto limitDto = new LimitDto();
+            BeanCoper.copyProperties(limitDto,limitInfo);
+            result.setData(limitDto);
+            result.setSuccess(true);
         } catch (Exception e) {
             logger.error("查询列表异常", e);
             result.setSuccess(false);

@@ -342,4 +342,41 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto) {
+        RPCResult<List<LogLoginDto>> result = new RPCResult<>();
+        try {
+            LogLoginInfo logLoginInfo = new LogLoginInfo();
+            BeanCoper.copyProperties(logLoginInfo, dto);
+            PageInfo pageinfo = dto.getPageinfo();
+            if (pageinfo.getSize() == null) {
+                pageinfo.setSize(10);
+            }
+            Pageable page = pageinfo.getPage();
+            Page<LogLoginInfo> pages = logLoginService.queryByPage(logLoginInfo, page);
+            List<LogLoginInfo> list = pages.getContent();
+            result.setTotalPage(pages.getTotalPages());
+            result.setPageSize(page.getPageSize());
+            result.setPageIndex(page.getPageNumber());
+            result.setTotalCount((int) pages.getTotalElements());
+
+            List<LogLoginDto> dtos = new ArrayList<>();
+            for (LogLoginInfo item : list) {
+                LogLoginDto dto1 = new LogLoginDto();
+                BeanCoper.copyProperties(dto1, item);
+                dtos.add(dto1);
+            }
+            result.setSuccess(true);
+            result.setCode("find.LogLoginDto.success");
+            result.setMessage("获取成功");
+            result.setData(dtos);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("find.LogLoginDto.error");
+            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
+            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
+        }
+        return result;
+    }
 }

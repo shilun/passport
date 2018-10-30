@@ -70,4 +70,6 @@ public interface UserRPCService {
      * @return
      */
     RPCResult<Long> queryUsersCount(UserDTO dto);
+
+    RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto);
 }

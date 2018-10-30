@@ -199,4 +199,6 @@ public interface ProxyRpcService {
     RPCResult<Long> queryRegNum(Long proxyId,DateType type);
 
     RPCResult<Long> queryRegNum(Long proxyId,Date startDate,Date endDate);
+
+    RPCResult<LimitDto> findLimitInfoById(Long id);
 }
