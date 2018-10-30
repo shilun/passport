@@ -163,21 +163,6 @@ public interface ProxyRpcService {
     RPCResult<ProxyDto> findByPin(Long proxyId, String pin);
 
     /**
-     * 获取限制信息
-     * @param ip
-     * @return
-     */
-    RPCResult<LimitDto> getLimitInfo(String ip);
-
-    /**
-     * 获取限制信息
-     * @param proxyId
-     * @param pin
-     * @return
-     */
-    RPCResult<LimitDto> getLimitInfo(Long proxyId, String pin);
-
-    /**
      * 对用户登陆或注册时的IP进行限制
      * @param ip
      * @param type

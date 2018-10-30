@@ -566,61 +566,6 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         return result;
     }
 
-    @Override
-    public RPCResult<LimitDto> getLimitInfo(String ip) {
-        RPCResult<LimitDto> result = null;
-        try {
-            result = new RPCResult<>();
-            if (StringUtils.isBlank(ip)) {
-                result.setSuccess(false);
-                result.setCode("param.null");
-                return result;
-            }
-            LimitInfo limitInfo = limitInfoService.findByIp(ip);
-            if(limitInfo == null){
-                result.setSuccess(false);
-                result.setCode("param.null");
-                return result;
-            }
-            LimitDto limitDto = new LimitDto();
-            BeanCoper.copyProperties(limitDto, limitInfo);
-            result.setData(limitDto);
-            result.setSuccess(true);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("getLimitInfoByIp.error");
-            logger.error("", e);
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<LimitDto> getLimitInfo(Long proxyId, String pin) {
-        RPCResult<LimitDto> result = null;
-        try {
-            result = new RPCResult<>();
-            if (StringUtils.isBlank(pin) || proxyId == null) {
-                result.setSuccess(false);
-                result.setCode("param.null");
-                return result;
-            }
-            LimitInfo limitInfo = limitInfoService.findByPin(proxyId,pin);
-            if(limitInfo == null){
-                result.setSuccess(false);
-                result.setCode("param.null");
-                return result;
-            }
-            LimitDto limitDto = new LimitDto();
-            BeanCoper.copyProperties(limitDto, limitInfo);
-            result.setData(limitDto);
-            result.setSuccess(true);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("getLimitInfoByPin.error");
-            logger.error("", e);
-        }
-        return result;
-    }
 
     @Override
     public RPCResult<Boolean> userlimitIp(String ip, LimitType type, Date limitStartTime, Date limitEndTime,String remarks) {
@@ -749,7 +694,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 dto.setPageinfo(pageinfo);
             }
             LimitInfo limitInfo = new LimitInfo();
-            limitInfo.setLimitType(limitType);
+            BeanCoper.copyProperties(limitInfo,dto);
 
             Page<LimitInfo> infos = limitInfoService.queryByPage(limitInfo, pageinfo.getPage());
             List<LimitDto> listResult = new ArrayList<>();
