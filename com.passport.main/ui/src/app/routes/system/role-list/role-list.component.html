@@ -34,5 +34,5 @@
   </table>
 </div>
 <div class="text-right">
-  <pagination  class="pagination-sm"   [(ngModel)]="pageIndex" [totalItems]="listData.totalCount" (pageChanged)="onPageChange($event)" ></pagination>
+  <pagination  class="pagination-sm" [maxSize]="maxSize"  [(ngModel)]="pageIndex" [totalItems]="listData.totalCount" (pageChanged)="onPageChange($event)" ></pagination>
 </div>

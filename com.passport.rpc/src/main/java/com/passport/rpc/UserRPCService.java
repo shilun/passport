@@ -15,6 +15,14 @@ public interface UserRPCService {
     RPCResult<UserExtendDTO> findByUserCode(Long proxyId,Integer userCode);
 
     /**
+     * 查询用户code
+     * @param proxyId
+     * @param pin
+     * @return
+     */
+    RPCResult<Long> findByUserCodeByPin(Long proxyId,String pin);
+
+    /**
      * 根据用户pin查找用户
      * @param proxyId
      * @param pin
