@@ -3,8 +3,6 @@ package com.passport.domain;
 import com.common.annotation.QueryField;
 import com.common.mongo.QueryType;
 import com.common.util.AbstractBaseEntity;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.passport.domain.serializer.DateJsonSerializer;
 import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
@@ -31,7 +29,6 @@ public class LogRegisterInfo extends AbstractBaseEntity {
     /**
      * 注册时间
      */
-    @JsonSerialize(using = DateJsonSerializer.class)
     private Date registerDate;
 
     @Transient
