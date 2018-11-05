@@ -1,8 +1,6 @@
 package com.passport.main.controller.dto;
 
 import com.common.util.AbstractDTO;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.passport.domain.serializer.DateJsonDeserializer;
 
 import java.util.Date;
 
@@ -41,7 +39,6 @@ public class ProxyDto  extends AbstractDTO {
     /**
      * 结整时间
      */
-    @JsonDeserialize(using = DateJsonDeserializer.class)
     private Date endTime;
 
     /**

@@ -50,7 +50,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     private String appTokenEncodeKey;
 
     @Override
-    public RPCResult<Long> findByUserCodeByPin(Long proxyId, String pin) {
+    public RPCResult<Long> findUserCodeByPin(Long proxyId, String pin) {
 
         RPCResult<Long> result = new RPCResult<>();
         try {

@@ -20,7 +20,7 @@ public interface UserRPCService {
      * @param pin
      * @return
      */
-    RPCResult<Long> findByUserCodeByPin(Long proxyId,String pin);
+    RPCResult<Long> findUserCodeByPin(Long proxyId,String pin);
 
     /**
      * 根据用户pin查找用户
