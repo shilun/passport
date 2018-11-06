@@ -40,6 +40,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
     //二维码图片地址
     private String qrName;
 
+    private Date createTime;
 
     public String getToken() {
         return token;
@@ -192,5 +193,13 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setUpPin(String upPin) {
         this.upPin = upPin;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }
