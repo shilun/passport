@@ -50,6 +50,25 @@ public class UserRPCServiceImpl implements UserRPCService {
     private String appTokenEncodeKey;
 
     @Override
+    public RPCResult<Long> findUserCodeByPin(Long proxyId, String pin) {
+
+        RPCResult<Long> result = new RPCResult<>();
+        try {
+            ClientUserInfo userInfo = clientUserInfoService.findByPin(proxyId, pin);
+            if (userInfo != null) {
+                result.setData(userInfo.getId());
+                result.setSuccess(true);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("查询用户失败", e);
+        }
+        result.setCode("findByUserCodeByPin.error");
+        result.setMessage("查询用户code失败");
+        return result;
+    }
+
+    @Override
     public RPCResult<UserExtendDTO> findByUserCode(Long proxyId, Integer userCode) {
         RPCResult<UserExtendDTO> rpcResult = new RPCResult<>();
         try {
@@ -330,7 +349,7 @@ public class UserRPCServiceImpl implements UserRPCService {
         try {
             result = new RPCResult<>();
             ClientUserInfo clientUserInfo = new ClientUserInfo();
-            BeanCoper.copyProperties(clientUserInfo,dto);
+            BeanCoper.copyProperties(clientUserInfo, dto);
             Long res = clientUserInfoService.queryCount(clientUserInfo);
             result.setSuccess(true);
             result.setData(res);

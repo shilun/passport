@@ -2,7 +2,6 @@ package com.passport.main.controller.dto;
 
 import com.common.util.AbstractDTO;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.passport.domain.serializer.DateJsonDeserializer;
 
 import java.util.Date;
 
@@ -36,7 +35,6 @@ public class ClientUserDto extends AbstractDTO {
     /**
      * 生日
      */
-    @JsonDeserialize(using = DateJsonDeserializer.class)
     private Date birthDay;
 
     /**

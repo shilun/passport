@@ -20,6 +20,8 @@ export abstract class AbstractController {
   public pageIndex: number = 0;
   public actionType: string = '添加';
 
+  maxSize:number=5;
+
   public valForm: FormGroup;
 
 
