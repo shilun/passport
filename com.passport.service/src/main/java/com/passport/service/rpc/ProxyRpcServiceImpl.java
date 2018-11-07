@@ -761,4 +761,35 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<Boolean> changeInfo(ProxyDto proxyDto) {
+        RPCResult<Boolean> result = null;
+        try {
+            result = new RPCResult<>();
+            Long id = proxyDto.getId();
+            if(id == null){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+
+            ProxyInfo info = proxyInfoService.findById(id);
+            if(info == null){
+                result.setSuccess(false);
+                result.setCode("ProxyInfo.null");
+                return result;
+            }
+
+            BeanCoper.copyProperties(info,proxyDto);
+            proxyInfoService.save(info);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            logger.error("修改异常", e);
+            result.setSuccess(false);
+            result.setCode("update.error");
+            result.setMessage("修改异常");
+        }
+        return result;
+    }
 }
