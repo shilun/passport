@@ -1,6 +1,7 @@
 package com.passport.service.rpc;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.common.exception.BizException;
 import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
@@ -241,7 +242,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         try {
             proxyInfoService.changePass(account, oldPass, newPass);
             result.setSuccess(true);
-        } catch (Exception e) {
+        }catch (BizException bize){
+            result.setSuccess(false);
+            result.setCode(bize.getCode());
+            result.setMessage(bize.getMessage());
+        }catch (Exception e) {
             logger.error("修改密码失败", e);
             result.setSuccess(false);
             result.setCode("proxy.changePass.error");
@@ -758,6 +763,37 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             result.setSuccess(false);
             result.setCode("query.Reg.error");
             result.setMessage("查询列表异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> changeInfo(ProxyDto proxyDto) {
+        RPCResult<Boolean> result = null;
+        try {
+            result = new RPCResult<>();
+            Long id = proxyDto.getId();
+            if(id == null){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+
+            ProxyInfo info = proxyInfoService.findById(id);
+            if(info == null){
+                result.setSuccess(false);
+                result.setCode("ProxyInfo.null");
+                return result;
+            }
+
+            BeanCoper.copyProperties(info,proxyDto);
+            proxyInfoService.save(info);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            logger.error("修改异常", e);
+            result.setSuccess(false);
+            result.setCode("update.error");
+            result.setMessage("修改异常");
         }
         return result;
     }
