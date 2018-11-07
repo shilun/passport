@@ -1,6 +1,7 @@
 package com.passport.service.rpc;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.common.exception.BizException;
 import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
@@ -241,7 +242,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         try {
             proxyInfoService.changePass(account, oldPass, newPass);
             result.setSuccess(true);
-        } catch (Exception e) {
+        }catch (BizException bize){
+            result.setSuccess(false);
+            result.setCode(bize.getCode());
+            result.setMessage(bize.getMessage());
+        }catch (Exception e) {
             logger.error("修改密码失败", e);
             result.setSuccess(false);
             result.setCode("proxy.changePass.error");
