@@ -203,4 +203,11 @@ public interface ProxyRpcService {
     RPCResult<LimitDto> findLimitInfoById(Long id);
 
     RPCResult<Boolean> changeInfo(ProxyDto proxyDto);
+
+    /**
+     * 删除限制信息
+     * @param dto
+     * @return
+     */
+    RPCResult<Boolean> delLimitInfo(LimitDto dto);
 }

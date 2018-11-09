@@ -19,6 +19,7 @@ import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.util.DateUtil;
+import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -788,6 +789,31 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
 
             BeanCoper.copyProperties(info,proxyDto);
             proxyInfoService.save(info);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            logger.error("修改异常", e);
+            result.setSuccess(false);
+            result.setCode("update.error");
+            result.setMessage("修改异常");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> delLimitInfo(LimitDto dto) {
+        RPCResult<Boolean> result = null;
+        try {
+            result = new RPCResult<>();
+            LimitInfo info = new LimitInfo();
+            BeanCoper.copyProperties(info,dto);
+            info = limitInfoService.findByOne(info);
+            if(info == null){
+                result.setSuccess(false);
+                result.setCode("LimitInfo.null");
+                return result;
+            }
+            info.setDelStatus(YesOrNoEnum.YES.getValue());
+            limitInfoService.save(info);
             result.setSuccess(true);
         } catch (Exception e) {
             logger.error("修改异常", e);
