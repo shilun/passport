@@ -19,11 +19,9 @@ import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.util.DateUtil;
-import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 
