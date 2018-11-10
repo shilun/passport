@@ -577,8 +577,24 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         RPCResult<Boolean> result = null;
         try {
             result = new RPCResult<>();
+            String ip = dto.getIp();
+            Long proxyId = dto.getProxyId();
+            String pin = dto.getPin();
             LimitInfo limitInfo = new LimitInfo();
-            BeanCoper.copyProperties(limitInfo,dto);
+            if(ip != null){
+                limitInfo.setIp(ip);
+            }else if(proxyId != null && pin != null){
+                limitInfo.setProxyId(proxyId);
+                limitInfo.setPin(pin);
+            }else{
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            limitInfo = limitInfoService.findByOne(limitInfo);
+            if(limitInfo == null){
+                BeanCoper.copyProperties(limitInfo,dto);
+            }
             limitInfoService.save(limitInfo);
             result.setSuccess(true);
         } catch (Exception e) {
