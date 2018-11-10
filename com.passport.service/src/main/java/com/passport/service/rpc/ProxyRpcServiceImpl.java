@@ -802,16 +802,13 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         RPCResult<Boolean> result = null;
         try {
             result = new RPCResult<>();
-            LimitInfo info = new LimitInfo();
-            BeanCoper.copyProperties(info,dto);
-            info = limitInfoService.findByOne(info);
-            if(info == null){
+            Long id = dto.getId();
+            if(id == null){
                 result.setSuccess(false);
-                result.setCode("LimitInfo.null");
+                result.setCode("param.null");
                 return result;
             }
-            info.setDelStatus(YesOrNoEnum.YES.getValue());
-            limitInfoService.save(info);
+            limitInfoService.delById(id);
             result.setSuccess(true);
         } catch (Exception e) {
             logger.error("修改异常", e);
