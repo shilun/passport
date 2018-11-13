@@ -18,6 +18,7 @@ import com.passport.service.LimitInfoService;
 import com.passport.service.LogLoginService;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.service.ProxyInfoService;
+import com.passport.service.constant.MessageConstant;
 import com.passport.service.util.DateUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,6 +55,49 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     private final String loginTokenKey="passport.proxy.token.{0}";
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Override
+    public RPCResult<List<ProxyDto>> query(ProxyDto dto) {
+        RPCResult<List<ProxyDto>> result = new RPCResult<>();
+        try{
+            PageInfo pageinfo = dto.getPageinfo();
+            if(pageinfo == null){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return null;
+            }
+            if (pageinfo.getSize() == null) {
+                pageinfo.setSize(10);
+            }
+            Pageable page = pageinfo.getPage();
+            ProxyInfo info = new ProxyInfo();
+            BeanCoper.copyProperties(info, dto);
+
+            Page<ProxyInfo> pages = proxyInfoService.queryByPage(info, page);
+            List<ProxyInfo> list = pages.getContent();
+            result.setTotalPage(pages.getTotalPages());
+            result.setPageSize(page.getPageSize());
+            result.setPageIndex(page.getPageNumber());
+            result.setTotalCount((int) pages.getTotalElements());
+
+            List<ProxyDto> dtos = new ArrayList<>();
+            for (ProxyInfo item : list) {
+                ProxyDto dto1 = new ProxyDto();
+                BeanCoper.copyProperties(dto1, item);
+                dtos.add(dto1);
+            }
+            result.setSuccess(true);
+            result.setCode("find.ProxyDto.dto.success");
+            result.setMessage("获取用户成功");
+            result.setData(dtos);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("find.ProxyDto.dto.error");
+            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
+            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
+        }
+        return result;
+    }
 
     @Override
     public RPCResult<List<ProxyDto>> queryAll() {

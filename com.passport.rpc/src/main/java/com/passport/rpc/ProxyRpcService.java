@@ -11,6 +11,11 @@ import java.util.List;
  * 查询代理商信息
  */
 public interface ProxyRpcService {
+    /**
+     * 查询所有代理商
+     * @return
+     */
+    public RPCResult<List<ProxyDto>> query(ProxyDto dto);
 
     /**
      * 查询所有代理商

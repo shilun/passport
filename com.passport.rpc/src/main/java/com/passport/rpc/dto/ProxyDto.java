@@ -1,11 +1,13 @@
 package com.passport.rpc.dto;
 
+import com.common.util.AbstractDTO;
+
 import java.io.Serializable;
 
 /**
  * 代理商信息
  */
-public class ProxyDto implements Serializable {
+public class ProxyDto extends AbstractDTO implements Serializable {
 
     private Long id;
     /**

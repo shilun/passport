@@ -817,7 +817,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
-        recommendRPCService.init(pin,recommendId,proxyId);
+        recommendRPCService.init(pin,recommendId == null ? "0" : recommendId,proxyId);
         limitInfoService.addIpRegisterNum(ip);
         return dto;
     }
