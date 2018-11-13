@@ -9,7 +9,6 @@ import java.io.Serializable;
  */
 public class ProxyDto extends AbstractDTO implements Serializable {
 
-    private Long id;
     /**
      * 代理的游戏
      * 1 棋牌 2 彩票 3 小游戏
@@ -66,14 +65,6 @@ public class ProxyDto extends AbstractDTO implements Serializable {
 
     public Integer[] getGames() {
         return games;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setGames(Integer[] games) {
