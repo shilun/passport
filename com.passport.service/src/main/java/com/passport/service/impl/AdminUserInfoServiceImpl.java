@@ -7,11 +7,14 @@ import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.AdminUserInfo;
 import com.passport.service.AdminUserInfoService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo> implements AdminUserInfoService {
+
+    private static Logger logger= Logger.getLogger(AdminUserInfoServiceImpl.class);
     @Value("${app.passKey}")
     private String passKey;
 
@@ -25,6 +28,7 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         AdminUserInfo query = new AdminUserInfo();
         query.setStatus(YesOrNoEnum.YES.getValue());
         passport = MD5.MD5Str(passport, passKey);
+        logger.error("loginName:"+loginName+" pass:"+passport);
         query.setPasswd(passport);
         boolean setLoginName=false;
         if(StringUtils.isEmail(loginName)){
@@ -43,6 +47,11 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         return info;
     }
 
+    public static void main(String[] args) {
+        String s = MD5.MD5Str("superadmin!Q@W", "389be01753974410b384ee45a4bc8517");
+        System.out.println(s);
+
+    }
     public AdminUserInfo findByPin(String pin) {
         AdminUserInfo query = new AdminUserInfo();
         query.setPin(pin);
