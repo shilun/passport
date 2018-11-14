@@ -13,7 +13,7 @@ import java.util.Date;
  * @date 2018/9/18 15:48
  */
 public interface LogLoginService extends MongoService<LogLoginInfo> {
-    Boolean addLoginLog(String pin,Long proxyId,Date registerDate,String ip);
+    Boolean addLoginLog(String pin,Long proxyId,Date registerDate,String ip,Long userCode);
 
     Long QueryActiveUsers(Long proxyId,Date startTime, Date endTime);
 

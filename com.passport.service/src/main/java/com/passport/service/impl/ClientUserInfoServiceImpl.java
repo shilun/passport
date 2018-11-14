@@ -126,7 +126,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if(isLoginLimit(null,proxyId,query.getPin())){
             throw new BizException("login.error", "当前用户被限制登陆");
         }
-        logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip);
+        logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip,query.getId());
         return null;
     }
 
@@ -275,7 +275,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
             //删除验证码
             redisTemplate.delete(key);
-            logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
+            logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip,userInfo.getId());
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -337,7 +337,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
         redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
-        logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip);
+        logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip,userInfo.getId());
         String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
         token = DesEncrypter.cryptString(token, appTokenEncodeKey);
         dto.setToken(token);
@@ -798,7 +798,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         String fileName = proxydto.getId() + "_" + phone;
         try {
-            String domain = "http://passport." + proxydto.getDomain();
+            String domain = "http://passport." + proxydto.getDomain()[0];
             String url = MessageFormat.format(recommendUrl,domain,pin);
             Result<String> res = tool.generateQRCode(url, fileName, imgTempDir);
             if(res.getSuccess()){
@@ -817,7 +817,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
-        recommendRPCService.init(pin,recommendId,proxyId);
+        recommendRPCService.init(pin,recommendId == null ? "0" : recommendId,proxyId);
         limitInfoService.addIpRegisterNum(ip);
         return dto;
     }

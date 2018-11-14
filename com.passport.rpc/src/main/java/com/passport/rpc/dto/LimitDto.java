@@ -57,6 +57,8 @@ public class LimitDto extends AbstractDTO implements Serializable {
 
     private String field_2;
 
+    private Long userCode;
+
     public String getName() {
         return name;
     }
@@ -151,6 +153,14 @@ public class LimitDto extends AbstractDTO implements Serializable {
 
     public void setField_2(String field_2) {
         this.field_2 = field_2;
+    }
+
+    public Long getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Long userCode) {
+        this.userCode = userCode;
     }
 
     @Override

@@ -48,6 +48,8 @@ public class LogLoginInfo extends AbstractBaseEntity {
     @QueryField(name="registerDate",type= QueryType.LTE)
     private Date regEndTime;
 
+    private Long userCode;
+
     /**
      * 登陆ip
      */
@@ -123,5 +125,13 @@ public class LogLoginInfo extends AbstractBaseEntity {
 
     public String getIp() {
         return ip;
+    }
+
+    public Long getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Long userCode) {
+        this.userCode = userCode;
     }
 }
