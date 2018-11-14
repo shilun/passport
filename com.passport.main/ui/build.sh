@@ -1,3 +1,3 @@
-cd .
+cd $uipath
 npm i
 ng build
