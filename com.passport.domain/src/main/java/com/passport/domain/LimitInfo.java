@@ -63,6 +63,8 @@ public class LimitInfo extends AbstractBaseEntity {
      */
     private String remarks;
 
+    private Long userCode;
+
     public String getName() {
         return name;
     }
@@ -157,5 +159,13 @@ public class LimitInfo extends AbstractBaseEntity {
 
     public void setEndCurrentIpRegNum(Integer endCurrentIpRegNum) {
         this.endCurrentIpRegNum = endCurrentIpRegNum;
+    }
+
+    public Long getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Long userCode) {
+        this.userCode = userCode;
     }
 }

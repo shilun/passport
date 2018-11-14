@@ -27,6 +27,8 @@ public class LogLoginDto extends AbstractDTO implements Serializable {
 
     private String ip;
 
+    private Long userCode;
+
     public String getPin() {
         return pin;
     }
@@ -65,5 +67,13 @@ public class LogLoginDto extends AbstractDTO implements Serializable {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public Long getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Long userCode) {
+        this.userCode = userCode;
     }
 }

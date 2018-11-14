@@ -309,11 +309,13 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<Boolean> changeInfo(Long proxyId, String pin, ChangeInfoType type, String value) {
+    public RPCResult<Boolean> changeInfo(UserDTO dto) {
         RPCResult<Boolean> result = null;
         try {
             result = new RPCResult<>();
-            if (proxyId == null || StringUtils.isBlank(pin) || StringUtils.isBlank(value)) {
+            Long proxyId = dto.getProxyId();
+            String pin = dto.getPin();
+            if (proxyId == null || StringUtils.isBlank(pin)) {
                 result.setSuccess(false);
                 result.setCode("param.null");
                 return result;
@@ -325,14 +327,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setCode("find.result.null");
                 return result;
             }
-            switch (type) {
-                case NICK:
-                    info.setNickName(value);
-                    break;
-                default:
-                    result.setSuccess(false);
-                    result.setCode("type.error");
-            }
+            BeanCoper.copyProperties(info,dto);
             clientUserInfoService.save(info);
             result.setSuccess(true);
         } catch (Exception e) {

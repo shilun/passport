@@ -43,7 +43,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
     private Tool tool;
 
     @Override
-    public Boolean addLoginLog(String pin, Long proxyId, Date registerDate, String ip) {
+    public Boolean addLoginLog(String pin, Long proxyId, Date registerDate, String ip,Long userCode) {
         Boolean flag = false;
         try {
             if (StringUtils.isBlank(pin) || proxyId == null) {
@@ -55,6 +55,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
             info.setLoginDay(new Date());
             info.setRegisterDate(registerDate);
             info.setIp(ip);
+            info.setUserCode(userCode);
             save(info);
             flag = true;
         } catch (Exception e) {

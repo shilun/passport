@@ -64,13 +64,10 @@ public interface UserRPCService {
 
     /**
      * 修改基本信息
-     * @param proxyId
-     * @param pin
-     * @param type
-     * @param value
+     * @param dto
      * @return
      */
-    RPCResult<Boolean> changeInfo(Long proxyId, String pin, ChangeInfoType type, String value);
+    RPCResult<Boolean> changeInfo(UserDTO dto);
 
     /**
      * 根据条件查询人数
