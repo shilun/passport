@@ -19,10 +19,10 @@
         <div class="register-container">
             <div class="register-title">
             </div>
-            <div class="register-group">
-                <label for="inputId">上线ID</label>
-                <input type="tel" class="form-control" placeholder="1234567" id="inputId" maxlength="6" th:value="${recommendId}"/>
-            </div>
+            <!--<div class="register-group">-->
+                <!--<label for="inputId">上线ID</label>-->
+                <input type="hidden" class="form-control" placeholder="1234567" id="inputId" maxlength="6" th:value="${recommendId}"/>
+            <!--</div>-->
             <div class="register-group">
                 <label for="inputPhone">手机号</label>
                 <input type="tel" placeholder="请输入手机号" id="inputPhone" maxlength="11"/>
