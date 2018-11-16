@@ -2,6 +2,7 @@ package com.passport.web.controller;
 
 import com.passport.domain.ProxyServerInfo;
 import com.passport.domain.module.GameTypeEnum;
+import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyServerInfoService;
@@ -40,6 +41,8 @@ public class OldController extends AbstractClientController {
     private String scode;
     @Value("${app.upload.domain}")
     private String uploadDomain;
+    @Value("${batch.register}")
+    private Boolean batctReg;
 
     @RequestMapping("forgetPassBuildCode")
     @ResponseBody
@@ -170,5 +173,26 @@ public class OldController extends AbstractClientController {
     @ApiOperation(value = "二维码注册")
     public Map<String, Object> regByQr(@RequestBody OldQRRegDto dto){
         return clientService.oldRegist(getDomain(), dto.getAccessName(), dto.getValidateCode(), dto.getAccessToken(), getIP(),dto.getRecommendId());
+    }
+    @RequestMapping("bachRg")
+    @ResponseBody
+    @ApiOperation(value = "批量注册")
+    public Map<String, Object> bachRg(@RequestBody OldBachRegDto dto){
+        if(batctReg){
+            Long beginPhone = dto.getBeginPhone();
+            Long endPhone = dto.getEndPhone();
+            String pass = dto.getPass();
+            ProxyDto domain = getDomain();
+            Map<String, Object> stringObjectMap = null;
+            int index = 0;
+            for(long i=beginPhone;i<=endPhone;i++){
+                stringObjectMap = clientService.oldRegist(domain, i + "", "123456", pass, getIP(), "0");
+                if(Boolean.parseBoolean(stringObjectMap.get("success").toString())){
+                    index ++;
+                }
+            }
+            return OldPackageMapUtil.toSuccessMap("","成功注册账号" + index + "个");
+        }
+        return OldPackageMapUtil.toFailMap("","注册失败");
     }
 }
