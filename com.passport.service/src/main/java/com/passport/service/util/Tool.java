@@ -76,6 +76,7 @@ public class Tool {
         qrCodeFile.delete();
         if(!res.getSuccess()){
             logger.error("保存图片失败");
+
             logger.error("uploadParams->code:"+uploadUtil.getCode()+" scode:"+uploadUtil.getScode()+" domain:"+uploadUtil.getDomainName());
         }
         return res;
