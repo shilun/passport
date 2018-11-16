@@ -1,5 +1,7 @@
 package com.passport.web.controller;
 
+import com.common.upload.UploadUtil;
+import com.common.util.Result;
 import com.passport.domain.ProxyServerInfo;
 import com.passport.domain.module.GameTypeEnum;
 import com.passport.rpc.dto.ProxyDto;
@@ -11,6 +13,7 @@ import com.passport.service.util.OldPackageMapUtil;
 import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.*;
 import io.swagger.annotations.ApiOperation;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/appinterface", method = {RequestMethod.POST})
 public class OldController extends AbstractClientController {
+    private Logger logger=Logger.getLogger(OldController.class);
     @Resource
     private ClientUserInfoService clientService;
     @Resource
@@ -110,6 +115,7 @@ public class OldController extends AbstractClientController {
             }
             map.put("hall_list",arr);
         }catch (Exception e){
+            logger.error(e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,e.getMessage());
         }
         return OldPackageMapUtil.toMap(HttpStatusCode.CODE_OK,HttpStatusCode.MSG_OK,true,map);
