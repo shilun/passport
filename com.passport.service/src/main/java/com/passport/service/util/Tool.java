@@ -5,6 +5,7 @@ import com.common.util.Result;
 import com.mongodb.DBObject;
 import com.swetake.util.Qrcode;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
 @Component
 public class Tool {
     private static Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-
+    private Logger logger=Logger.getLogger(Tool.class);
     @Autowired(required = false)
     private UploadUtil uploadUtil;
     /**
@@ -73,6 +74,10 @@ public class Tool {
         ImageIO.write(bi, "jpg", qrCodeFile);
         Result<String> res = uploadUtil.uploadFile(qrCodeFile);
         qrCodeFile.delete();
+        if(!res.getSuccess()){
+            logger.error("保存图片失败");
+            logger.error("uploadParams->code:"+uploadUtil.getCode()+" scode:"+uploadUtil.getScode()+" domain:"+uploadUtil.getDomainName());
+        }
         return res;
     }
 
