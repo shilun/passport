@@ -46,14 +46,6 @@ public class ClientUserInfo extends AbstractBaseEntity {
 
     private Date birthDay;
 
-    public String getRefId() {
-        return refId;
-    }
-
-    public void setRefId(String refId) {
-        this.refId = refId;
-    }
-
     /**
      * 注册ip
      */
@@ -73,6 +65,14 @@ public class ClientUserInfo extends AbstractBaseEntity {
     //(推荐)二维码图片名字
     private String qrName;
 
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
     public Long getProxyId() {
         return proxyId;
     }
