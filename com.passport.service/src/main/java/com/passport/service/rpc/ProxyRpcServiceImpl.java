@@ -625,9 +625,9 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             Long proxyId = dto.getProxyId();
             String pin = dto.getPin();
             LimitInfo limitInfo = new LimitInfo();
-            if(ip != null){
+            if(StringUtils.isNotBlank(ip)){
                 limitInfo.setIp(ip);
-            }else if(proxyId != null && pin != null){
+            }else if(proxyId != null && StringUtils.isNotBlank(pin)){
                 limitInfo.setProxyId(proxyId);
                 limitInfo.setPin(pin);
             }else{
@@ -637,6 +637,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             }
             limitInfo = limitInfoService.findByOne(limitInfo);
             if(limitInfo == null){
+                limitInfo = new LimitInfo();
                 BeanCoper.copyProperties(limitInfo,dto);
             }
             limitInfoService.save(limitInfo);
