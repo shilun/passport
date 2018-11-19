@@ -1,5 +1,6 @@
 package com.passport.main.application;
 
+import com.common.upload.UploadUtil;
 import com.passport.service.util.AliyunMnsUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,12 @@ public class GlobalConfig {
     private String smsAliyunEndpoint;
     @Value("${app.sms.aliyun.smsTopic}")
     private String smsAliyunSmsTopic;
+    @Value("${app.software.upload.scode}")
+    private String softUploadScode;
+    @Value("${app.software.upload.code}")
+    private String softUploadCode;
+    @Value("${app.software.upload.domain}")
+    private String softUploadDomain;
 
     @Bean("aliyunMnsUtil")
     public AliyunMnsUtil AliyunMnsUtil() {
@@ -28,5 +35,13 @@ public class GlobalConfig {
         ClassPathResource resource = new ClassPathResource("sms-template.xml");
         aliyunMnsUtil.setTemplateXml(resource);
         return aliyunMnsUtil;
+    }
+    @Bean("softUploadUtil")
+   public UploadUtil uploadUtil(){
+        UploadUtil uploadUtil=new UploadUtil();
+        uploadUtil.setScode(softUploadScode);
+        uploadUtil.setDomainName(softUploadDomain);
+        uploadUtil.setCode(softUploadCode);
+        return uploadUtil;
     }
 }

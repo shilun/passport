@@ -34,7 +34,11 @@ export const menu = [
     {
       text: '服务器配置管理',
       link: '/system/server/list'
-    }
+    },
+      {
+        text: '软件管理',
+        link: '/system/software/list'
+      }
     ]
   }
 ];
