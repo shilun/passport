@@ -24,7 +24,7 @@ public class QRCodeController extends AbstractClientController {
             response.setContentType("image/jpeg");
             outputStream = response.getOutputStream();
             String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
-            QRCodeUtil.encode("http://passport." + domain + "/login/reg?recId=" + getUserDto().getPin(), outputStream);
+            QRCodeUtil.encode("http://passport." + domain + "/login/reg?q=" + getUserDto().getPin(), outputStream);
         } finally {
             outputStream.close();
         }
