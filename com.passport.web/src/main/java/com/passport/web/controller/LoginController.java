@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -230,5 +231,13 @@ public class LoginController extends AbstractClientController {
             loginService.saveUserExtendInfo(getDomain().getId(),userExtendDTO);
             return null;
         });
+    }
+
+
+    @RequestMapping(value = "reg", method = {RequestMethod.GET})
+    @ApiOperation(value = "用户注册")
+    public String reg(String recId, Model model) {
+        model.addAttribute("recommendId",recId);
+        return "/register";
     }
 }
