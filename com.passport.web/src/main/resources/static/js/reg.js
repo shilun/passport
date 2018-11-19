@@ -113,7 +113,7 @@ function sendCode(obj) {
     if (result) {
         $.ajax({
             type: 'POST',
-            url: 'http://passport:jiahou.com/appinterface/regBuildCode',
+            url: '/appinterface/regBuildCode',
             data: {"phoneNo": phone},
             contentType: "application/json",
             dataType: 'json',
