@@ -110,7 +110,7 @@ $(document).ready(function(){
         if (result) {
             $.ajax({
                 type: 'POST',
-                url: url+'/regBuildCode',
+                url: '/appinterface/regBuildCode',
                 data: '{"phoneNo":'+phone+'}',
                 headers:{'Content-Type': 'application/json'},
                 success: function (data) {
@@ -151,7 +151,7 @@ $(document).ready(function(){
     function submitForm(phone, code, password,id) {
         $.ajax({
             type: 'POST',
-            url: url+'/regByQr',
+            url: '/appinterface/regByQr',
             data: '{ "accessName":"'+phone+'","accessToken":"'+password+'","loginType":1'+',"recommendId":"'+id+'","validateCode":"'+code+'"}',
             headers:{'Content-Type': 'application/json','Accept': 'application/json'},
             success: function (data) {
