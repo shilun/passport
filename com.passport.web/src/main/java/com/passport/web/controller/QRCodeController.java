@@ -17,6 +17,9 @@ public class QRCodeController extends AbstractClientController {
     @RequestMapping("build")
     public void down(HttpServletResponse response,String pin)
             throws Exception {
+        if(StringUtils.isBlank(pin)){
+            return;
+        }
         ServletOutputStream outputStream = null;
         try {
             response.setContentType("image/jpeg");
