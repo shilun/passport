@@ -4,11 +4,13 @@ import com.common.exception.BizException;
 import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
 import com.common.web.IExecute;
+import com.passport.domain.module.AgentTypeEnum;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserInfoService;
+import com.passport.service.SoftWareService;
 import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.*;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +36,8 @@ public class LoginController extends AbstractClientController {
     @Resource
     private ClientUserInfoService loginService;
 
+    @Resource
+    private SoftWareService softWareService;
     @Value("${app.cookie.encode.key}")
     private String cookieEncodeKey;
 
@@ -237,7 +241,24 @@ public class LoginController extends AbstractClientController {
     @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")
     public String reg(String q, Model model) {
-        model.addAttribute("recommendId",q);
+        model.addAttribute("recommendId", q);
+        AgentTypeEnum agentType = getAgentType();
+        if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
+            model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
+        }
+        if (agentType == AgentTypeEnum.IOS) {
+            model.addAttribute("url", "itms-services://?action=download-manifest&url=/AppDownload/download.plist");
+        }
         return "/register";
+    }
+    public AgentTypeEnum getAgentType() {
+        String agent = getRequest().getHeader("user-agent").toLowerCase();
+        if (agent.indexOf(AgentTypeEnum.Android.name().toLowerCase()) != -1) {
+            return AgentTypeEnum.Android;
+        }
+        if (agent.indexOf("iPhone".toLowerCase()) != -1 || agent.indexOf("iPod".toLowerCase()) != -1 || agent.indexOf("iPad".toLowerCase()) != -1) {
+            return AgentTypeEnum.IOS;
+        }
+        return AgentTypeEnum.Other;
     }
 }

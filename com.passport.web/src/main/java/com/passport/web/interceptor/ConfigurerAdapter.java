@@ -26,6 +26,7 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
        registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns(new String[]{"error",
                "/login/*",
                "/qrCode/*",
+               "/AppDownload/*",
                "/appinterface/user-login",
                "/appinterface/user-reg",
                "/appinterface/forgetPassBuildCode",
