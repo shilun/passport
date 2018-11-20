@@ -13,10 +13,9 @@ public interface SoftWareService extends MongoService<SoftWare> {
     /**
      * 获取最新包
      * @param type
-     * @param appSign app标识
      * @return
      */
-    SoftWare findLastInfo(Long agentId, AgentTypeEnum type, String appSign);
+    SoftWare findLastInfo(Long agentId, AgentTypeEnum type);
 
 
 

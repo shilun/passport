@@ -14,7 +14,7 @@ public class SoftWareServiceImpl extends AbstractMongoService<SoftWare> implemen
     }
 
     @Override
-    public SoftWare findLastInfo(Long agentId, AgentTypeEnum type, String appSign) {
+    public SoftWare findLastInfo(Long agentId, AgentTypeEnum type) {
         return null;
     }
 

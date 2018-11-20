@@ -26,8 +26,10 @@ public class AppDownloadController extends AbstractClientController {
     @Resource
     private SoftWareService softWareService;
 
+
+
     @RequestMapping()
-    public String down(HttpServletResponse response, Integer osType, String appSign) {
+    public String down(HttpServletResponse response, Integer osType) {
         response.setContentType("application/x-download");
         AgentTypeEnum type = null;
         if (osType != null) {
@@ -35,13 +37,13 @@ public class AppDownloadController extends AbstractClientController {
         } else {
             type = getAgentType();
         }
-        return "redirect:" + softWareService.findLastInfo(getDomain().getId(),type, appSign).getUrl();
+        return "redirect:" + softWareService.findLastInfo(getDomain().getId(),type).getUrl();
     }
 
     @RequestMapping(value = "/download")
     @ApiOperation(value = "下载", notes = "下载")
     @ResponseBody
-    public Map<String, Object> download(Integer osType, String version) {
+    public Map<String, Object> download(Integer osType) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -51,17 +53,17 @@ public class AppDownloadController extends AbstractClientController {
                 } else {
                     type = getAgentType();
                 }
-                return softWareService.findLastInfo(getDomain().getId(),type, version).getUrl();
+                return softWareService.findLastInfo(getDomain().getId(),type).getUrl();
             }
         });
     }
 
     @RequestMapping("download.plist")
-    public String buildDownloadPage(HttpServletResponse response, String appSign) {
+    public String buildDownloadPage(HttpServletResponse response) {
         response.setContentType("text/plain");
         response.setHeader("Content-type", "text/plain;charset=UTF-8");
         AgentTypeEnum type = AgentTypeEnum.IOS;
-        SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(),type, appSign);
+        SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(),type);
         getRequest().setAttribute("url", lastInfo.getUrl());
         getRequest().setAttribute("version", lastInfo.getVersion());
         return "downloadIOS";
