@@ -264,4 +264,8 @@ public class LoginController extends AbstractClientController {
         }
         return AgentTypeEnum.Other;
     }
+
+    public static void main(String[] args) {
+        System.out.println("HTTPS://QR.SRBAPI.COM/fkx07887oxpgacfiysawi2f".toUpperCase());
+    }
 }
