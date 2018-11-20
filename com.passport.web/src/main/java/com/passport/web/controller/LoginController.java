@@ -249,7 +249,7 @@ public class LoginController extends AbstractClientController {
         }
         if (agentType == AgentTypeEnum.IOS) {
 
-            model.addAttribute("url", "itms-services://?action=download-manifest&url=http://passport" + domain + "/AppDownload/download.plist");
+            model.addAttribute("url", "itms-services://?action=download-manifest&url=http://passport." + domain + "/AppDownload/download.plist");
         }
         return "/register";
     }
