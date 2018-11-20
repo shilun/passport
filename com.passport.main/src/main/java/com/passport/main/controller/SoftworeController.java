@@ -37,7 +37,7 @@ public class SoftworeController extends AbstractController {
             @Override
             public Object getData() {
                 try {
-                    String s = "http://" + fileUploadUtil.getDomainName() + "/" + fileUploadUtil.getScode() + "/" + fileUploadUtil.uploadFile(file.getBytes(), file.getOriginalFilename()).getModule();
+                    String s = "/" + fileUploadUtil.getScode() + "/" + fileUploadUtil.uploadFile(file.getBytes(), file.getOriginalFilename()).getModule();
                     return s;
                 } catch (Exception e) {
                     logger.error("上付文件失败", e);

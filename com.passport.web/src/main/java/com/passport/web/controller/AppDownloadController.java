@@ -83,7 +83,7 @@ public class AppDownloadController extends AbstractClientController {
         SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(), type);
         VelocityContext context = new VelocityContext();
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
-        context.put("url", "http://passport."+ domain +lastInfo.getUrl());
+        context.put("url", "http://images."+domain+lastInfo.getUrl());
         context.put("name", lastInfo.getName());
         context.put("version", lastInfo.getVersion());
 

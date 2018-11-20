@@ -44,7 +44,7 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
-    public Map<String, Object> login(@RequestBody LoginByPassDto dto,HttpServletResponse response) {
+    public Map<String, Object> login(@RequestBody LoginByPassDto dto, HttpServletResponse response) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
@@ -96,7 +96,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return loginService.registVerification(getDomain(),dto.getAccount(), dto.getCode(), dto.getPass(),getIP());
+                return loginService.registVerification(getDomain(), dto.getAccount(), dto.getCode(), dto.getPass(), getIP());
             }
         });
     }
@@ -111,7 +111,7 @@ public class LoginController extends AbstractClientController {
                 if (dto == null) {
                     return true;
                 }
-                loginService.loginOut(dto.getPin(),dto.getToken());
+                loginService.loginOut(dto.getPin(), dto.getToken());
             } catch (Exception e) {
                 return false;
             }
@@ -140,7 +140,7 @@ public class LoginController extends AbstractClientController {
     @ApiOperation(value = "修改手机号获取验证码")
     public Map<String, Object> changeMobile(@RequestBody ChangeMobileDto dto) {
         return buildMessage(() -> {
-            loginService.changeMobile(getDomain().getId(),getUserDto().getPin(), dto.getMobile());
+            loginService.changeMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile());
             return null;
         });
     }
@@ -148,10 +148,10 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("changeMobileVer")
     @ApiOperation(value = "修改手机号校验")
     public Map<String, Object> changeMobileVer(@RequestBody ChangeMobileVerDto dto) {
-        return buildMessage(() ->{
-            loginService.changeMobile(getDomain().getId(),getUserDto().getPin(), dto.getMobile(), dto.getCode());
+        return buildMessage(() -> {
+            loginService.changeMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
             return null;
-        } );
+        });
     }
 
     @RequestMapping("bindMobile")
@@ -166,17 +166,17 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("bindMobileVer")
     @ApiOperation(value = "绑定手机号校验")
     public Map<String, Object> bindMobileVer(@RequestBody BindMobileVerDto dto) {
-        return buildMessage(() ->{
+        return buildMessage(() -> {
             loginService.bindMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
             return null;
-        } );
+        });
     }
 
     @RequestMapping("changePass")
     @ApiOperation(value = "修改密码")
     public Map<String, Object> changePass(@RequestBody ChangePassDto dto) {
-        return buildMessage(() ->{
-            loginService.changePass(getDomain().getId(),getUserDto().getPin(), dto.getOldPass(), dto.getNewPass());
+        return buildMessage(() -> {
+            loginService.changePass(getDomain().getId(), getUserDto().getPin(), dto.getOldPass(), dto.getNewPass());
             return null;
         });
     }
@@ -184,26 +184,26 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("changeNick")
     @ApiOperation(value = "修改昵称")
     public Map<String, Object> changeNick(@RequestBody ChangeNickDto dto) {
-        return buildMessage(() ->{
-            loginService.changeNickName(getDomain().getId(),getUserDto().getPin(), dto.getNick());
+        return buildMessage(() -> {
+            loginService.changeNickName(getDomain().getId(), getUserDto().getPin(), dto.getNick());
             return null;
-        } );
+        });
     }
 
     @RequestMapping("changeSex")
     @ApiOperation(value = "修改性别")
     public Map<String, Object> changeSex(@RequestBody ChangeSexDto dto) {
-        return buildMessage(() ->{
-            loginService.changeSex(getDomain().getId(),getUserDto().getPin(), dto.getSex());
+        return buildMessage(() -> {
+            loginService.changeSex(getDomain().getId(), getUserDto().getPin(), dto.getSex());
             return null;
-        } );
+        });
     }
 
     @RequestMapping("changeBirthday")
     @ApiOperation(value = "修改生日")
     public Map<String, Object> changeBirthday(@RequestBody String birthday) {
         return buildMessage(() -> {
-            loginService.changeBirthday(getDomain().getId(),getUserDto().getPin(), JSONObject.fromObject(birthday).getString("birthday"));
+            loginService.changeBirthday(getDomain().getId(), getUserDto().getPin(), JSONObject.fromObject(birthday).getString("birthday"));
             return null;
         });
     }
@@ -211,17 +211,17 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("forgetPass")
     @ApiOperation(value = "忘记密码获取验证码")
     public Map<String, Object> forgetPass(@RequestBody String account) {
-        return buildMessage(() ->{
-            loginService.forgetPass(getDomain().getId(),JSONObject.fromObject(account).getString("account"));
+        return buildMessage(() -> {
+            loginService.forgetPass(getDomain().getId(), JSONObject.fromObject(account).getString("account"));
             return null;
-        } );
+        });
     }
 
     @RequestMapping("forgetPassVer")
     @ApiOperation(value = "忘记密码校验")
     public Map<String, Object> forgetPassVer(@RequestBody ForgetPassVerDto dto) {
         return buildMessage(() -> {
-            loginService.forgetPassCodeVerification(getDomain().getId(),dto.getAccount(), dto.getCode(), dto.getPass());
+            loginService.forgetPassCodeVerification(getDomain().getId(), dto.getAccount(), dto.getCode(), dto.getPass());
             return null;
         });
     }
@@ -232,7 +232,7 @@ public class LoginController extends AbstractClientController {
         UserExtendDTO userExtendDTO = new UserExtendDTO();
         BeanCoper.copyProperties(userExtendDTO, dto);
         return buildMessage(() -> {
-            loginService.saveUserExtendInfo(getDomain().getId(),userExtendDTO);
+            loginService.saveUserExtendInfo(getDomain().getId(), userExtendDTO);
             return null;
         });
     }
@@ -242,15 +242,18 @@ public class LoginController extends AbstractClientController {
     @ApiOperation(value = "用户注册")
     public String reg(String q, Model model) {
         model.addAttribute("recommendId", q);
+        String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         AgentTypeEnum agentType = getAgentType();
         if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
-            model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
+            model.addAttribute("url", "http://image." + domain + softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
         }
         if (agentType == AgentTypeEnum.IOS) {
-            model.addAttribute("url", "itms-services://?action=download-manifest&url=/AppDownload/download.plist");
+
+            model.addAttribute("url", "itms-services://?action=download-manifest&url=http://passport" + domain + "/AppDownload/download.plist");
         }
         return "/register";
     }
+
     public AgentTypeEnum getAgentType() {
         String agent = getRequest().getHeader("user-agent").toLowerCase();
         if (agent.indexOf(AgentTypeEnum.Android.name().toLowerCase()) != -1) {
