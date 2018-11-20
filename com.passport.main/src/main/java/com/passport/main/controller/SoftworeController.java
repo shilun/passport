@@ -4,12 +4,14 @@ import com.common.annotation.RoleResource;
 import com.common.exception.BizException;
 import com.common.upload.UploadUtil;
 import com.common.util.BeanCoper;
+import com.common.util.StringUtils;
 import com.common.web.AbstractController;
 import com.common.web.IExecute;
 import com.passport.domain.SoftWare;
 import com.passport.main.controller.dto.SoftWareDto;
 import com.passport.service.SoftWareService;
 import org.apache.log4j.Logger;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +57,12 @@ public class SoftworeController extends AbstractController {
             @Override
             public Object getData() {
                 SoftWare query = BeanCoper.copyProperties(SoftWare.class, dto);
-                return softWareService.queryByPage(query, dto.getPageinfo().getPage());
+                Page<SoftWare> softWares = softWareService.queryByPage(query, dto.getPageinfo().getPage());
+                String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
+                for(SoftWare soft:softWares.getContent()){
+                    soft.setUrl("http://image."+domain+soft.getUrl());
+                }
+                return softWares;
             }
         });
     }
