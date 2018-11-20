@@ -17,14 +17,14 @@ import java.io.BufferedOutputStream;
 public class QRCodeController extends AbstractClientController {
 
     @RequestMapping("build")
-    public void down(HttpServletResponse response)
+    public void down(HttpServletResponse response,String pin)
             throws Exception {
         ServletOutputStream outputStream = null;
         try {
             response.setContentType("image/jpeg");
             outputStream = response.getOutputStream();
             String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
-            QRCodeUtil.encode("http://passport." + domain + "/login/reg?q=" + getUserDto().getPin(), outputStream);
+            QRCodeUtil.encode("http://passport." + domain + "/login/reg?q=" + pin, outputStream);
         } finally {
             outputStream.close();
         }
