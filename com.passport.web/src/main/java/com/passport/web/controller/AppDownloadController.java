@@ -65,12 +65,13 @@ public class AppDownloadController extends AbstractClientController {
         AgentTypeEnum type = AgentTypeEnum.IOS;
         SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(),type);
         getRequest().setAttribute("url", lastInfo.getUrl());
+        getRequest().setAttribute("name", lastInfo.getName());
         getRequest().setAttribute("version", lastInfo.getVersion());
         return "downloadIOS";
     }
 
     @RequestMapping("page")
-    public String handle() {
+    public String index() {
         return "download";
     }
 

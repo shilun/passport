@@ -15,8 +15,7 @@ public interface SoftWareService extends MongoService<SoftWare> {
      * @param type
      * @return
      */
-    SoftWare findLastInfo(Long agentId, AgentTypeEnum type);
-
+    SoftWare findLastInfo(Long proxyId, AgentTypeEnum type);
 
 
 }
