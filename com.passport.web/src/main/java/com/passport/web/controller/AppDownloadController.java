@@ -1,6 +1,7 @@
 package com.passport.web.controller;
 
 import com.common.util.GlosseryEnumUtils;
+import com.common.util.StringUtils;
 import com.common.web.IExecute;
 import com.passport.domain.SoftWare;
 import com.passport.domain.module.AgentTypeEnum;
@@ -81,7 +82,8 @@ public class AppDownloadController extends AbstractClientController {
         AgentTypeEnum type = AgentTypeEnum.IOS;
         SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(), type);
         VelocityContext context = new VelocityContext();
-        context.put("url", lastInfo.getUrl());
+        String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
+        context.put("url", "http://passport."+ domain +lastInfo.getUrl());
         context.put("name", lastInfo.getName());
         context.put("version", lastInfo.getVersion());
 
