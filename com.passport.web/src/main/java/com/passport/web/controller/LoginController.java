@@ -252,16 +252,15 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")
-    @ResponseBody
     public String reg(String q, Model model) {
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         AgentTypeEnum agentType = getAgentType();
         if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
-            model.addAttribute("url", "http://image." + domain + softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
+            model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
         }
         if (agentType == AgentTypeEnum.IOS) {
-//            model.addAttribute("url", "itms-services://?action=download-manifest&url=http://passport." + domain + "/AppDownload/download.plist");
+            model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
         }
         return "/register";
     }
