@@ -8,11 +8,7 @@ import com.passport.domain.module.AgentTypeEnum;
 import com.passport.service.SoftWareService;
 import com.passport.web.AbstractClientController;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.StringWriter;
 import java.util.Map;
 import java.util.Properties;
 
@@ -67,12 +62,12 @@ public class AppDownloadController extends AbstractClientController {
         });
     }
 
-    static {
-        Properties p = new Properties();
-        p.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-        p.put("input.encoding", "UTF-8");
-        Velocity.init(p);
-    }
+//    static {
+//        Properties p = new Properties();
+//        p.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+//        p.put("input.encoding", "UTF-8");
+//        Velocity.init(p);
+//    }
 
     @RequestMapping("download.plist")
     @ResponseBody
@@ -81,13 +76,14 @@ public class AppDownloadController extends AbstractClientController {
         response.setHeader("Content-type", "text/plain;charset=UTF-8");
         AgentTypeEnum type = AgentTypeEnum.IOS;
         SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(), type);
-        VelocityContext context = new VelocityContext();
-        String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
-        context.put("url", "http://images."+domain+lastInfo.getUrl());
-        context.put("name", lastInfo.getName());
-        context.put("version", lastInfo.getVersion());
-
-        return getContentBody(context, "downloadIOS.html");
+        return "";
+//        VelocityContext context = new VelocityContext();
+//        String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
+//        context.put("url", "http://images."+domain+lastInfo.getUrl());
+//        context.put("name", lastInfo.getName());
+//        context.put("version", lastInfo.getVersion());
+//
+//        return getContentBody(context, "downloadIOS.html");
     }
 
     @RequestMapping("page")
@@ -112,23 +108,6 @@ public class AppDownloadController extends AbstractClientController {
             return AgentTypeEnum.IOS;
         }
         return AgentTypeEnum.Other;
-    }
-
-    protected static String getContentBody(VelocityContext context, String vmFile) {
-        Template template = null;
-        try {
-            template = Velocity.getTemplate(vmFile);
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        StringWriter sw = null;
-        try {
-            sw = new StringWriter();
-            template.merge(context, sw);
-            return sw.toString();
-        } finally {
-            IOUtils.closeQuietly(sw);
-        }
     }
 
 
