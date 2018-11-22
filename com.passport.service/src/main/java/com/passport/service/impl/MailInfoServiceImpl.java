@@ -6,9 +6,8 @@ import com.common.util.StringUtils;
 import com.passport.domain.MailInfo;
 import com.passport.domain.module.MailInfoStatusEnum;
 import com.passport.rpc.dto.MailInfoDto;
-import com.passport.service.worker.MailWork;
 import com.passport.service.MailInfoService;
-import com.passport.rpc.dto.MailInfoDto;
+import com.passport.service.worker.MailWork;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +59,7 @@ public class MailInfoServiceImpl extends AbstractMongoService<MailInfo> implemen
             result.setData(true);
             result.setSuccess(true);
         } catch (Exception e) {
+
             result.setData(false);
             result.setSuccess(false);
             result.setCode(source + "sendmail.error");

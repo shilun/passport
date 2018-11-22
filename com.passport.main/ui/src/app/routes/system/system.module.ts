@@ -18,6 +18,9 @@ import {AdminPassComponent} from './admin-pass/admin-pass.component';
 import {ProxyPassComponent} from "./proxy-pass/proxy-pass.component";
 import {ServerListComponent} from './server-list/server-list.component';
 import {ServerViewComponent} from './server-view/server-view.component';
+import { SoftwareListComponent } from './software-list/software-list.component';
+import { SoftwareViewComponent } from './software-view/software-view.component';
+import {FileUploadModule} from 'ng2-file-upload';
 
 
 const routes: Routes = [
@@ -34,13 +37,16 @@ const routes: Routes = [
   {path: 'proxy/view', component: ProxyViewComponent},
   {path: 'proxy/changePass', component: ProxyPassComponent},
   {path: 'server/list', component: ServerListComponent},
-  {path: 'server/view', component: ServerViewComponent}
+  {path: 'server/view', component: ServerViewComponent},
+  {path: 'software/list', component: SoftwareListComponent},
+  {path: 'software/view', component: SoftwareViewComponent}
 
 ];
 
 @NgModule({
   imports: [
     CommonModule,
+    FileUploadModule,
     SharedModule,
     RouterModule.forChild(routes),
     Ng2TableModule,
@@ -49,7 +55,7 @@ const routes: Routes = [
   declarations: [
     ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,
     AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent,ProxyPassComponent,
-    ServerListComponent,ServerViewComponent]
+    ServerListComponent,ServerViewComponent, SoftwareListComponent, SoftwareViewComponent]
 })
 
 

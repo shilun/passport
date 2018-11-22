@@ -1,0 +1,127 @@
+<div class="content-heading">
+  软件版本管理--{{actionType}}
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="valForm" class="form-validate form-horizontal" (submit)="submitForm($event, valForm.value)"
+            novalidate="">
+        <!-- START panel-->
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">名称</label>
+                <div class="col-sm-2">
+                  <input class="form-control" type="text" id="name" formControlName="name"
+                         [formControl]="valForm.controls['name']" [(ngModel)]="entity.name"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['name'].hasError('required') && (valForm.controls['name'].dirty || valForm.controls['name'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">代理商</label>
+                <div class="col-sm-6">
+                  <select id="proxyId" name="proxyId" class="form-control"  [(ngModel)]='entity.proxyId' [formControl]="valForm.controls['proxyId']" formControlName="proxyId" >
+                    <option *ngFor="let item of proxyes"  [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger" *ngIf="valForm.controls['proxyId'].hasError('required') && (valForm.controls['proxyId'].dirty || valForm.controls['proxyId'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">版本</label>
+                <div class="col-sm-2">
+                  <input class="form-control" type="text" id="version" formControlName="version" [formControl]="valForm.controls['version']" [(ngModel)]="entity.version"/>
+                  <span class="text-danger" *ngIf="valForm.controls['version'].hasError('required') && (valForm.controls['version'].dirty || valForm.controls['version'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">文件</label>
+                <div class="col-sm-6">
+                  <input class="form-control col-sm-4" type="text" readonly id="url" formControlName="url" [formControl]="valForm.controls['url']" [(ngModel)]="entity.url"/>
+                </div>
+                <label for="image-input" class="file-upload col-sm-2">
+                  <button class="btn btn-info"><em class="fa fa-upload mr"></em>UPLOAD</button>
+                  <input id="image-input" type="file" ng2FileSelect [uploader]="uploader"/>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">软件类型</label>
+                <div class="col-sm-6">
+                  <select id="osType" name="osType" class="form-control"  [(ngModel)]='entity.osType' [formControl]="valForm.controls['osType']" formControlName="osType" >
+                    <option *ngFor="let item of agenttypes"  [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger" *ngIf="valForm.controls['osType'].hasError('required') && (valForm.controls['osType'].dirty || valForm.controls['osType'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">版本类型</label>
+                <div class="col-sm-6">
+                  <select id="versionType" name="versionType" class="form-control"  [(ngModel)]='entity.versionType' [formControl]="valForm.controls['versionType']" formControlName="versionType" >
+                    <option *ngFor="let item of versiontypes"  [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger" *ngIf="valForm.controls['versionType'].hasError('required') && (valForm.controls['versionType'].dirty || valForm.controls['versionType'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">强制更新</label>
+                <div class="col-sm-6">
+                  <select id="mandatory" name="mandatory" class="form-control"  [(ngModel)]='entity.mandatory' [formControl]="valForm.controls['mandatory']" formControlName="mandatory" >
+                    <option *ngFor="let item of statuses"  [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger" *ngIf="valForm.controls['mandatory'].hasError('required') && (valForm.controls['mandatory'].dirty || valForm.controls['mandatory'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">状态</label>
+                <div class="col-sm-6">
+                  <select id="status" name="status" class="form-control"  [(ngModel)]='entity.status' [formControl]="valForm.controls['status']" formControlName="status" >
+                    <option *ngFor="let item of statuses"  [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger" *ngIf="valForm.controls['status'].hasError('required') && (valForm.controls['status'].dirty || valForm.controls['status'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">appSign</label>
+                <div class="col-sm-1">
+                  <input class="form-control" type="text" id="appSign" formControlName="appSign"
+                         [formControl]="valForm.controls['appSign']" [(ngModel)]="entity.appSign"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['appSign'].hasError('required') && (valForm.controls['appSign'].dirty || valForm.controls['appSign'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="panel-footer text-center">
+            <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
+            <a class="btn btn-default" routerLink="/system/software/list" [queryParams]="{account:entity.account}">取消</a>
+          </div>
+        </div>
+        <!-- END panel-->
+      </form>
+    </div>
+  </div>
+  <!-- END row-->
+
+</div>

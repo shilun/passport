@@ -14,7 +14,7 @@
     <div class="register-box">
         <div class="register-top">
             <div class="logo"></div>
-            <a href="#" class="downGame"></a>
+            <a th:href="${url}" class="downGame"></a>
         </div>
         <div class="register-container">
             <div class="register-title">
@@ -54,7 +54,7 @@
                     <label id="regAccount"></label>
                 </p>
                 <div class="btn-group actions" id="actions">
-                    <a href="#" class="btn btn-apple">下载安装</a>
+                    <a class="btn btn-apple" th:href="${url}">下载安装</a>
                 </div>
             </div>
         </div>

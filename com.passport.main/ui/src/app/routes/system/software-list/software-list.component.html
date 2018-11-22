@@ -1,0 +1,70 @@
+<div class="content-heading">
+  软件版本管理列表
+</div>
+<div class="panel">
+  <div class="panel-body">
+    <form class="form-inline" role="form">
+      <div class="form-group">
+        <input class="form-control" name="gameId" type="text" [(ngModel)]="entity.gameId" placeholder="gameId" />
+      </div>
+      <button class="btn btn-default btn-primary" type="button" (click)="list(entity)">查询</button>
+      <a class="btn btn-default" routerLink="/system/software/view">
+        <strong>添加</strong>
+      </a>
+    </form>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>名称</th>
+      <th>代理商</th>
+      <th>软件类型</th>
+      <th>版本</th>
+      <th>版本类型</th>
+      <th>是否启用</th>
+      <th>是否强制更新</th>
+      <th>下载地址</th>
+    </tr>
+    </thead>
+    <tbody>
+    <ng-container *ngFor="let item of listData.list">
+      <tr>
+        <td>
+          <a routerLink="/system/software/view" [queryParams]="{id:item.id}">{{item.name}}</a>
+        </td>
+        <td>
+          {{valuePare(item.proxyId,proxyes)}}
+        </td>
+        <td>
+          <ng-container *ngIf="item.osType==1">
+            android
+          </ng-container>
+          <ng-container *ngIf="item.osType==2">
+            ios
+          </ng-container>
+        </td>
+        <td>
+          {{item.version}}
+        </td>
+        <td>
+          <ng-container *ngIf="item.versionType==1">
+            增量
+          </ng-container>
+          <ng-container *ngIf="item.versionType==2">
+            全量
+          </ng-container>
+        </td>
+        <th>{{valuePare(item.status,statuses)}}</th>
+        <th>{{valuePare(item.mandatory,statuses)}}</th>
+        <td><a href="{{item.url}}">下载</a></td>
+      </tr>
+    </ng-container>
+    </tbody>
+  </table>
+</div>
+<div class="text-right">
+  <pagination  class="pagination-sm"   [(ngModel)]="pageIndex" [totalItems]="listData.totalCount" (pageChanged)="onPageChange($event)" ></pagination>
+</div>
