@@ -260,7 +260,7 @@ public class LoginController extends AbstractClientController {
             model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
         }
         if (agentType == AgentTypeEnum.IOS) {
-            model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
+            model.addAttribute("url", "itms-services://?action=download-manifest&url=http://passport." + domain + "/AppDownload/download.plist");
         }
         return "/register";
     }
