@@ -77,4 +77,6 @@ public interface UserRPCService {
     RPCResult<Long> queryUsersCount(UserDTO dto);
 
     RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto);
+
+    RPCResult<UserDTO> queryUser(Long proxyId,Long userCode);
 }
