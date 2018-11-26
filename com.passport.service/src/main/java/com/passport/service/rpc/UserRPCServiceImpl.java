@@ -393,4 +393,35 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<UserDTO> queryUser(Long proxyId, Long userCode) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        try {
+            if(proxyId == null || userCode == null){
+                result.setSuccess(false);
+                result.setCode("param.null");
+                return result;
+            }
+            
+            ClientUserInfo info = new ClientUserInfo();
+            info.setProxyId(proxyId);
+            info.setId(userCode);
+            List<ClientUserInfo> list = clientUserInfoService.query(info);
+            if(list == null || list.size() < 1){
+                result.setSuccess(false);
+                result.setCode("find.result.null");
+                return result;
+            }
+            UserDTO dto = BeanCoper.copyProperties(UserDTO.class, list.get(0));
+            result.setSuccess(true);
+            result.setData(dto);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("find.LogLoginDto.error");
+            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
+            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
+        }
+        return result;
+    }
 }
