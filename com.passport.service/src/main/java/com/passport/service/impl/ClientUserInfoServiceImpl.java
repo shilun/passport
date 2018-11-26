@@ -1064,7 +1064,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (StringUtils.isNotBlank(wechat)) {
                 userInfo.setWechat(wechat);
             }
-            if (StringUtils.isBlank(sex) && tool.isNo(sex)) {
+            if (StringUtils.isNotBlank(sex) && tool.isNo(sex)) {
                 int sexInt = Integer.parseInt(sex);
                 if (SexEnum.MALE.getValue() == sexInt || SexEnum.FEMALE.getValue() == sexInt) {
                     userInfo.setSexType(sexInt);
