@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Service(timeout = 1000,group = "test")
+@Service(timeout = 1000)
 @org.springframework.stereotype.Service
 public class ProxyRpcServiceImpl implements ProxyRpcService {
 
