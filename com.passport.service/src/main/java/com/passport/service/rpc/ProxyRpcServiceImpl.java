@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Service(timeout = 1000)
+@Service(timeout = 1000,group = "test")
 @org.springframework.stereotype.Service
 public class ProxyRpcServiceImpl implements ProxyRpcService {
 
@@ -638,8 +638,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             limitInfo = limitInfoService.findByOne(limitInfo);
             if(limitInfo == null){
                 limitInfo = new LimitInfo();
-                BeanCoper.copyProperties(limitInfo,dto);
             }
+            BeanCoper.copyProperties(limitInfo,dto);
             limitInfoService.save(limitInfo);
             result.setSuccess(true);
         } catch (Exception e) {
