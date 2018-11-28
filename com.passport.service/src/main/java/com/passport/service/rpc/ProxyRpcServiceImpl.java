@@ -638,8 +638,8 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             limitInfo = limitInfoService.findByOne(limitInfo);
             if(limitInfo == null){
                 limitInfo = new LimitInfo();
-                BeanCoper.copyProperties(limitInfo,dto);
             }
+            BeanCoper.copyProperties(limitInfo,dto);
             limitInfoService.save(limitInfo);
             result.setSuccess(true);
         } catch (Exception e) {
