@@ -793,21 +793,21 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         entity.setQq(qq);
         entity.setRegisterIp(ip);
 
-        String fileName = proxydto.getId() + "_" + phone;
-        try {
-
-            String domain = "http://passport." + proxydto.getDomain()[0];
-            String url = MessageFormat.format(recommendUrl, domain, pin);
-            Result<String> res = tool.generateQRCode(url, fileName, imgTempDir);
-            if (res.getSuccess()) {
-                entity.setQrName(res.getModule());
-            } else {
-                logger.error("保存图片失败-code:" + res.getResultCode() + ";message:" + res.getMessage());
-            }
-        } catch (Exception e) {
-            logger.error("生成二维码异常", e);
-            throw new BizException("生成二维码异常");
-        }
+//        String fileName = proxydto.getId() + "_" + phone;
+//        try {
+//
+//            String domain = "http://passport." + proxydto.getDomain()[0];
+//            String url = MessageFormat.format(recommendUrl, domain, pin);
+//            Result<String> res = tool.generateQRCode(url, fileName, imgTempDir);
+//            if (res.getSuccess()) {
+//                entity.setQrName(res.getModule());
+//            } else {
+//                logger.error("保存图片失败-code:" + res.getResultCode() + ";message:" + res.getMessage());
+//            }
+//        } catch (Exception e) {
+//            logger.error("生成二维码异常", e);
+//            throw new BizException("生成二维码异常");
+//        }
 
         save(entity);
 
