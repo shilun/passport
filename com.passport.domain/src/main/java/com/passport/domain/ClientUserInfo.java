@@ -198,6 +198,7 @@ public class ClientUserInfo extends AbstractBaseEntity {
         return qrName;
     }
 
+    @Deprecated
     public void setQrName(String qrName) {
         this.qrName = qrName;
     }

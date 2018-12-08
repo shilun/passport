@@ -473,6 +473,11 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
                 BeanCoper.copyProperties(userDTO, clientUserInfo);
                 listResult.add(userDTO);
             }
+            result.setTotalPage(infos.getTotalPages());
+            result.setPageSize(infos.getSize());
+            result.setPageIndex(infos.getNumber());
+            result.setTotalCount((int) infos.getTotalElements());
+
             result.setSuccess(true);
             result.setData(listResult);
         } catch (Exception e) {

@@ -38,11 +38,6 @@
             <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>QRCode</groupId>
-            <artifactId>QRCode</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>platform</groupId>
             <artifactId>com.platform.rpc</artifactId>
             <version>1.0.0</version>
