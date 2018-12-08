@@ -67,8 +67,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Value("${app.token.encode.key}")
     private String appTokenEncodeKey;
-    @Value("${reg.recommend.url}")
-    private String recommendUrl;
+
     @Value("${server.tomcat.basedir}")
     private String imgTempDir;
     @Resource
