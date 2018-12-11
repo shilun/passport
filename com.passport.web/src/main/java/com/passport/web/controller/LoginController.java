@@ -107,7 +107,7 @@ public class LoginController extends AbstractClientController {
                 if (dto == null) {
                     return true;
                 }
-                loginService.loginOut(dto.getPin(), dto.getToken());
+                loginService.loginOut(dto.getProxyId(),dto.getPin(), dto.getToken());
             } catch (Exception e) {
                 return false;
             }

@@ -230,7 +230,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * 退出登录
      * @param token
      */
-    void loginOut(String pin,String token);
+    void loginOut(Long proxyId,String pin,String token);
 
     Page<ClientUserInfo> QueryRegisterUsers(Integer pageNum, Date startTime, Date endTime);
 

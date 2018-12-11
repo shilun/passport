@@ -49,7 +49,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private final String CLIENT_USER_CACHE = "passport.cache.{0}";
     private final String PASS_USER_REG = "passport.userrpc.reg.account.{0}.proxyid.{1}";
     private final String LOGIN_MOBILE_CODE = "passport.userrpc.login.account.{0}.proxyid.{1}";
-    private final String LOGIN_PIN = "passport.login.{0}";
+    private final String LOGIN_PIN = "passport.login.{0}.{1}";
     private final String LOGIN_TOKEN = "passport.login.token.{0}";
     private final String MOBILE_USER_CHANGE = "passport.userrpc.change.mobile.{0}";
     private final String MOBILE_USER_BIND = "passport.userrpc.bind.mobile.{0}";
@@ -308,7 +308,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             throw new BizException("密码错误");
         }
 
-        String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+        String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId, userInfo.getPin());
         Object o = redisTemplate.opsForValue().get(login_pin_key);
 
         if (o != null) {
@@ -674,14 +674,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void loginOut(String pin, String token) {
+    public void loginOut(Long proxyId, String pin, String token) {
         try {
-            String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId, pin);
             UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(login_pin_key);
             if (dto == null) {
                 return;
             }
-            String login_pin_token = MessageFormat.format(LOGIN_PIN, pin, token);
+            String login_pin_token = MessageFormat.format(LOGIN_TOKEN, token);
             redisTemplate.delete(login_pin_key);
             redisTemplate.delete(login_pin_token);
         } catch (Exception e) {
