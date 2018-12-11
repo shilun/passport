@@ -5,10 +5,7 @@ import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
 import com.common.web.IExecute;
 import com.passport.domain.module.AgentTypeEnum;
-import com.passport.rpc.UserRPCService;
-import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
-import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.SoftWareService;
 import com.passport.web.AbstractClientController;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -233,18 +229,6 @@ public class LoginController extends AbstractClientController {
     public Map<String, Object> forgetPassVer(@RequestBody ForgetPassVerDto dto) {
         return buildMessage(() -> {
             loginService.forgetPassCodeVerification(getDomain().getId(), dto.getAccount(), dto.getCode(), dto.getPass());
-            return null;
-        });
-    }
-
-    @RequestMapping("saveExtendInfo")
-    @ApiOperation(value = "保存扩展信息")
-    @ResponseBody
-    public Map<String, Object> saveExtendInfo(@RequestBody UserExtendDto dto) {
-        UserExtendDTO userExtendDTO = new UserExtendDTO();
-        BeanCoper.copyProperties(userExtendDTO, dto);
-        return buildMessage(() -> {
-            loginService.saveUserExtendInfo(getDomain().getId(), userExtendDTO);
             return null;
         });
     }

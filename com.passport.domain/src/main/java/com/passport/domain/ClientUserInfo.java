@@ -65,6 +65,10 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     private Long qq;
     //(推荐)二维码图片名字
     private String qrName;
+    //是否机器人  1.否  2.是
+    private Integer robot;
+    //签名
+    private String sign;
 
 
     public String getRefId() {
@@ -197,6 +201,22 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
 
     public String getQrName() {
         return qrName;
+    }
+
+    public Integer getRobot() {
+        return robot;
+    }
+
+    public void setRobot(Integer robot) {
+        this.robot = robot;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
     }
 
     @Deprecated

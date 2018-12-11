@@ -7,11 +7,9 @@ import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.DateUtil;
-import com.common.util.Result;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
-import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.LimitInfo;
@@ -20,7 +18,6 @@ import com.passport.rpc.dto.LimitType;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.service.*;
 import com.passport.rpc.dto.UserDTO;
-import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.constant.ChangeType;
 import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.constant.MessageConstant;
@@ -74,8 +71,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private SMSInfoService smsInfoService;
     @Resource
     private LogLoginService logLoginService;
-    @Resource
-    private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
     private LimitInfoService limitInfoService;
     @Reference(check = false)
@@ -313,12 +308,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             throw new BizException("密码错误");
         }
 
-        ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-        if (clientUserExtendInfo == null) {
-            clientUserExtendInfo = new ClientUserExtendInfo();
-            clientUserExtendInfo.setId(clientUserExtendInfo.getId());
-            clientUserExtendInfoService.save(clientUserExtendInfo);
-        }
         String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
         Object o = redisTemplate.opsForValue().get(login_pin_key);
 
@@ -685,18 +674,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void saveUserExtendInfo(Long proxyId, UserExtendDTO userExtendDTO) {
-        try {
-            ClientUserExtendInfo entity = new ClientUserExtendInfo();
-            BeanCoper.copyProperties(entity, userExtendDTO);
-            clientUserExtendInfoService.save(entity);
-        } catch (Exception e) {
-            logger.error(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e);
-            new BizException(MessageConstant.SAVE_USER_EXTEND_INFO_FAIL, e.getMessage());
-        }
-    }
-
-    @Override
     public void loginOut(String pin, String token) {
         try {
             String login_pin_key = MessageFormat.format(LOGIN_PIN, pin);
@@ -811,12 +788,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         save(entity);
         pin = entity.getId() + "";
         entity.setPin(pin);
+        entity.setRobot(1);
         save(entity);
-
-        ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
-        clientUserExtendInfo.setUserCode(entity.getId().intValue());
-        clientUserExtendInfo.setRobot(YesOrNoEnum.NO.getValue());
-        clientUserExtendInfoService.save(clientUserExtendInfo);
 
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, entity);
@@ -1002,10 +975,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             dataMap.put("gender", info.getSexType());
             dataMap.put("nick", info.getNickName());
             dataMap.put("headUrl", info.getHeadUrl());
-            ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(info.getId().intValue());
-            if (extend != null) {
-                dataMap.put("sign", extend.getSign());
-            }
+            dataMap.put("sign", info.getSign());
             return OldPackageMapUtil.toMap(HttpStatusCode.CODE_OK, HttpStatusCode.MSG_OK, true, dataMap);
         } catch (Exception e) {
             logger.error("", e);
@@ -1032,10 +1002,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             dataMap.put("gender", info.getSexType());
             dataMap.put("nick", info.getNickName());
             dataMap.put("headUrl", info.getHeadUrl());
-            ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(info.getId().intValue());
-            if (extend != null) {
-                dataMap.put("sign", extend.getSign());
-            }
+            dataMap.put("sign", info.getSign());
             return OldPackageMapUtil.toMap(HttpStatusCode.CODE_OK, HttpStatusCode.MSG_OK, true, dataMap);
         } catch (Exception e) {
             logger.error("", e);
@@ -1073,18 +1040,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 }
             }
             if (StringUtils.isNotBlank(sign)) {
-                ClientUserExtendInfo extend = clientUserExtendInfoService.findByUserCode(userInfo.getId().intValue());
-                if (extend != null) {
-                    extend.setSign(sign);
-                    dataMap.put("sign", extend.getSign());
-                    clientUserExtendInfoService.save(extend);
-                }
+                userInfo.setSign(sign);
             }
             save(userInfo);
             dataMap.put("nick", userInfo.getNickName());
             dataMap.put("qq", userInfo.getQq());
             dataMap.put("wechat", userInfo.getWechat());
             dataMap.put("gender", userInfo.getSexType());
+            dataMap.put("sign", userInfo.getSign());
         } catch (Exception e) {
             logger.error("", e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "编辑用户信息异常");

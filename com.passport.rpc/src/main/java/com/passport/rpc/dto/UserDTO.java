@@ -41,6 +41,10 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String qrName;
 
     private Date createTime;
+    //是否机器人  1.否  2.是
+    private Integer robot;
+    //签名
+    private String sign;
 
     public String getToken() {
         return token;
@@ -201,5 +205,21 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getRobot() {
+        return robot;
+    }
+
+    public void setRobot(Integer robot) {
+        this.robot = robot;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
     }
 }
