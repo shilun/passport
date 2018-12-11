@@ -809,7 +809,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 //        }
 
         save(entity);
-        entity.setPin(entity.getId() + "");
+        pin = entity.getId() + "";
+        entity.setPin(pin);
         save(entity);
 
         ClientUserExtendInfo clientUserExtendInfo = new ClientUserExtendInfo();
