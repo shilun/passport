@@ -1,13 +1,14 @@
 package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
+import com.common.util.IUserEntity;
 
 import java.util.Date;
 
 /**
  * 客户用户信息
  */
-public class ClientUserInfo extends AbstractBaseEntity {
+public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     /**
      * 用户pin
      */
