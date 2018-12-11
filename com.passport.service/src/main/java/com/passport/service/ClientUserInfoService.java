@@ -5,13 +5,11 @@ import com.common.util.model.SexEnum;
 import com.passport.domain.ClientUserInfo;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
-import com.passport.rpc.dto.UserExtendDTO;
 import com.passport.service.constant.ChangeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -227,14 +225,6 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     void changeBirthday(Long proxyId,String pin, String date);
-
-    /**
-     * 保存用户信息
-     * @param proxyId
-     * @param userExtendDTO
-     */
-    void saveUserExtendInfo(Long proxyId,UserExtendDTO userExtendDTO);
-
 
     /**
      * 退出登录

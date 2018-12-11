@@ -5,16 +5,12 @@ import com.common.util.BeanCoper;
 import com.common.util.PageInfo;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
-import com.passport.domain.ClientUserExtendInfo;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
-import com.passport.domain.LimitInfo;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.*;
-import com.passport.service.ClientUserExtendInfoService;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.LogLoginService;
-import com.passport.service.LimitInfoService;
 import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +35,6 @@ public class UserRPCServiceImpl implements UserRPCService {
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private ClientUserInfoService clientUserInfoService;
-    @Resource
-    private ClientUserExtendInfoService clientUserExtendInfoService;
     @Resource
     private LogLoginService logLoginService;
 
@@ -67,28 +60,6 @@ public class UserRPCServiceImpl implements UserRPCService {
         result.setMessage("查询用户code失败");
         return result;
     }
-
-    @Override
-    public RPCResult<UserExtendDTO> findByUserCode(Long proxyId, Integer userCode) {
-        RPCResult<UserExtendDTO> rpcResult = new RPCResult<>();
-        try {
-            ClientUserExtendInfo clientUserExtendInfo = clientUserExtendInfoService.findByUserCode(userCode);
-            UserExtendDTO dto = new UserExtendDTO();
-            BeanCoper.copyProperties(dto, clientUserExtendInfo);
-            rpcResult.setSuccess(true);
-            rpcResult.setMessage("获取用户信息成功");
-            rpcResult.setCode("find.userExtend.success");
-            rpcResult.setData(dto);
-            return rpcResult;
-        } catch (Exception e) {
-            rpcResult.setSuccess(false);
-            rpcResult.setCode("find.userExtend.error");
-            rpcResult.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
-            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
-        }
-        return rpcResult;
-    }
-
 
     @Override
     public RPCResult<UserDTO> findByMobile(Long proxyId, String mobile) {
@@ -240,42 +211,6 @@ public class UserRPCServiceImpl implements UserRPCService {
             result.setCode("find.userDTO.dto.error");
             result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
             logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token) {
-        RPCResult<QipaiUserDTO> result = new RPCResult<>();
-        try {
-            String oldToken = token;
-            token = DesDecrypter.decryptString(token, appTokenEncodeKey);
-            String realToken = token.split(":")[2];
-            if (StringUtils.isBlank(realToken)) {
-                result.setSuccess(false);
-                result.setCode("token.null");
-                return result;
-            }
-
-            String tokenKey = MessageFormat.format(LOGIN_TOKEN, realToken);
-            UserDTO dto = (UserDTO) redisTemplate.opsForValue().get(tokenKey);
-            if (dto == null) {
-                result.setSuccess(false);
-                result.setCode("token.error");
-                return result;
-            }
-            dto.setToken(oldToken);
-            QipaiUserDTO qipaiUserDTO = new QipaiUserDTO();
-            BeanCoper.copyProperties(qipaiUserDTO, dto);
-
-            RPCResult<UserExtendDTO> extendResult = this.findByUserCode(dto.getProxyId(), dto.getId().intValue());
-            qipaiUserDTO.setUserExtendDTO(extendResult.getData());
-            result.setSuccess(true);
-            result.setData(qipaiUserDTO);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("qipaiVerfiyToken.error");
-            logger.error("", e);
         }
         return result;
     }

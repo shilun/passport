@@ -12,8 +12,6 @@ import java.util.List;
  */
 public interface UserRPCService {
 
-    RPCResult<UserExtendDTO> findByUserCode(Long proxyId,Integer userCode);
-
     /**
      * 查询用户code
      * @param proxyId
@@ -46,12 +44,6 @@ public interface UserRPCService {
     RPCResult<UserDTO> verfiyToken(String token);
 
     RPCResult<List<UserDTO>> query(UserDTO dto);
-    /**
-     * 棋牌服务器校验token
-     * @param token
-     * @return
-     */
-    RPCResult<QipaiUserDTO> qipaiVerfiyToken(String token);
 
     /**
      * 获取用户最近一次的登陆信息
