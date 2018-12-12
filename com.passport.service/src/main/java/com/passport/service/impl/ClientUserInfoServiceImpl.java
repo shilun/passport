@@ -771,6 +771,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
         ClientUserInfo upEntity = new ClientUserInfo();
         upEntity.setId(entity.getId());
+        upEntity.setPin(String.valueOf(entity.getId()));
         up(upEntity);
 
         UserDTO dto = new UserDTO();
