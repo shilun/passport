@@ -9,6 +9,9 @@
         <version>1.5.10.RELEASE</version>
     </parent>
     <artifactId>com.passport.web</artifactId>
+    <properties>
+        <log.level>debug</log.level>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>passport</groupId>
@@ -75,5 +78,14 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>
