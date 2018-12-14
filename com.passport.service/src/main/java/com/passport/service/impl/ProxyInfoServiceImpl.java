@@ -95,16 +95,18 @@ public class ProxyInfoServiceImpl extends AbstractMongoService<ProxyInfo> implem
         proxyUserInfo.setPhone(proxyInfo.getPhone());
         proxyUserInfo.setProxyId(proxyId);
         ProxyUserInfo user = proxyUserInfoService.findByOne(proxyUserInfo);
+        Long userId = null;
         if (user == null) {
-            Long userId = proxyUserInfoService.addUser(proxyId, proxyInfo.getPhone(), MD5.MD5Str(newPass, passKey), proxyInfo.getRemark());
-            proxyUserInfoService.changeRole(proxyId, userId, ProxyUserInfo.allROLE);
-        } else {
-            ProxyUserInfo entity = new ProxyUserInfo();
-            entity.setPass(MD5.MD5Str(newPass, passKey));
-            proxyUserInfoService.save(entity);
-            entity.setId(user.getId());
-
+            userId = proxyUserInfoService.addUser(proxyId, proxyInfo.getPhone(), MD5.MD5Str(newPass, passKey), proxyInfo.getRemark());
         }
+        else{
+            userId=user.getId();
+        }
+        ProxyUserInfo entity = new ProxyUserInfo();
+        entity.setId(userId);
+        entity.setPass(MD5.MD5Str(newPass, passKey));
+        proxyUserInfoService.save(entity);
+
 
     }
 }
