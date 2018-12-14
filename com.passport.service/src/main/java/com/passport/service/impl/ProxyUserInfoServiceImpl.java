@@ -21,7 +21,7 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
 
     @Override
     protected Class getEntityClass() {
-        return ProxyUserInfoService.class;
+        return ProxyUserInfo.class;
     }
 
     @Resource
