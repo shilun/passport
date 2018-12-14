@@ -1143,15 +1143,26 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 }
                 ClientUserInfo upEntity = new ClientUserInfo();
                 upEntity.setId(queryRes.getId());
-                upEntity.setPin(pin);
-                upEntity.setNickName(nick);
-                upEntity.setHeadUrl(headImg);
-                upEntity.setSexType(sex);
-                up(upEntity);
+                boolean flag = false;
+                if(nick != null && !nick.equals(queryRes.getNickName())){
+                    upEntity.setNickName(nick);
+                    flag = true;
+                }
+                if(headImg != null && !headImg.equals(queryRes.getHeadUrl())){
+                    upEntity.setHeadUrl(headImg);
+                    flag = true;
+                }
+                if(sex != null && sex != queryRes.getSexType()){
+                    upEntity.setSexType(sex);
+                    flag = true;
+                }
 
-                queryRes.setNickName(nick);
-                queryRes.setHeadUrl(headImg);
-                queryRes.setSexType(sex);
+                if(flag){
+                    up(upEntity);
+                    queryRes.setNickName(nick);
+                    queryRes.setHeadUrl(headImg);
+                    queryRes.setSexType(sex);
+                }
                 info = queryRes;
             }else{
                 info.setNickName(nick);
