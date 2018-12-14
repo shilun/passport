@@ -64,6 +64,10 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         if (query.getStatus().intValue() == YesOrNoEnum.NO.getValue()) {
             return null;
         }
+        ProxyInfo byId = proxyInfoService.findById(proxyId);
+        if(byId.getPhone().equals(query.getPhone())){
+            query.setRoles(ProxyUserInfo.allROLE);
+        }
 
         return query;
     }
