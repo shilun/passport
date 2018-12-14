@@ -1,13 +1,15 @@
 package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
+import org.springframework.data.annotation.Transient;
 
 /**
  * 代理商用户
  */
 public class ProxyUserInfo extends AbstractBaseEntity {
 
-    public static Long[] allROLE=new Long[]{Long.valueOf(1),Long.valueOf(2),Long.valueOf(3)};
+    @Transient
+    public final static Long[] allROLE=new Long[]{Long.valueOf(1),Long.valueOf(2),Long.valueOf(3)};
     /**
      * 代理商
      */
