@@ -1141,12 +1141,18 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 if (isLoginLimit(null,proxyId,pin)) {
                     throw new BizException("login.error", "当前用户被限制登陆");
                 }
-                info.setId(queryRes.getId());
-                info.setPin(pin);
-                info.setNickName(nick);
-                info.setHeadUrl(headImg);
-                info.setSexType(sex);
-                up(info);
+                ClientUserInfo upEntity = new ClientUserInfo();
+                upEntity.setId(queryRes.getId());
+                upEntity.setPin(pin);
+                upEntity.setNickName(nick);
+                upEntity.setHeadUrl(headImg);
+                upEntity.setSexType(sex);
+                up(upEntity);
+
+                queryRes.setNickName(nick);
+                queryRes.setHeadUrl(headImg);
+                queryRes.setSexType(sex);
+                info = queryRes;
             }else{
                 info.setNickName(nick);
                 info.setHeadUrl(headImg);
