@@ -1118,6 +1118,96 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
     }
 
+    @Override
+    public UserDTO wxLogin(Long proxyId,String ip,String refId,String nick,String headImg,Integer sex){
+        try {
+            //查询此ip是否被限制注册
+            if (isRegisterLimit(ip)) {
+                throw new BizException("regist.error", "当前ip被限制注册");
+            }
+            if(proxyId == null || proxyId < 1){
+                throw new BizException("代理错误");
+            }
+            if(StringUtils.isBlank(refId) || StringUtils.isBlank(nick) || StringUtils.isBlank(headImg)){
+                throw new BizException("参数不能为空");
+            }
+            ClientUserInfo info = new ClientUserInfo();
+            info.setProxyId(proxyId);
+            info.setRefId(refId);
+            ClientUserInfo queryRes = findByOne(info);
+            if(queryRes != null){
+                String pin = queryRes.getPin();
+                //查询此pin是否被限制登陆
+                if (isLoginLimit(null,proxyId,pin)) {
+                    throw new BizException("login.error", "当前用户被限制登陆");
+                }
+                ClientUserInfo upEntity = new ClientUserInfo();
+                upEntity.setId(queryRes.getId());
+                boolean flag = false;
+                if(nick != null && !nick.equals(queryRes.getNickName())){
+                    upEntity.setNickName(nick);
+                    flag = true;
+                }
+                if(headImg != null && !headImg.equals(queryRes.getHeadUrl())){
+                    upEntity.setHeadUrl(headImg);
+                    flag = true;
+                }
+                if(sex != null && sex != queryRes.getSexType()){
+                    upEntity.setSexType(sex);
+                    flag = true;
+                }
+
+                if(flag){
+                    up(upEntity);
+                    queryRes.setNickName(nick);
+                    queryRes.setHeadUrl(headImg);
+                    queryRes.setSexType(sex);
+                }
+                info = queryRes;
+            }else{
+                info.setNickName(nick);
+                info.setHeadUrl(headImg);
+                info.setSexType(sex);
+                info.setStatus(UserStatusEnum.Normal.getValue());
+                info.setRegisterIp(ip);
+                save(info);
+                ClientUserInfo upEntity = new ClientUserInfo();
+                upEntity.setId(info.getId());
+                upEntity.setPin(String.valueOf(info.getId()));
+                up(upEntity);
+                info.setPin(upEntity.getPin());
+                recommendRPCService.init(info.getPin(),  "0", proxyId);
+                limitInfoService.addIpRegisterNum(ip);
+            }
+
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId, info.getPin());
+            Object o = redisTemplate.opsForValue().get(login_pin_key);
+
+            if (o != null) {
+                String oldTokenKey = o.toString();
+                oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
+                redisTemplate.delete(oldTokenKey);
+                redisTemplate.delete(login_pin_key);
+            }
+            String newToken = StringUtils.getUUID();
+            UserDTO dto = new UserDTO();
+            BeanCoper.copyProperties(dto, info);
+            dto.setToken(newToken);
+            String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
+            redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
+            logLoginService.addLoginLog(dto.getPin(), proxyId, info.getCreateTime(), ip, info.getId());
+            String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
+            token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+            dto.setToken(token);
+            return dto;
+        } catch (Exception e) {
+            logger.error("登陆异常", e);
+            new BizException("登陆异常", e.getMessage());
+        }
+        return null;
+    }
+
     private Map<String, Object> oldBuildCode(Long proxyId, String phone, String redisKey) {
         if (!StringUtils.isMobileNO(phone)) {
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "手机号格式不正确");
