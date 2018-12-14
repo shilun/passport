@@ -36,7 +36,7 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         if (byOne != null) {
             throw new BizException("add.user.error", "添加用户失败,用户重复");
         }
-        query.setPhone(MD5.MD5Str(pass, passKey));
+        query.setPass(MD5.MD5Str(pass, passKey));
         query.setDesc(desc);
         query.setStatus(YesOrNoEnum.YES.getValue());
         save(query);
