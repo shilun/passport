@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class WxLoginDto implements Serializable {
     private static final long serialVersionUID = -2204476585083230238L;
     @ApiModelProperty(value = "微信id")
-    private String wxId;
+    private String code;
     @ApiModelProperty(value = "昵称")
     private String nick;
     @ApiModelProperty(value = "头像")
@@ -21,12 +21,12 @@ public class WxLoginDto implements Serializable {
     @ApiModelProperty(value = "性别")
     private Integer sex;
 
-    public String getWxId() {
-        return wxId;
+    public String getCode() {
+        return code;
     }
 
-    public void setWxId(String wxId) {
-        this.wxId = wxId;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getNick() {
