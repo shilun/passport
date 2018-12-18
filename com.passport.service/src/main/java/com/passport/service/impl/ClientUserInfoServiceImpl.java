@@ -2,6 +2,7 @@ package com.passport.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.common.exception.BizException;
+import com.common.httpclient.HttpClientUtil;
 import com.common.mongo.AbstractMongoService;
 import com.common.security.DesEncrypter;
 import com.common.security.MD5;
@@ -26,6 +27,7 @@ import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
 import com.platform.rpc.RecommendRPCService;
+import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -67,6 +69,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Value("${server.tomcat.basedir}")
     private String imgTempDir;
+
+    @Value("${smart.app.farm.appid}")
+    private String appid;
+
+    @Value("${smart.app.farm.secret}")
+    private String secret;
+
+    @Value("${smart.app.farm.getId.url}")
+    private String url;
+
     @Resource
     private SMSInfoService smsInfoService;
     @Resource
@@ -1119,7 +1131,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO wxLogin(Long proxyId,String ip,String refId,String nick,String headImg,Integer sex){
+    public UserDTO wxLogin(Long proxyId,String ip,String code,String nick,String headImg,Integer sex){
         try {
             //查询此ip是否被限制注册
             if (isRegisterLimit(ip)) {
@@ -1128,12 +1140,26 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if(proxyId == null || proxyId < 1){
                 throw new BizException("代理错误");
             }
-            if(StringUtils.isBlank(refId) || StringUtils.isBlank(nick) || StringUtils.isBlank(headImg)){
+            if(StringUtils.isBlank(code) || StringUtils.isBlank(nick) || StringUtils.isBlank(headImg)){
                 throw new BizException("参数不能为空");
             }
+
+            Map<String,String> paramsMap = new HashMap<>();
+            paramsMap.put("appid",appid);
+            paramsMap.put("secret",secret);
+            paramsMap.put("js_code",code);
+            paramsMap.put("grant_type","authorization_code");
+
+            JSONObject json = new HttpClientUtil().doPostJson(url, paramsMap);
+            if(!json.containsKey("openid")){
+                throw new BizException("获取微信信息失败");
+            }
+
+            String openId = json.getString("openid");
             ClientUserInfo info = new ClientUserInfo();
             info.setProxyId(proxyId);
-            info.setRefId(refId);
+            info.setRefId(openId);
+
             ClientUserInfo queryRes = findByOne(info);
             if(queryRes != null){
                 String pin = queryRes.getPin();

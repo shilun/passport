@@ -368,8 +368,8 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /**
      * 根据第三方账号登陆
      * @param proxyId
-     * @param refId
+     * @param code
      * @return
      */
-    UserDTO wxLogin(Long proxyId,String ip,String refId,String nick,String headImg,Integer sex);
+    UserDTO wxLogin(Long proxyId,String ip,String code,String nick,String headImg,Integer sex);
 }
