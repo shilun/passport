@@ -3,6 +3,8 @@ package com.passport.rpc;
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.ProxyUserDto;
 
+import java.util.List;
+
 public interface ProxyUserRpcService {
 
 
@@ -21,9 +23,10 @@ public interface ProxyUserRpcService {
      * @param phone
      * @param pass
      * @param desc
+     * @param roles
      * @return
      */
-    RPCResult addUser(Long proxyId, String phone, String pass,String desc);
+    RPCResult addUser(Long proxyId, String phone, String pass,String desc,Long roles[]);
 
     /**
      * 登出
@@ -62,12 +65,29 @@ public interface ProxyUserRpcService {
     RPCResult<Boolean> changeRole(Long proxyId, Long id, Long roles[]);
 
     /**
+     * 修改用户信息
      * @param proxyId
      * @param id
      * @param phone
      * @param desc
      * @param status
+     * @param roles
      * @return
      */
-    RPCResult<Boolean> upUser(Long proxyId, Long id, String phone, String desc, Integer status);
+    RPCResult<Boolean> upUser(Long proxyId, Long id, String phone, String desc, Integer status,Long roles[]);
+
+    /**
+     * 查看单个用户
+     * @param proxyId
+     * @param id
+     * @return
+     */
+    RPCResult<ProxyUserDto> find(Long proxyId,Long id);
+
+    /**
+     * 查找代理商下所有用户
+     * @param proxyId
+     * @return
+     */
+    RPCResult<List<ProxyUserDto>> queryByProxyId(Long proxyId);
 }

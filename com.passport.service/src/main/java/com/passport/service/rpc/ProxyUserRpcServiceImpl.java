@@ -5,6 +5,7 @@ import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
+import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ProxyUserInfo;
 import com.passport.rpc.ProxyUserRpcService;
 import com.passport.rpc.dto.ProxyUserDto;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -35,10 +38,17 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
 
 
     @Override
-    public RPCResult addUser(Long proxyId, String phone, String pass, String desc) {
+    public RPCResult addUser(Long proxyId, String phone, String pass, String desc, Long roles[]) {
         RPCResult result = new RPCResult();
         try {
-            proxyUserInfoService.addUser(proxyId,phone,pass,desc);
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
+            Long id = proxyUserInfoService.addUser(proxyId, phone, pass, desc);
+            proxyUserInfoService.changeRole(proxyId, id, roles);
             result.setSuccess(true);
         } catch (Exception e) {
             logger.error("添加用户失败", e);
@@ -53,6 +63,12 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
     public RPCResult<ProxyUserDto> login(Long proxyId, String account, String pass) {
         RPCResult<ProxyUserDto> result = new RPCResult<>();
         try {
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
             ProxyUserInfo login = proxyUserInfoService.login(proxyId, account, pass);
             if (login == null) {
                 result.setSuccess(false);
@@ -78,7 +94,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
             result.setCode("login.error");
             result.setMessage("登录失败");
         }
-        return null;
+        return result;
     }
 
     @Override
@@ -118,6 +134,12 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
     public RPCResult<Boolean> changePass(Long proxyId, String account, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
             ProxyUserInfo query = new ProxyUserInfo();
             query.setProxyId(proxyId);
             boolean setLoginName = false;
@@ -155,6 +177,12 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
     public RPCResult<Boolean> changeRole(Long proxyId, Long id, Long[] roles) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
             ProxyUserInfo entity = proxyUserInfoService.findById(id);
             if (entity.getProxyId().longValue() != proxyId.longValue()) {
                 result.setSuccess(false);
@@ -179,9 +207,15 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
     }
 
     @Override
-    public RPCResult<Boolean> upUser(Long proxyId, Long id, String phone, String desc, Integer status) {
+    public RPCResult<Boolean> upUser(Long proxyId, Long id, String phone, String desc, Integer status, Long roles[]) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
             ProxyUserInfo entity = proxyUserInfoService.findById(id);
             if (entity.getProxyId().longValue() != proxyId.longValue()) {
                 result.setSuccess(false);
@@ -190,6 +224,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 return result;
             }
             proxyUserInfoService.upUser(proxyId, id, phone, desc, status);
+            proxyUserInfoService.changeRole(proxyId, id, roles);
             result.setSuccess(true);
             result.setData(true);
             return result;
@@ -198,6 +233,73 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
             result.setSuccess(false);
             result.setCode("change.role.error");
             result.setMessage("修改角色失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<ProxyUserDto> find(Long proxyId, Long id) {
+        RPCResult<ProxyUserDto> result = new RPCResult<>();
+        try {
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
+            ProxyUserInfo login = proxyUserInfoService.findById(id);
+            if (login == null) {
+                result.setSuccess(false);
+                result.setCode("data.error");
+                result.setMessage("数据不存在");
+                return result;
+            }
+            if (login.getProxyId().longValue() != proxyId.longValue()) {
+                result.setSuccess(false);
+                result.setCode("data.error");
+                result.setMessage("数据不存在");
+                return result;
+            }
+
+            result.setSuccess(true);
+            ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
+            result.setData(dto);
+
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            logger.error("查询失败", e);
+            result.setSuccess(false);
+            result.setCode("data.error");
+            result.setMessage("查询失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<List<ProxyUserDto>> queryByProxyId(Long proxyId) {
+        RPCResult<List<ProxyUserDto>> result = new RPCResult<>();
+        try {
+            if (proxyId == null) {
+                result.setSuccess(false);
+                result.setCode("proxyId.error");
+                result.setMessage("代理商是标识不能为空");
+                return result;
+            }
+            ProxyUserInfo query = new ProxyUserInfo();
+            query.setProxyId(proxyId);
+            query.setStatus(YesOrNoEnum.YES.getValue());
+            List<ProxyUserInfo> list = proxyUserInfoService.query(query);
+            List<ProxyUserDto> resultList = new ArrayList<>();
+            for (ProxyUserInfo info : list) {
+                resultList.add(BeanCoper.copyProperties(ProxyUserDto.class, info));
+            }
+            result.setData(resultList);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            logger.error("查询失败", e);
+            result.setCode("queryByProxyId.error");
+            result.setMessage("查询代理商运营用户失败");
         }
         return result;
     }
