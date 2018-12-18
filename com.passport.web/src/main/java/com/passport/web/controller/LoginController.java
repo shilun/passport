@@ -233,6 +233,22 @@ public class LoginController extends AbstractClientController {
         });
     }
 
+    @RequestMapping("wxLogin")
+    @ApiOperation(value = "微信登陆")
+    @ResponseBody
+    public Map<String, Object> wxLogin(@RequestBody WxLoginDto dto,HttpServletResponse response) {
+        return buildMessage(() -> {
+            getRequest().getSession().removeAttribute("userDto");
+            UserDTO login = loginService.wxLogin(getDomain().getId(),getIP(), dto.getCode(), dto.getNick(), dto.getHeadImg(),dto.getSex());
+            if(login != null) {
+                putCookie("cToken", login.getToken(), response);
+                return login;
+            }else{
+                throw new BizException("登陆失败");
+            }
+        });
+    }
+
 
     @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")

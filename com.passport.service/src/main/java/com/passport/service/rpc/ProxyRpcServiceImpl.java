@@ -204,10 +204,10 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<ProxyDto> login(String account, String pass) {
+    public RPCResult<ProxyDto> login(Long proxyId,String account, String pass) {
         RPCResult<ProxyDto> result = new RPCResult<>();
         try {
-            ProxyInfo proxyInfo = proxyInfoService.findByLoginName(account, pass);
+            ProxyInfo proxyInfo = proxyInfoService.findByLoginName(proxyId,account, pass);
             if (proxyInfo == null) {
                 result.setSuccess(false);
                 result.setCode("proxy.login.error");
@@ -280,10 +280,10 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     }
 
     @Override
-    public RPCResult<Boolean> changePass(String account, String oldPass, String newPass) {
+    public RPCResult<Boolean> changePass(Long proxyId,String account, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            proxyInfoService.changePass(account, oldPass, newPass);
+            proxyInfoService.changePass(proxyId,account, oldPass, newPass);
             result.setSuccess(true);
         }catch (BizException bize){
             result.setSuccess(false);

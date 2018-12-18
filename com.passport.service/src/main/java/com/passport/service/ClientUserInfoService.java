@@ -364,4 +364,12 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     Map<String, Object> oldForgetPassBuildCode(Long proxyId,String phone);
+
+    /**
+     * 根据第三方账号登陆
+     * @param proxyId
+     * @param code
+     * @return
+     */
+    UserDTO wxLogin(Long proxyId,String ip,String code,String nick,String headImg,Integer sex);
 }
