@@ -70,14 +70,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Value("${server.tomcat.basedir}")
     private String imgTempDir;
 
-    @Value("${smart.app.farm.appid}")
-    private String appid;
+    @Value("${app.weixin.appid}")
+    private String weixinAppid;
 
-    @Value("${smart.app.farm.secret}")
-    private String secret;
+    @Value("${app.weixin.secret}")
+    private String weixinSecret;
 
-    @Value("${smart.app.farm.getId.url}")
-    private String url;
+    @Value("${app.weixin.getId.url}")
+    private String weixinUrl;
 
     @Resource
     private SMSInfoService smsInfoService;
@@ -1145,12 +1145,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
 
             Map<String,String> paramsMap = new HashMap<>();
-            paramsMap.put("appid",appid);
-            paramsMap.put("secret",secret);
+            paramsMap.put("appid",weixinAppid);
+            paramsMap.put("secret",weixinSecret);
             paramsMap.put("js_code",code);
             paramsMap.put("grant_type","authorization_code");
 
-            JSONObject json = new HttpClientUtil().doPostJson(url, paramsMap);
+            JSONObject json = new HttpClientUtil().doPostJson(weixinUrl, paramsMap);
             if(!json.containsKey("openid")){
                 throw new BizException("获取微信信息失败");
             }
