@@ -3,6 +3,7 @@ package com.passport.rpc.dto;
 import java.io.Serializable;
 
 public class ProxyUserDto  implements Serializable {
+    private Long id;
     private String loginToken;
     private String account;
     /**
@@ -104,5 +105,13 @@ public class ProxyUserDto  implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
