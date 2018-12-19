@@ -127,11 +127,7 @@ public class UserRPCServiceImpl implements UserRPCService {
         return rpcResult;
     }
 
-    public static void main(String[] args) {
-        String text = "RJ73VLB6IN2NF7W4PH26GS3ZNNMMN2GYSOR6PUBXPPSMYJTTETGAJEKQ53GBL66L45TZJZ6HRROCDLEZ4FQVKP3VCXSH7BK6UQPZTVPV42Q2SOBXUMOQ";
-        text = DesDecrypter.decryptString(text, "");
-        System.out.println(text);
-    }
+
 
     @Override
     public RPCResult<UserDTO> verfiyToken(String token) {
