@@ -58,39 +58,6 @@ public interface ProxyRpcService {
      */
     RPCResult<ProxyDto> findByDomain(String domain);
 
-    /**
-     * @param proxyId
-     * @param account
-     * @param pass
-     * @return
-     */
-    RPCResult<ProxyDto> login(Long proxyId, String account, String pass);
-
-    /**
-     * 登出
-     *
-     * @param loginToken
-     * @return
-     */
-    RPCResult logOut(String loginToken);
-
-    /**
-     * 验证token
-     *
-     * @param loginToken
-     * @return
-     */
-    RPCResult<ProxyDto> verfiyToken(String loginToken);
-
-    /**
-     * 登录密码
-     * @param proxyId
-     * @param account
-     * @param oldPass
-     * @param newPass
-     * @return
-     */
-    RPCResult<Boolean> changePass(Long proxyId,String account, String oldPass, String newPass);
 
     /**
      * 查询活跃人数
