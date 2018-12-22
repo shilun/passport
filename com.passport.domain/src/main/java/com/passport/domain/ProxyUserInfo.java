@@ -8,8 +8,6 @@ import org.springframework.data.annotation.Transient;
  */
 public class ProxyUserInfo extends AbstractBaseEntity {
 
-    @Transient
-    public final static Long[] allROLE=new Long[]{Long.valueOf(1),Long.valueOf(2),Long.valueOf(3)};
     /**
      * 代理商
      */

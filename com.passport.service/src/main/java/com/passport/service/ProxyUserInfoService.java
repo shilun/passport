@@ -10,48 +10,50 @@ public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
 
     /**
      * 登录
+     *
      * @param proxyId
      * @param account
      * @param pass
      * @return
      */
-   ProxyUserInfo login(Long proxyId,String account,String pass);
+    ProxyUserInfo login(Long proxyId, String account, String pass);
 
     /**
-     * 修改密码
-     * @param proxyId
-     * @param userId
-     * @param pass
-     * @return
+     * @param id
+     * @param password
+     * @param vpassword
      */
-   void changePass(Long proxyId, Long userId, String pass, String newPass);
+    void changePass(Long id, String password, String vpassword);
 
     /**
      * 修改用户角色
+     *
      * @param proxyId
      * @param id
      * @param roles
      * @return
      */
-   void changeRole(Long proxyId,Long id,Long roles[]);
+    void changeRole(Long proxyId, Long id, Long roles[]);
 
 
     /**
-     *修改用户信息
+     * 修改用户信息
+     *
      * @param proxyId
      * @param id
      * @param phone
      * @param desc
      * @param status
      */
-   void upUser(Long proxyId,Long id,String phone,String desc,Integer status);
+    void upUser(Long proxyId, Long id, String phone, String desc, Integer status);
 
     /**
      * 添加用户
+     *
      * @param proxyId 代理商
-     * @param phone 电话
-     * @param pass 密码
-     * @param desc 备注
+     * @param phone   电话
+     * @param pass    密码
+     * @param desc    备注
      */
     Long addUser(Long proxyId, String phone, String pass, String desc);
 }

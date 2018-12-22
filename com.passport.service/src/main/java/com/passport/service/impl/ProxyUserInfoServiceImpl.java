@@ -64,30 +64,24 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         if (query.getStatus().intValue() == YesOrNoEnum.NO.getValue()) {
             return null;
         }
-        ProxyInfo byId = proxyInfoService.findById(proxyId);
-        if(byId.getPhone().equals(query.getPhone())){
-            query.setRoles(ProxyUserInfo.allROLE);
-        }
 
         return query;
     }
 
     @Override
-    public void changePass(Long proxyId, Long userId, String pass, String newPass) {
+    public void changePass(Long id, String password, String vpassword) {
         ProxyUserInfo query = new ProxyUserInfo();
-        query.setProxyId(proxyId);
-        query.setId(userId);
+        query.setId(id);
         query = findByOne(query);
         if(query==null){
             throw new BizException("user.password.error", "用户不存在");
         }
-        pass = MD5.MD5Str(pass, passKey);
-        if (!pass.equals(query.getPass())) {
-            throw new BizException("old.password.error", "旧密码失败");
+        if(!password.equals(vpassword)){
+            throw new BizException("user.password.error", "密码和验证密码不一至");
         }
         ProxyUserInfo upEntity = new ProxyUserInfo();
         upEntity.setId(query.getId());
-        upEntity.setPass(MD5.MD5Str(newPass, passKey));
+        upEntity.setPass(MD5.MD5Str(password, passKey));
         save(upEntity);
     }
 

@@ -87,7 +87,7 @@ public class ProxyUserController extends AbstractClientController {
     @RoleResource(resource = "passport")
     public Map<String, Object> changePass(@RequestBody ProxyUserPasswordChangeDto dto) {
         return buildMessage(() -> {
-            proxyUserInfoService.changePass(dto.getProxyId(), dto.getUserId(), dto.getOldPassword(), dto.getNewPassword());
+            proxyUserInfoService.changePass(dto.getId(),dto.getPassword(),dto.getVpassword());
             return null;
         });
     }

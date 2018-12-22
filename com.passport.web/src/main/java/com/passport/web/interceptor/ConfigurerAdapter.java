@@ -27,11 +27,6 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
                "/login/*",
                "/qrCode/*",
                "/AppDownload/*",
-               "/appinterface/user-login",
-               "/appinterface/user-reg",
-               "/appinterface/forgetPassBuildCode",
-               "/appinterface/regBuildCode",
-                "/appinterface/reg",
-               "/appinterface/regByQr"});
+               "/appinterface/*"});
     }
 }
