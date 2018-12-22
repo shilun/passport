@@ -1,7 +1,6 @@
 package com.passport.web.controller;
 
 import com.common.exception.BizException;
-import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
 import com.common.web.IExecute;
 import com.passport.domain.module.AgentTypeEnum;
