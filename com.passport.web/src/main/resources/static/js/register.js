@@ -13,7 +13,7 @@ $(document).ready(function(){
             inputId = $('#inputId').val();
         inputName = $("#inputName").val();
         if(inputId == ''){
-            $.toast('请输入Id', 'cancel');
+            $('#inputId').val("0");
             return false;
         }
         else if (phone == '') {

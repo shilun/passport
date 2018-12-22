@@ -1,24 +1,33 @@
 package com.passport.main.controller.dto;
 
-public class ProxyUserPasswordChangeDto extends PasswordChangeDto {
+public class ProxyUserPasswordChangeDto  {
 
-    private Long proxyId;
+    private Long id;
 
-    private Long userId;
+    private String password;
+    private String vpassword;
 
-    public Long getProxyId() {
-        return proxyId;
+    public Long getId() {
+        return id;
     }
 
-    public void setProxyId(Long proxyId) {
-        this.proxyId = proxyId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getVpassword() {
+        return vpassword;
+    }
+
+    public void setVpassword(String vpassword) {
+        this.vpassword = vpassword;
     }
 }
