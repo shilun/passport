@@ -68,42 +68,42 @@ public class AppDownloadController extends AbstractClientController {
         response.setHeader("Content-type", "text/plain;charset=UTF-8");
         AgentTypeEnum type = AgentTypeEnum.IOS;
         SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(), type);
-        return getContentBody(lastInfo.getUrl(),lastInfo.getVersion(),lastInfo.getName());
+        return getContentBody(lastInfo.getUrl(), lastInfo.getVersion(), lastInfo.getName());
     }
 
-    protected static String getContentBody(String url,String version,String name) {
-       String context="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-               "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-               "<plist version=\"1.0\">\n" +
-               "    <dict>\n" +
-               "        <key>items</key>\n" +
-               "        <array>\n" +
-               "            <dict>\n" +
-               "                <key>assets</key>\n" +
-               "                <array>\n" +
-               "                    <dict>\n" +
-               "                        <key>kind</key>\n" +
-               "                        <string>software-package</string>\n" +
-               "                        <key>url</key>\n" +
-               "                        <string>"+url+"</string>\n" +
-               "                    </dict>\n" +
-               "                </array>\n" +
-               "                <key>metadata</key>\n" +
-               "                <dict>\n" +
-               "                    <key>bundle-identifier</key>\n" +
-               "                    <string>com.fandou</string>\n" +
-               "                    <key>bundle-version</key>\n" +
-               "                    <string>"+version+"</string>\n" +
-               "                    <key>kind</key>\n" +
-               "                    <string>software</string>\n" +
-               "                    <key>title</key>\n" +
-               "                    <string>"+name+"</string>\n" +
-               "                </dict>\n" +
-               "            </dict>\n" +
-               "        </array>\n" +
-               "    </dict>\n" +
-               "</plist>";
-       return context;
+    protected static String getContentBody(String url, String version, String name) {
+        StringBuilder context = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        context.append("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n");
+        context.append("<plist version=\"1.0\">\n");
+        context.append("    <dict>\n");
+        context.append("        <key>items</key>\n");
+        context.append("        <array>\n");
+        context.append("            <dict>\n");
+        context.append("                <key>assets</key>\n");
+        context.append("                <array>\n");
+        context.append("                    <dict>\n");
+        context.append("                        <key>kind</key>\n");
+        context.append("                        <string>software-package</string>\n");
+        context.append("                        <key>url</key>\n");
+        context.append("                        <string>" + url + "</string>\n");
+        context.append("                    </dict>\n");
+        context.append("                </array>\n");
+        context.append("                <key>metadata</key>\n");
+        context.append("                <dict>\n");
+        context.append("                    <key>bundle-identifier</key>\n");
+        context.append("                    <string>com.fandou</string>\n");
+        context.append("                    <key>bundle-version</key>\n");
+        context.append("                    <string>" + version + "</string>\n");
+        context.append("                    <key>kind</key>\n");
+        context.append("                    <string>software</string>\n");
+        context.append("                    <key>title</key>\n");
+        context.append("                    <string>" + name + "</string>\n");
+        context.append("                </dict>\n");
+        context.append("            </dict>\n");
+        context.append("        </array>\n");
+        context.append("    </dict>\n");
+        context.append("</plist>");
+        return context.toString();
     }
 
     @RequestMapping("page")
