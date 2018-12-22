@@ -1,5 +1,5 @@
 <div class="content-heading">
-  代理商管理列表
+  代理商用户管理列表
 </div>
 <div class="panel">
   <div class="panel-body">
@@ -8,7 +8,7 @@
         <input class="form-control" name="name" type="text" [(ngModel)]="entity.name" placeholder="名称" />
       </div>
       <button class="btn btn-default btn-primary" type="button" (click)="list(entity)">查询</button>
-      <a class="btn btn-default" routerLink="/system/proxy/view">
+      <a class="btn btn-default" routerLink="/system/proxyuser/view" [queryParams]="{proxyId:entity.proxyId}">
         <strong>添加</strong>
       </a>
     </form>
@@ -19,27 +19,23 @@
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>pin</th>
-      <th>名称</th>
+      <th>代理商</th>
+      <th>账户</th>
       <th>电话</th>
-      <th>联系人</th>
-      <th>域名</th>
-      <th>结束时间</th>
-      <th>创建时间</th>
+      <th>角色</th>
+      <th>状态</th>
       <th>操作</th>
     </tr>
     </thead>
     <tbody>
     <ng-container *ngFor="let item of listData.list">
       <tr>
-        <td><a routerLink="/system/proxy/view" [queryParams]="{id:item.id}">{{item.pin}}</a></td>
-        <td>{{item.name}}</td>
+        <td>{{valuePare(item.proxyId,proxyes)}}</td>
+        <td>{{item.pin}}</td>
         <td>{{item.phone}}</td>
-        <td>{{item.linkMan}}</td>
-        <th>{{item.domain}}</th>
-        <th>{{item.endTime}}</th>
-        <td>{{item.createTime}}</td>
-        <td><a routerLink="/system/proxyuser/list" [queryParams]="{proxyId:item.id}">修改</a></td>
+        <td>{{item.roles}}</td>
+        <th>{{valuePare(item.status,statuses)}}</th>
+        <td><a routerLink="/system/proxyuser/view" [queryParams]="{id:item.id}">修改</a></td>
       </tr>
     </ng-container>
     </tbody>

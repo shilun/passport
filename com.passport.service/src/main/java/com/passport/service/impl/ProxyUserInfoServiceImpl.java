@@ -73,18 +73,14 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
     }
 
     @Override
-    public void changePass(Long proxyId, String account, String pass, String newPass) {
+    public void changePass(Long proxyId, Long userId, String pass, String newPass) {
         ProxyUserInfo query = new ProxyUserInfo();
         query.setProxyId(proxyId);
-        boolean setLoginName = false;
-        if (StringUtils.isMobileNO(account)) {
-            setLoginName = true;
-            query.setPhone(account);
-        }
-        if (setLoginName == false) {
-            query.setPin(account);
-        }
+        query.setId(userId);
         query = findByOne(query);
+        if(query==null){
+            throw new BizException("user.password.error", "用户不存在");
+        }
         pass = MD5.MD5Str(pass, passKey);
         if (!pass.equals(query.getPass())) {
             throw new BizException("old.password.error", "旧密码失败");

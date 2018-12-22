@@ -1,6 +1,7 @@
 package com.passport.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.common.exception.ApplicationException;
 import com.common.exception.BizException;
 import com.common.httpclient.HttpClientUtil;
 import com.common.mongo.AbstractMongoService;
@@ -360,6 +361,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
         }
+    }
+
+    @Override
+    public void delById(Long id) {
+        throw new ApplicationException("删除失败，方法已禁用");
     }
 
     @Override
