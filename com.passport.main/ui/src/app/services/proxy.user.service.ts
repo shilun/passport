@@ -9,6 +9,6 @@ export class ProxyUserService extends AbstractBaseService {
     super(http, '/proxyuser');
   }
   public async changePass(id: string,password:string): Promise<any> {
-    return await this.doExec('/changePass', {id: id,password:password});
+    return await this.doExec('/changePass', {id: id,password:password,vpassword:password});
   }
 }
