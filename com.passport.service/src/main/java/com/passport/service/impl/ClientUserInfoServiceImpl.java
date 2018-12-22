@@ -211,11 +211,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
         String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
-        String o = (String) redisTemplate.opsForValue().get(key);
-        if (o.equalsIgnoreCase(vcode)) {
-            return regist(proxydto, null, account, pass, account, null, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+        if(!redisTemplate.hasKey(key)){
+            throw new BizException("验证码过期");
         }
-        return null;
+        String o = (String) redisTemplate.opsForValue().get(key);
+        if (!o.equalsIgnoreCase(vcode)) {
+            throw new BizException("验证码错误");
+        }
+        return regist(proxydto, null, account, pass, account, null, null, SexEnum.MALE, null, ip, null, null, null, null, null);
     }
 
     @Override
@@ -248,12 +251,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 return null;
             }
             String key = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                return null;
+            if(!redisTemplate.hasKey(key)){
+                throw new BizException("验证码过期");
             }
+            String o = (String) redisTemplate.opsForValue().get(key);
             if (!o.equals(vcode)) {
-                return null;
+                throw new BizException("验证码错误");
             }
             ClientUserInfo userInfo = findByPhone(proxyId, account);
             if (userInfo == null) {
@@ -448,11 +451,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
 
             String key = MessageFormat.format(MOBILE_USER_BIND, mobile);
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                throw new BizException("验证码错误");
+            if(!redisTemplate.hasKey(key)){
+                throw new BizException("验证码过期");
             }
-
+            String o = (String) redisTemplate.opsForValue().get(key);
             if (!o.equals(msg)) {
                 throw new BizException("验证码错误");
             }
@@ -478,12 +480,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 throw new BizException("无法找到该用户");
 
             String key = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
+            if(!redisTemplate.hasKey(key)){
+                throw new BizException("验证码过期");
+            }
             String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null)
+            if (!o.equals(msg)) {
                 throw new BizException("验证码错误");
-
-            if (!o.equals(msg))
-                throw new BizException("验证码错误");
+            }
 
             userInfo.setPhone(mobile);
             save(userInfo);
@@ -536,10 +539,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 throw new BizException("手机号错误");
             }
             String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                throw new BizException("验证码错误");
+            if(!redisTemplate.hasKey(key)){
+                throw new BizException("验证码过期");
             }
+            String o = (String) redisTemplate.opsForValue().get(key);
             if (!o.equals(msg)) {
                 throw new BizException("验证码错误");
             }
@@ -612,10 +615,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 throw new BizException("无法找到该用户");
             }
             String key = MessageFormat.format(FORGET_PASS, pin);
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                throw new BizException("验证码错误");
+            if(!redisTemplate.hasKey(key)){
+                throw new BizException("验证码过期");
             }
+            String o = (String) redisTemplate.opsForValue().get(key);
             if (!o.equals(code)) {
                 throw new BizException("验证码错误");
             }
@@ -944,14 +947,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "未找到该用户");
             }
 
-            /*String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, account);
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (o == null) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
+            String key = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, account);
+            if (!redisTemplate.hasKey(key)) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码过期");
             }
+            String o = (String) redisTemplate.opsForValue().get(key);
             if (!o.equals(code)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
-            }*/
+            }
 
             pwd = MD5.MD5Str(pwd, passKey);
             user.setPasswd(pwd);
@@ -1098,11 +1101,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (length < 6 || length > 16) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "密码长度在6-16位");
             }
-            /*String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+
+            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+            if (!redisTemplate.hasKey(key)) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码过期");
+            }
             String o = (String) redisTemplate.opsForValue().get(key);
-            if (!o.equalsIgnoreCase(vcode)){
+            if (!o.equals(vcode)) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST,"验证码错误");
-            }*/
+            }
             UserDTO userDTO = regist(proxydto, recommendId, account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if (userDTO == null) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "注册失败");
