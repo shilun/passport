@@ -50,7 +50,7 @@ public class OldController extends AbstractClientController {
     private String scode;
     @Value("${app.upload.domain}")
     private String uploadDomain;
-    @Value("${batch.register}")
+    @Value("${app.batch.register}")
     private Boolean batctReg;
 
     @RequestMapping("forgetPassBuildCode")
