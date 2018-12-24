@@ -1,7 +1,6 @@
 package com.passport.web;
 
 import com.common.exception.BizException;
-import com.common.security.DesDecrypter;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.web.AbstractController;
