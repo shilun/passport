@@ -31,6 +31,10 @@ public class LogLoginInfo extends AbstractBaseEntity {
      * 注册时间
      */
     private Date registerDate;
+    /**
+     * ip地理位置
+     */
+    private String ipAddress;
 
     @Transient
     @QueryField(name="loginDay",type= QueryType.GTE)
@@ -133,5 +137,13 @@ public class LogLoginInfo extends AbstractBaseEntity {
 
     public void setUserCode(Long userCode) {
         this.userCode = userCode;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }
