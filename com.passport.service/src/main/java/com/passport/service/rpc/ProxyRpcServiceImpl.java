@@ -123,23 +123,23 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
         result.setMessage("查找代理商失败");
         return result;
     }
-
-    @Override
-    public RPCResult<String> refreshToken(Long proxyId) {
-        RPCResult<String> result = new RPCResult();
-        try {
-            String s = proxyInfoService.refreshToken(proxyId);
-            result.setSuccess(true);
-            result.setData(s);
-            return result;
-        } catch (Exception e) {
-            logger.error("刷新代理商token失败", e);
-        }
-        result.setSuccess(false);
-        result.setCode("proxy.refreshToken.error");
-        result.setMessage("刷新代理商token失败");
-        return result;
-    }
+//
+//    @Override
+//    public RPCResult<String> refreshToken(Long proxyId) {
+//        RPCResult<String> result = new RPCResult();
+//        try {
+//            String s = proxyInfoService.refreshToken(proxyId);
+//            result.setSuccess(true);
+//            result.setData(s);
+//            return result;
+//        } catch (Exception e) {
+//            logger.error("刷新代理商token失败", e);
+//        }
+//        result.setSuccess(false);
+//        result.setCode("proxy.refreshToken.error");
+//        result.setMessage("刷新代理商token失败");
+//        return result;
+//    }
 
     @Override
     public RPCResult upEncodingKey(Long proxyId, String encodingKey) {
@@ -498,30 +498,33 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
 
     @Override
     public RPCResult<ProxyDto> findByPin(Long proxyId, String pin) {
-        RPCResult<ProxyDto> result = null;
-        try {
-            result = new RPCResult<>();
-            if (proxyId == null || !StringUtils.isBlank(pin)) {
-                result.setSuccess(false);
-                return result;
-            }
-            ProxyInfo proxyInfo = new ProxyInfo();
-            proxyInfo.setPin(pin);
-            proxyInfo = proxyInfoService.findByOne(proxyInfo);
-            if (proxyInfo == null) {
-                result.setSuccess(false);
-                return result;
-            }
-            ProxyDto dto = new ProxyDto();
-            BeanCoper.copyProperties(dto, proxyInfo);
-            result.setSuccess(true);
-            result.setData(dto);
-        } catch (Exception e) {
-            logger.error("查询用户信息异常", e);
-            result.setSuccess(false);
-            result.setCode("find.users.Superior.info.error");
-            result.setMessage("查询用户信息异常");
-        }
+        RPCResult<ProxyDto> result = new RPCResult();
+        result.setSuccess(false);
+        result.setCode("method.desable");
+        result.setMessage("远程方法已禁用,请使用 findById");
+//        try {
+//            result = new RPCResult<>();
+//            if (proxyId == null || !StringUtils.isBlank(pin)) {
+//                result.setSuccess(false);
+//                return result;
+//            }
+//            ProxyInfo proxyInfo = new ProxyInfo();
+//            proxyInfo.setPin(pin);
+//            proxyInfo = proxyInfoService.findByOne(proxyInfo);
+//            if (proxyInfo == null) {
+//                result.setSuccess(false);
+//                return result;
+//            }
+//            ProxyDto dto = new ProxyDto();
+//            BeanCoper.copyProperties(dto, proxyInfo);
+//            result.setSuccess(true);
+//            result.setData(dto);
+//        } catch (Exception e) {
+//            logger.error("查询用户信息异常", e);
+//            result.setSuccess(false);
+//            result.setCode("find.users.Superior.info.error");
+//            result.setMessage("查询用户信息异常");
+//        }
         return result;
     }
 

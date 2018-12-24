@@ -77,6 +77,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 return result;
             }
 
+            login.setPass(null);
             result.setSuccess(true);
             ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
 
@@ -131,7 +132,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
     }
 
     @Override
-    public RPCResult<Boolean> changePass(Long proxyId, String account, String oldPass, String newPass) {
+    public RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             if (proxyId == null) {
@@ -140,16 +141,14 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("代理商是标识不能为空");
                 return result;
             }
+            ProxyUserInfo byId = proxyUserInfoService.findById(id);
+            if(byId.getProxyId().longValue()!=proxyId){
+                result.setSuccess(false);
+                result.setCode("data.error");
+                result.setMessage("数据失败");
+            }
             ProxyUserInfo query = new ProxyUserInfo();
-            query.setProxyId(proxyId);
-            boolean setLoginName = false;
-            if (StringUtils.isMobileNO(account)) {
-                setLoginName = true;
-                query.setPhone(account);
-            }
-            if (setLoginName == false) {
-                query.setPin(account);
-            }
+
             query = proxyUserInfoService.findByOne(query);
             oldPass = MD5.MD5Str(oldPass, passKey);
             if (!oldPass.equalsIgnoreCase(query.getPass())) {
@@ -260,7 +259,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("数据不存在");
                 return result;
             }
-
+            login.setPass(null);
             result.setSuccess(true);
             ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
             result.setData(dto);
@@ -292,6 +291,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
             List<ProxyUserInfo> list = proxyUserInfoService.query(query);
             List<ProxyUserDto> resultList = new ArrayList<>();
             for (ProxyUserInfo info : list) {
+                info.setPass("");
                 resultList.add(BeanCoper.copyProperties(ProxyUserDto.class, info));
             }
             result.setData(resultList);

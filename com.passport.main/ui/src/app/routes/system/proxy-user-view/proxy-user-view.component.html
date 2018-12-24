@@ -19,10 +19,15 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">账户</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="text" id="pin" formControlName="pin"
-                         [formControl]="valForm.controls['pin']" [(ngModel)]="entity.pin"/>
-                  <span class="text-danger"
-                        *ngIf="valForm.controls['pin'].hasError('required') && (valForm.controls['pin'].dirty || valForm.controls['pin'].touched)">必选项</span>
+                  <ng-container *ngIf="entity.id!=null">
+                    <input class="form-control" type="text" id="pin" formControlName="pin"  readonly="true"
+                           [formControl]="valForm.controls['pin']" [(ngModel)]="entity.pin"/>
+                  </ng-container>
+                  <ng-container *ngIf="entity.id==null">
+                    <input class="form-control" type="text" id="pin" formControlName="pin"
+                           [formControl]="valForm.controls['pin']" [(ngModel)]="entity.pin"/>
+                  </ng-container>
+
                 </div>
               </div>
             </fieldset>
@@ -40,12 +45,13 @@
             <fieldset>
               <div class="form-group">
                 <label class="col-sm-2 control-label">角色</label>
-                <div class="col-sm-6">
+                <div class="col-sm-2">
                   <input class="form-control" type="text" id="roles" formControlName="roles"
                          [formControl]="valForm.controls['roles']" [(ngModel)]="entity.roles"/>
                   <span class="text-danger"
                         *ngIf="valForm.controls['roles'].hasError('required') && (valForm.controls['roles'].dirty || valForm.controls['roles'].touched)">必选项</span>
                 </div>
+                <label class="col-sm-4">1 运营 2 财务 3 配置 </label>
               </div>
             </fieldset>
             <fieldset>
@@ -76,6 +82,7 @@
           <div class="panel-footer text-center">
             <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
             <a class="btn btn-default" routerLink="/system/proxyuser/list"  [queryParams]="{proxyId:entity.proxyId}">取消</a>
+            <a class="btn btn-default" routerLink="/system/proxyuser/del"  [queryParams]="{proxyId:entity.proxyId,id:entity.id}">取消</a>
           </div>
         </div>
         <!-- END panel-->

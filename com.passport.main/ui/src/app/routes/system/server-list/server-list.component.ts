@@ -12,7 +12,7 @@ export class ServerListComponent extends AbstractController implements OnInit {
 
   statuses: Array<any>;
   gametypes: Array<any>;
-
+  proxyes: Array<any>;
   constructor(protected serverService: ServerService, protected globalService: GlobalService, protected route: ActivatedRoute, protected router: Router) {
     super(serverService, route, router);
     this.entity = {};
@@ -25,6 +25,10 @@ export class ServerListComponent extends AbstractController implements OnInit {
     let result = await this.globalService.list('yesorno');
     if (result.success) {
       this.statuses = result.data.list;
+    }
+    result = await this.globalService.list('proxy');
+    if (result.success) {
+      this.proxyes = result.data.list;
     }
   }
 

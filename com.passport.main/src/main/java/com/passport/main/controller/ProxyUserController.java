@@ -4,6 +4,7 @@ import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
 import com.passport.domain.ProxyUserInfo;
 import com.passport.main.AbstractClientController;
+import com.passport.main.controller.dto.ProxyUserDelDto;
 import com.passport.main.controller.dto.ProxyUserDto;
 import com.passport.main.controller.dto.ProxyUserPasswordChangeDto;
 import com.passport.service.ProxyUserInfoService;
@@ -74,10 +75,31 @@ public class ProxyUserController extends AbstractClientController {
     @RoleResource(resource = "passport")
     public Map<String, Object> save(@RequestBody ProxyUserDto dto) {
         return buildMessage(() -> {
-            ProxyUserInfo entity = new ProxyUserInfo();
-            entity.setProxyId(getUser().getProxyId());
-            BeanCoper.copyProperties(entity, dto);
-            proxyUserInfoService.save(entity);
+            if(dto.getId()==null){
+                ProxyUserInfo info=BeanCoper.copyProperties(ProxyUserInfo.class, dto);
+                proxyUserInfoService.save(info);
+            }
+            else{
+                proxyUserInfoService.upUser(dto.getProxyId(),dto.getId(),dto.getPhone(),dto.getDesc(),dto.getStatus(),dto.getRoles());
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * 保存
+     *
+     * @param dto
+     * @return
+     */
+    @ApiOperation(value = "删除")
+    @RequestMapping("/proxyuser/del")
+    @RoleResource(resource = "passport")
+    public Map<String, Object> del(@RequestBody ProxyUserDelDto dto) {
+        return buildMessage(() -> {
+                proxyUserInfoService.delById(dto.getProxyId(),dto.getId());
+
             return null;
         });
     }
