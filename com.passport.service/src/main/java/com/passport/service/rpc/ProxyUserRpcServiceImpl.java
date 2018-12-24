@@ -222,8 +222,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("数据失败");
                 return result;
             }
-            proxyUserInfoService.upUser(proxyId, id, phone, desc, status);
-            proxyUserInfoService.changeRole(proxyId, id, roles);
+            proxyUserInfoService.upUser(proxyId, id, phone, desc, status,roles);
             result.setSuccess(true);
             result.setData(true);
             return result;
