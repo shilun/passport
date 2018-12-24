@@ -77,6 +77,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 return result;
             }
 
+            login.setPass(null);
             result.setSuccess(true);
             ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
 
@@ -260,7 +261,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("数据不存在");
                 return result;
             }
-
+            login.setPass(null);
             result.setSuccess(true);
             ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
             result.setData(dto);
@@ -292,6 +293,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
             List<ProxyUserInfo> list = proxyUserInfoService.query(query);
             List<ProxyUserDto> resultList = new ArrayList<>();
             for (ProxyUserInfo info : list) {
+                info.setPass("");
                 resultList.add(BeanCoper.copyProperties(ProxyUserDto.class, info));
             }
             result.setData(resultList);
