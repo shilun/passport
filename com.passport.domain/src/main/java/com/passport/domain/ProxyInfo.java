@@ -13,10 +13,6 @@ import java.util.Date;
  */
 public class ProxyInfo extends AbstractBaseEntity {
 
-    /**
-     * 用户pin
-     */
-    private String pin;
 
     /**
      * 代理的游戏
@@ -92,14 +88,6 @@ public class ProxyInfo extends AbstractBaseEntity {
 
     public void setEncodingKey(String encodingKey) {
         this.encodingKey = encodingKey;
-    }
-
-    public String getPin() {
-        return pin;
-    }
-
-    public void setPin(String pin) {
-        this.pin = pin;
     }
 
     public String getName() {

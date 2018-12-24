@@ -12,6 +12,12 @@ import java.util.Date;
  */
 public class DateUtil {
 
+    public static Date getTomorrowZeroTime(){
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR,1);
+        return setZero(cal);
+    }
+
     /**
      * 将时分秒置为0
      * @param date

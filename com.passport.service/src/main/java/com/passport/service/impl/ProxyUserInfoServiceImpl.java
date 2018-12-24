@@ -28,6 +28,30 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
     private ProxyInfoService proxyInfoService;
 
     @Override
+    public Long save(ProxyUserInfo entity) {
+        if (entity.getId() == null) {
+            ProxyUserInfo query = new ProxyUserInfo();
+            query.setProxyId(entity.getProxyId());
+            if (StringUtils.isNotEmpty(entity.getPin())) {
+                query.setPin(entity.getPin());
+            }
+            ProxyUserInfo byOne = findByOne(query);
+            if (byOne != null) {
+                throw new BizException("add.user.error", "添加用户失败,用户重复");
+            }
+            if (StringUtils.isNotEmpty(entity.getPhone())) {
+                query.setPhone(entity.getPhone());
+            }
+            byOne = findByOne(query);
+            if (byOne != null) {
+                throw new BizException("add.user.error", "添加用户失败,电话重复");
+            }
+        }
+
+        return super.save(entity);
+    }
+
+    @Override
     public Long addUser(Long proxyId, String phone, String pass, String desc) {
         ProxyUserInfo query = new ProxyUserInfo();
         query.setProxyId(proxyId);
@@ -36,6 +60,7 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         if (byOne != null) {
             throw new BizException("add.user.error", "添加用户失败,用户重复");
         }
+        query.setPin(phone);
         query.setPass(MD5.MD5Str(pass, passKey));
         query.setDesc(desc);
         query.setStatus(YesOrNoEnum.YES.getValue());
@@ -73,10 +98,10 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         ProxyUserInfo query = new ProxyUserInfo();
         query.setId(id);
         query = findByOne(query);
-        if(query==null){
+        if (query == null) {
             throw new BizException("user.password.error", "用户不存在");
         }
-        if(!password.equals(vpassword)){
+        if (!password.equals(vpassword)) {
             throw new BizException("user.password.error", "密码和验证密码不一至");
         }
         ProxyUserInfo upEntity = new ProxyUserInfo();
@@ -92,7 +117,7 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
             throw new BizException("data.error", "数据失败");
         }
         ProxyInfo proxyInfo = proxyInfoService.findById(proxyId);
-        if(proxyInfo.getPhone().equals(entity.getPhone())){
+        if (proxyInfo.getPhone().equals(entity.getPhone())) {
             throw new BizException("data.up.error", "管理员不能修改角色");
         }
         entity = new ProxyUserInfo();
@@ -104,6 +129,10 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
 
     @Override
     public void upUser(Long proxyId, Long id, String phone, String desc, Integer status) {
+       upUser(proxyId,id,phone,desc,status,null);
+    }
+    @Override
+    public void upUser(Long proxyId, Long id, String phone, String desc, Integer status,Long[] roles) {
         ProxyUserInfo query = new ProxyUserInfo();
         query.setPhone(phone);
         ProxyUserInfo info = findByOne(query);
@@ -119,6 +148,17 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         entity.setStatus(status);
         entity.setPhone(phone);
         entity.setDesc(desc);
+        entity.setRoles(roles);
         save(entity);
+    }
+
+
+    @Override
+    public void delById(Long proxyId, Long id) {
+        ProxyUserInfo info = findById(id);
+        if(info.getProxyId().longValue()!=proxyId.longValue()){
+            throw new BizException("data.error", "数据失败");
+        }
+        delById(id);
     }
 }

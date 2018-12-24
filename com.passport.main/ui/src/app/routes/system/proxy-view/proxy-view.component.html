@@ -23,17 +23,6 @@
 
             <fieldset>
               <div class="form-group">
-                <label class="col-sm-2 control-label">pin</label>
-                <div class="col-sm-6">
-                  <input class="form-control" type="text" id="pin" formControlName="pin"
-                         [formControl]="valForm.controls['pin']" [(ngModel)]="entity.pin"/>
-                  <span class="text-danger"
-                        *ngIf="valForm.controls['pin'].hasError('required') && (valForm.controls['pin'].dirty || valForm.controls['pin'].touched)">必选项</span>
-                </div>
-              </div>
-            </fieldset>
-            <fieldset>
-              <div class="form-group">
                 <label class="col-sm-2 control-label">代理商token</label>
                 <div class="col-sm-4">
                   <span class="form-control">{{entity.token}}</span>

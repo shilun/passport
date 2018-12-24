@@ -19,7 +19,6 @@
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>pin</th>
       <th>名称</th>
       <th>电话</th>
       <th>联系人</th>
@@ -32,14 +31,13 @@
     <tbody>
     <ng-container *ngFor="let item of listData.list">
       <tr>
-        <td><a routerLink="/system/proxy/view" [queryParams]="{id:item.id}">{{item.pin}}</a></td>
-        <td>{{item.name}}</td>
+        <td><a routerLink="/system/proxy/view" [queryParams]="{id:item.id}">{{item.name}}</a></td>
         <td>{{item.phone}}</td>
         <td>{{item.linkMan}}</td>
         <th>{{item.domain}}</th>
         <th>{{item.endTime}}</th>
         <td>{{item.createTime}}</td>
-        <td><a routerLink="/system/proxyuser/list" [queryParams]="{proxyId:item.id}">修改</a></td>
+        <td><a routerLink="/system/proxyuser/list" [queryParams]="{proxyId:item.id}">管理员管理</a></td>
       </tr>
     </ng-container>
     </tbody>

@@ -33,13 +33,6 @@ public interface ProxyRpcService {
      */
     public RPCResult<ProxyDto> findById(Long proxyId);
 
-    /**
-     * 重新生成token
-     *
-     * @param proxyId
-     * @return
-     */
-    public RPCResult<String> refreshToken(Long proxyId);
 
     /**
      * 修改加密串
@@ -155,6 +148,7 @@ public interface ProxyRpcService {
      * @param pin
      * @return
      */
+    @Deprecated
     RPCResult<ProxyDto> findByPin(Long proxyId, String pin);
 
     /**

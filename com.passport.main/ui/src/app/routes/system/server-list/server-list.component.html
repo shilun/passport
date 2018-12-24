@@ -33,7 +33,7 @@
     <tbody>
     <ng-container *ngFor="let item of listData.list">
       <tr>
-        <td>{{item.proxyId}}</td>
+        <td>{{valuePare(item.proxyId,proxyes)}}</td>
         <td>
           <ng-container *ngIf="item.gameType==1">棋牌</ng-container>
           <ng-container *ngIf="item.gameType==2">彩票</ng-container>

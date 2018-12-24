@@ -58,7 +58,7 @@ export class ProxyUserPassComponent extends AbstractController implements OnInit
   public async saveData(successUrl: string): Promise<void> {
     let result = await this.baseService.changePass(this.entity.id,this.entity.password);
     if (result.success) {
-      this.router.navigate(successUrl.split('/'));
+      this.router.navigate(["/system/proxyuser/list"],{queryParams:{proxyId:this.proxyId}});
     }
     else {
       alert(result.message);
