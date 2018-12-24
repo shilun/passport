@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -102,6 +103,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private RecommendRPCService recommendRPCService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+
     @Resource
     private Tool tool;
 
@@ -366,12 +369,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
         redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
+
+
         logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip, userInfo.getId());
         String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
         token = DesEncrypter.cryptString(token, appTokenEncodeKey);
         dto.setToken(token);
         return dto;
     }
+
 
 
     @Override

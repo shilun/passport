@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Luo
@@ -43,50 +45,52 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
 
     @Resource
     private Tool tool;
+    private ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
 
     @Override
-    public Boolean addLoginLog(String pin, Long proxyId, Date registerDate, String ip,Long userCode) {
-        Boolean flag = false;
-
+    public Boolean addLoginLog(String pin, Long proxyId, Date registerDate, String ip, Long userCode) {
         if (StringUtils.isBlank(pin) || proxyId == null) {
             return false;
         }
-
-        StringBuffer sb = new StringBuffer();
-        try {
-            //获取ip物理地址
-            URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + ip);
-            JSONObject jsonObject = tool.httpGet(url);
-            if(jsonObject.getInt("code") == 0){
-                JSONObject data = jsonObject.getJSONObject("data");
-                if(data.containsKey("country")){
-                    sb.append(data.getString("country")).append(",");
+        cachedThreadPool.submit(() -> {
+            StringBuffer sb = new StringBuffer();
+            try {
+                //获取ip物理地址
+                URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + ip);
+                JSONObject jsonObject = tool.httpGet(url);
+                if (jsonObject.getInt("code") == 0) {
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    if (data.containsKey("country")) {
+                        sb.append(data.getString("country")).append(",");
+                    }
+                    if (data.containsKey("region")) {
+                        sb.append(data.getString("region")).append(",");
+                    }
+                    if (data.containsKey("city")) {
+                        sb.append(data.getString("city"));
+                    }
                 }
-                if(data.containsKey("region")){
-                    sb.append(data.getString("region")).append(",");
-                }
-                if(data.containsKey("city")){
-                    sb.append(data.getString("city"));
-                }
+            } catch (Exception e) {
+                logger.error("", e);
             }
-        } catch (Exception e) {
-            logger.error("", e);
-        }
 
-        try {
-            LogLoginInfo info = new LogLoginInfo();
-            info.setPin(pin);
-            info.setProxyId(proxyId);
-            info.setLoginDay(new Date());
-            info.setRegisterDate(registerDate);
-            info.setIp(ip);
-            info.setUserCode(userCode);
-            info.setIpAddress(sb.toString());
-            save(info);
-            flag = true;
-        } catch (Exception e) {
-            logger.error("", e);
-        }
+            try {
+                LogLoginInfo info = new LogLoginInfo();
+                info.setPin(pin);
+                info.setProxyId(proxyId);
+                info.setLoginDay(new Date());
+                info.setRegisterDate(registerDate);
+                info.setIp(ip);
+                info.setUserCode(userCode);
+                info.setIpAddress(sb.toString());
+                save(info);
+
+            } catch (Exception e) {
+                logger.error("", e);
+            }
+        });
+        Boolean flag = false;
+
         return flag;
     }
 
