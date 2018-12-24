@@ -35,7 +35,7 @@ export class ProxyUserViewComponent extends AbstractController implements OnInit
   async ngOnInit() {
 
     this.entity.proxyId=this.getRequest("proxyId");
-    if (this.getRequest('id') != '') {
+    if (this.getRequest('id') != ''&&this.getRequest('id')!=undefined) {
      await this.viewById();
       let roles="";
       for(let i in this.entity.roles){
@@ -43,6 +43,9 @@ export class ProxyUserViewComponent extends AbstractController implements OnInit
       }
       roles=roles.substr(1);
       this.entity.roles=roles;
+    }
+    else{
+      this.entity.id=null;
     }
     let result = await this.globalService.list('yesorno');
     if (result.success) {

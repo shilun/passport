@@ -48,6 +48,17 @@ public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
     void upUser(Long proxyId, Long id, String phone, String desc, Integer status);
 
     /**
+     * 修改用户信息
+     * @param proxyId
+     * @param id
+     * @param phone
+     * @param desc
+     * @param status
+     * @param roles
+     */
+    void upUser(Long proxyId, Long id, String phone, String desc, Integer status,Long[]roles);
+
+    /**
      * 添加用户
      *
      * @param proxyId 代理商
@@ -56,4 +67,11 @@ public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
      * @param desc    备注
      */
     Long addUser(Long proxyId, String phone, String pass, String desc);
+
+    /**
+     * 删除用户
+     * @param proxyId
+     * @param id
+     */
+    void delById(Long proxyId, Long id);
 }

@@ -1,5 +1,6 @@
 package com.passport.web.interceptor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -23,10 +24,10 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-       registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns(new String[]{"error",
-               "/login/*",
-               "/qrCode/*",
-               "/AppDownload/*",
-               "/appinterface/*"});
+        registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns(new String[]{"error",
+                "/login/*",
+                "/qrCode/*",
+                "/AppDownload/*",
+                "/appinterface/*"});
     }
 }

@@ -13,7 +13,7 @@ export class ServerViewComponent extends AbstractController implements OnInit {
 
   statuses: Array<any>;
   games: Array<any>;
-
+  proxyes: Array<any>;
   constructor(fm: FormBuilder, baseService: ServerService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
     this.entity = {id:'',gameType: '',gameId:'',status:'', serverId: '', ip: '', port: '', evironment: ''};
@@ -38,7 +38,13 @@ export class ServerViewComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.statuses = result.data.list;
     }
+    result = await this.globalService.list('proxy');
+    if (result.success) {
+      this.proxyes = result.data.list;
+    }
     await this.viewById();
+
+
   }
 
   public save() {

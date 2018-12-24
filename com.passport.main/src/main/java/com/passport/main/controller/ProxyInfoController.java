@@ -70,12 +70,12 @@ public class ProxyInfoController extends AbstractClientController {
         });
     }
 
-    @RoleResource(resource = "passport")
-    @RequestMapping("/proxy/changePass")
-    public Map<String, Object> changePass(@RequestBody IdChangePassDto dto) {
-        return buildMessage(() -> {
-            proxyInfoService.changePass(dto.getId(), dto.getPassword());
-            return null;
-        });
-    }
+//    @RoleResource(resource = "passport")
+//    @RequestMapping("/proxy/changePass")
+//    public Map<String, Object> changePass(@RequestBody IdChangePassDto dto) {
+//        return buildMessage(() -> {
+//            proxyInfoService.changePass(dto.getId(), dto.getPassword());
+//            return null;
+//        });
+//    }
 }
