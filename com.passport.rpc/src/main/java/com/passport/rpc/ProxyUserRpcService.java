@@ -47,12 +47,12 @@ public interface ProxyUserRpcService {
     /**
      * 登录密码
      *
-     * @param account
+     * @param id
      * @param oldPass
      * @param newPass
      * @return
      */
-    RPCResult<Boolean> changePass(Long proxyId, String account, String oldPass, String newPass);
+    RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass);
 
     /**
      * 修改用户角色
