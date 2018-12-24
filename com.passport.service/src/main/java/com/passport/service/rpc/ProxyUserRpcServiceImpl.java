@@ -141,6 +141,12 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("代理商是标识不能为空");
                 return result;
             }
+            if(StringUtils.isBlank(newPass)){
+                result.setSuccess(false);
+                result.setCode("newPass.error");
+                result.setMessage("新密码不能为空");
+                return result;
+            }
             ProxyUserInfo byId = proxyUserInfoService.findById(id);
             if(byId.getProxyId().longValue()!=proxyId){
                 result.setSuccess(false);

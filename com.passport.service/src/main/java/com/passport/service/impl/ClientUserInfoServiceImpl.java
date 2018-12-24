@@ -145,7 +145,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             throw new BizException("login.error", "当前用户被限制登陆");
         }
         logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip, query.getId());
-        return null;
+        return query;
     }
 
     public ClientUserInfo findByPin(Long proxyId, String pin) {
