@@ -8,18 +8,28 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.net.ssl.SSLContext;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Component
 public class MnsUtils {
-
+    private static Logger logger= LoggerFactory.getLogger(MnsUtils.class);
     @Value("${app.sms.account}")
     private String smsAccount;
     @Value("${app.sms.password}")
@@ -39,7 +49,7 @@ public class MnsUtils {
             nvps.add(new BasicNameValuePair("content", content));
 
             post.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
-            HttpResponse response = SSLClient.createSSLClientDefault().execute(post);
+            HttpResponse response = buildClient().execute(post);
             HttpEntity entity = response.getEntity();
             String returnString = EntityUtils.toString(entity);
             JSONObject jsonObject = JSONObject.fromObject(returnString);
@@ -53,4 +63,26 @@ public class MnsUtils {
             throw new ApplicationException("发送短信失败", e);
         }
     }
+
+
+    private CloseableHttpClient buildClient(){
+        try {
+            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
+                    null, new TrustStrategy() {
+                        // 信任所有
+                        public boolean isTrusted(X509Certificate[] chain,
+                                                 String authType) throws CertificateException {
+                            return true;
+                        }
+                    }).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                    sslContext);
+            return HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        } catch (Exception e) {
+            logger.error("实例化 sslContext eroor", e);
+        }
+        return HttpClients.createDefault();
+    }
+
+
 }
