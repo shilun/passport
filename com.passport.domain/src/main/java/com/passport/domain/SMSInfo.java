@@ -34,6 +34,16 @@ public class SMSInfo extends AbstractBaseEntity implements java.io.Serializable 
 	 */
 	private Integer status;
 
+	private String result;
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
 	public Integer getMinExecuteCount() {
 		return minExecuteCount;
 	}

@@ -27,10 +27,10 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
 
     @Override
     public RPCResult<Boolean> buildSMSCode(String mobile, String content, String source) {
-        boolean templateMatched = aliyunMnsUtil.checkSMS(content);
-        if (!templateMatched) {
-            throw new BizException("content.matche.error", "短信内容不匹配模板");
-        }
+//        boolean templateMatched = aliyunMnsUtil.checkSMS(content);
+//        if (!templateMatched) {
+//            throw new BizException("content.matche.error", "短信内容不匹配模板");
+//        }
         RPCResult<Boolean> result = new RPCResult<>();
         result.setData(false);
         try {
@@ -44,7 +44,7 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
             result.setSuccess(false);
             result.setCode("send.msg.error");
             result.setMessage("发送短信失败");
-            e.printStackTrace();
+
         }
         return result;
     }

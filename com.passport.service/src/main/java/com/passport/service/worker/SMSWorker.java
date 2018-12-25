@@ -4,6 +4,7 @@ import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.SMSInfo;
 import com.passport.service.SMSInfoService;
 import com.passport.service.util.AliyunMnsUtil;
+import com.passport.service.util.MnsUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,9 @@ public class SMSWorker {
     private AliyunMnsUtil aliyunMnsUtil;
 
     @Resource
+    private MnsUtils mnsUtils;
+
+    @Resource
     private SMSInfoService smsInfoService;
 
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
@@ -50,11 +54,13 @@ public class SMSWorker {
         Runnable run = () -> {
             SMSInfo data = item;
             try {
-                aliyunMnsUtil.sendSms(
-                        item.getId(),
-                        data.getContent(),
-                        data.getMobile());
-                sendSuccess(data.getId());
+//
+//                aliyunMnsUtil.sendSms(
+//                        item.getId(),
+//                        data.getContent(),
+//                        data.getMobile());
+                String result = mnsUtils.doSend(item.getMobile(), item.getContent());
+                sendSuccess(data.getId(),result);
             } catch (Exception e) {
                 logger.error("sendSMS error:content =>", e);
                 data.setExecuteCount(data.getExecuteCount() + 1);
@@ -66,9 +72,10 @@ public class SMSWorker {
 
 
     //短信发送成功
-    protected void sendSuccess(Long id) {
+    protected void sendSuccess(Long id,String result) {
         SMSInfo entity = new SMSInfo();
         entity.setId(id);
+        entity.setResult(result);
         entity.setStatus(YesOrNoEnum.YES.getValue());
         smsInfoService.save(entity);
     }

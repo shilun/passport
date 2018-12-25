@@ -27,32 +27,6 @@ public class Tool {
     @Autowired(required = false)
     private UploadUtil uploadUtil;
 
-    /**
-     * 将DBObject转为实体
-     * @param dbObject
-     * @param bean
-     * @param <T>
-     * @return
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     */
-    public <T> T dbObjectToBean(DBObject dbObject, T bean) throws Exception{
-        if (bean == null) {
-            return null;
-        }
-        Field[] fields = bean.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            String varName = field.getName();
-            Object object = dbObject.get(varName);
-            if (object != null) {
-                BeanUtils.setProperty(bean, varName, object);
-            }
-
-        }
-        return bean;
-    }
-
     public boolean isNo(String str){
         return pattern.matcher(str).matches();
     }
