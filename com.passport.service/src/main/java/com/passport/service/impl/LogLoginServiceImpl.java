@@ -210,18 +210,14 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
 
     @Override
     public LogLoginInfo getUserLastLoginInfo(Long proxyId, String pin) throws Exception {
-        //db.logLoginInfo.find({pin:"685fab5d117d427491f57ee78e7d48b5"}).sort({"loginDay":-1}).limit(1)
-        DBCollection collection = template.getCollection("logLoginInfo");
-        DBObject pinObj = new BasicDBObject("pin", pin);
-        DBObject sortObj = new BasicDBObject("loginDay", -1);
-        DBCursor res = collection.find(pinObj).sort(sortObj).limit(1);
-        DBObject obj = null;
-        LogLoginInfo info = null;
-        if (res.hasNext()) {
-            info = new LogLoginInfo();
-            obj = res.next();
-            info = tool.dbObjectToBean(obj, info);
+        Query query = new Query();
+        query.addCriteria(Criteria.where("pin").is(pin));
+        query.with(new Sort(Sort.Direction.DESC, "loginDay"));
+        query.limit(1);
+        List<LogLoginInfo> list = template.find(query, LogLoginInfo.class);
+        if(list == null || list.size() <= 0){
+            return null;
         }
-        return info;
+        return list.get(0);
     }
 }
