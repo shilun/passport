@@ -184,20 +184,20 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     /**
      * 密码丢失
      *
-     * @param pin
+     * @param phone
      * @return
      */
-    void forgetPass(Long proxyId,String pin);
+    void forgetPass(Long proxyId,String phone);
 
 
     /**
      * 密码丢失邮箱校验码验证
      *
-     * @param pin
+     * @param phone
      * @param code
      * @return
      */
-    UserDTO forgetPassCodeVerification(Long proxyId,String pin, String code, String pass);
+    UserDTO forgetPassCodeVerification(Long proxyId,String phone, String code, String pass);
 
     /**
      * 改变用户昵称

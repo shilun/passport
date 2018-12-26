@@ -2,6 +2,8 @@ package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
 
+import java.util.Date;
+
 /**
  *
  * @desc 短信内容
@@ -9,8 +11,13 @@ import com.common.util.AbstractBaseEntity;
  */
 public class SMSInfo extends AbstractBaseEntity implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
+
 	/**
-	 * 发送方
+	 * 签名
+	 */
+	private String sign;
+	/**
+	 * 调用业务系统
 	 */
 	private String sender;
 	/**
@@ -29,10 +36,19 @@ public class SMSInfo extends AbstractBaseEntity implements java.io.Serializable 
 	 * 最小发送次数
 	 */
 	private Integer minExecuteCount;
+
 	/**
 	 * 状态 1 发送成功 2 发送失败
 	 */
 	private Integer status;
+
+	public String getSign() {
+		return sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
+	}
 
 	private String result;
 

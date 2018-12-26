@@ -101,6 +101,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LimitInfoService limitInfoService;
     @Reference(check = false)
     private RecommendRPCService recommendRPCService;
+
+    @Resource
+    private ProxyInfoService proxyInfoService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -229,7 +232,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         String code = AliyunMnsUtil.randomSixCode();
         String redisKey = MessageFormat.format(PASS_USER_REG, account, proxyId);
-        sendSMSCode(account, redisKey, code);
+        sendSMSCode(account, redisKey, code,proxyInfoService.findById(proxyId).getName());
 
         Date expireDate = com.passport.service.util.DateUtil.getTomorrowZeroTime();
         redisTemplate.opsForValue().set(key,count + 1);
@@ -258,7 +261,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
-            sendSMSCode(account, redisKey, code);
+            sendSMSCode(account, redisKey, code,proxyInfoService.findById(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
             new BizException(MessageConstant.FIND_USER_FAIL, e.getMessage());
@@ -418,7 +421,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
-            sendSMSCode(mobile, redisKey, code);
+            sendSMSCode(mobile, redisKey, code,proxyInfoService.findById(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
@@ -440,7 +443,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
-            sendSMSCode(mobile, redisKey, code);
+            sendSMSCode(mobile, redisKey, code,proxyInfoService.findById(proxyId).getName());
 
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
@@ -461,7 +464,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_BIND, mobile);
-            sendSMSCode(mobile, redisKey, code);
+
+            sendSMSCode(mobile, redisKey, code,proxyInfoService.findById(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.BIND_MOBILE_FAIL, e);
             new BizException(MessageConstant.BIND_MOBILE_FAIL, e.getMessage());
@@ -609,7 +613,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
-            sendSMSCode(mobile, redisKey, code);
+            sendSMSCode(mobile, redisKey, code,proxyInfoService.findById(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
@@ -617,19 +621,19 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void forgetPass(Long proxyId, String pin) {
+    public void forgetPass(Long proxyId, String phone) {
         try {
-            if (StringUtils.isBlank(pin)) {
+            if (StringUtils.isBlank(phone)) {
                 throw new BizException("参数不能为空");
             }
-            ClientUserInfo userInfo = findByPin(proxyId, pin);
+            ClientUserInfo userInfo = findByPhone(proxyId, phone);
             if (userInfo == null) {
                 throw new BizException("无法找到该用户");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String mobile = userInfo.getPhone();
-            String redisKey = MessageFormat.format(FORGET_PASS, pin);
-            sendSMSCode(mobile, redisKey, code);
+            String redisKey = MessageFormat.format(FORGET_PASS, phone);
+            sendSMSCode(mobile, redisKey, code,proxyInfoService.findById(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
@@ -637,16 +641,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO forgetPassCodeVerification(Long proxyId, String pin, String code, String pass) {
+    public UserDTO forgetPassCodeVerification(Long proxyId, String phone, String code, String pass) {
         try {
-            if (StringUtils.isBlank(pin)) {
+            if (StringUtils.isBlank(phone)) {
                 throw new BizException("参数不能为空");
             }
-            ClientUserInfo userInfo = findByPin(proxyId, pin);
+            ClientUserInfo userInfo = findByPhone(proxyId, phone);
             if (userInfo == null) {
                 throw new BizException("无法找到该用户");
             }
-            String key = MessageFormat.format(FORGET_PASS, pin);
+            String key = MessageFormat.format(FORGET_PASS, phone);
             if(!redisTemplate.hasKey(key)){
                 throw new BizException("验证码过期");
             }
@@ -745,7 +749,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
 
-    private void sendSMSCode(String mobile, String redisKey, String code) {
+
+    private void sendSMSCode(String mobile, String redisKey, String code,String sign) {
         String key = MessageFormat.format(LAST_SEND_SMS_TIME,mobile);
 
         long now = System.currentTimeMillis();
@@ -759,9 +764,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         String content = MessageFormat.format("您好!您的验证码:{0},有效时间3分钟，请及时验证!", code);
         SMSInfo info = new SMSInfo();
+        info.setSign(sign);
         info.setMobile(mobile);
         info.setContent(content);
-        info.setSender("大三环");
+        info.setSender("passport");
         smsInfoService.insert(info);
         redisTemplate.opsForValue().set(redisKey, code, SysContant.MSGCODE_TIMEOUT, TimeUnit.SECONDS);
     }
@@ -1345,7 +1351,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
 
         String code = AliyunMnsUtil.randomSixCode();
-        sendSMSCode(phone, redisKey, code);
+        sendSMSCode(phone, redisKey, code,proxyInfoService.findById(proxyId).getName());
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK, "发送验证码成功");
     }
 

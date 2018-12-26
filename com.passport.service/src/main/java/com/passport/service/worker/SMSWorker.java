@@ -59,7 +59,8 @@ public class SMSWorker {
 //                        item.getId(),
 //                        data.getContent(),
 //                        data.getMobile());
-                String result = mnsUtils.doSend(item.getMobile(), item.getContent());
+
+                String result = mnsUtils.doSend(item.getMobile(), item.getContent(),item.getSign());
                 sendSuccess(data.getId(),result);
             } catch (Exception e) {
                 logger.error("sendSMS error:content =>", e);
