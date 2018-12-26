@@ -621,18 +621,18 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void forgetPass(Long proxyId, String pin) {
+    public void forgetPass(Long proxyId, String phone) {
         try {
-            if (StringUtils.isBlank(pin)) {
+            if (StringUtils.isBlank(phone)) {
                 throw new BizException("参数不能为空");
             }
-            ClientUserInfo userInfo = findByPin(proxyId, pin);
+            ClientUserInfo userInfo = findByPhone(proxyId, phone);
             if (userInfo == null) {
                 throw new BizException("无法找到该用户");
             }
             String code = AliyunMnsUtil.randomSixCode();
             String mobile = userInfo.getPhone();
-            String redisKey = MessageFormat.format(FORGET_PASS, pin);
+            String redisKey = MessageFormat.format(FORGET_PASS, phone);
             sendSMSCode(mobile, redisKey, code,proxyInfoService.findById(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
@@ -641,16 +641,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO forgetPassCodeVerification(Long proxyId, String pin, String code, String pass) {
+    public UserDTO forgetPassCodeVerification(Long proxyId, String phone, String code, String pass) {
         try {
-            if (StringUtils.isBlank(pin)) {
+            if (StringUtils.isBlank(phone)) {
                 throw new BizException("参数不能为空");
             }
-            ClientUserInfo userInfo = findByPin(proxyId, pin);
+            ClientUserInfo userInfo = findByPhone(proxyId, phone);
             if (userInfo == null) {
                 throw new BizException("无法找到该用户");
             }
-            String key = MessageFormat.format(FORGET_PASS, pin);
+            String key = MessageFormat.format(FORGET_PASS, phone);
             if(!redisTemplate.hasKey(key)){
                 throw new BizException("验证码过期");
             }

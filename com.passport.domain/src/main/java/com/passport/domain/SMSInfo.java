@@ -2,6 +2,8 @@ package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
 
+import java.util.Date;
+
 /**
  *
  * @desc 短信内容
@@ -34,6 +36,7 @@ public class SMSInfo extends AbstractBaseEntity implements java.io.Serializable 
 	 * 最小发送次数
 	 */
 	private Integer minExecuteCount;
+
 	/**
 	 * 状态 1 发送成功 2 发送失败
 	 */
