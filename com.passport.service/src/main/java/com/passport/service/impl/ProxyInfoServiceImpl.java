@@ -47,7 +47,6 @@ public class ProxyInfoServiceImpl extends AbstractMongoService<ProxyInfo> implem
             entity.setToken(StringUtils.getUUID());
         }
         Long save = super.save(entity);
-        proxyUserInfoService.addUser(entity.getId(), entity.getPhone(), entity.getPass(), entity.getRemark());
         return save;
     }
 //
