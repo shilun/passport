@@ -48,4 +48,9 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<Boolean> buildSMSCode(String mobile, String content, String source, String sign) {
+        return null;
+    }
 }
