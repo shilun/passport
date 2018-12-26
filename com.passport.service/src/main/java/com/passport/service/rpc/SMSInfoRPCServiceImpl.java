@@ -38,6 +38,10 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
             info.setSender(source);
             smsInfoService.insert(info);
             result.setSuccess(true);
+        } catch (BizException e) {
+            result.setSuccess(false);
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("send.msg.error");
