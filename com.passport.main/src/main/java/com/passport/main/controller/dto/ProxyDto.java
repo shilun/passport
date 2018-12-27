@@ -39,7 +39,7 @@ public class ProxyDto  extends AbstractDTO {
     /**
      * 结整时间
      */
-    private Date endTime;
+    private String endTime;
 
     /**
      * 接入加密key uuid生成
@@ -53,20 +53,20 @@ public class ProxyDto  extends AbstractDTO {
      * 备注
      */
     private String remark;
-
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
     /**
      * 状态
      */
     private Integer status;
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+
 
     public Integer[] getGames() {
         return games;
