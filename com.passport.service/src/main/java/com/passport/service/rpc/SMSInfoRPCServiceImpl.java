@@ -28,9 +28,16 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
 
     @Override
     public RPCResult<Boolean> buildSMSCode(String mobile, String content, String source, String sign) {
+
         RPCResult<Boolean> result = new RPCResult<>();
         result.setData(false);
         try {
+            boolean templateMatched = aliyunMnsUtil.checkSMS(content);
+            if (!templateMatched) {
+                result.setCode("content.matche.error");
+                result.setMessage("短信内容不匹配模板");
+                return result;
+            }
             SMSInfo info = new SMSInfo();
             info.setSign(sign);
             info.setMobile(mobile);

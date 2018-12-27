@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sms-template>
 	<template>
-		<sign-name>大三环</sign-name>
+		<sign-name>九洲</sign-name>
 		<code>SMS_132386341</code>
 		<regex>您好!您的验证码:(.*?),有效时间3分钟，请及时验证!</regex>
 		<parakeys>code</parakeys>

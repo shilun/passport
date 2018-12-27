@@ -2,6 +2,7 @@ package com.passport.main.controller;
 
 import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
+import com.common.util.DateUtil;
 import com.common.util.StringUtils;
 import com.passport.domain.ProxyInfo;
 import com.passport.main.controller.dto.IdChangePassDto;
@@ -65,7 +66,17 @@ public class ProxyInfoController extends AbstractClientController {
     public Map<String, Object> save(@RequestBody ProxyDto info) {
         return buildMessage(() -> {
             ProxyInfo entity = new ProxyInfo();
-            BeanCoper.copyProperties(entity, info);
+            entity.setName(info.getName());
+            entity.setPhone(info.getPhone());
+            entity.setGames(info.getGames());
+            entity.setLinkMan(info.getLinkMan());
+            entity.setToken(info.getToken());
+            entity.setEndTime(DateUtil.parseDate(info.getEndTime()));
+            entity.setEncodingKey(info.getEncodingKey());
+            entity.setDomain(info.getDomain());
+            entity.setRemark(info.getRemark());
+            entity.setStatus(info.getStatus());
+            entity.setId(info.getId());
             return proxyInfoService.save(entity);
         });
     }
