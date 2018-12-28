@@ -107,8 +107,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LogLoginService logLoginService;
     @Resource
     private LimitInfoService limitInfoService;
-    @Reference(check = false)
-    private RecommendRPCService recommendRPCService;
+//    @Reference(check = false)
+//    private RecommendRPCService recommendRPCService;
 
     @Resource
     private ProxyInfoService proxyInfoService;
@@ -861,20 +861,20 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             BeanCoper.copyProperties(dto, entity);
             String pin = entity.getPin();
 //        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
-
             //调用HTTP接口初始化推荐人信息
-            HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
-            Map<String, Object> objs = new HashMap<>();
-            objs.put("pin", pin);
-            objs.put("upPin", recommendId == null ? "0" : recommendId);
-            objs.put("proxyId", proxyId);
-            String url = "http://" + server + ":" + port + "/recommend/init";
-            httpClientFactory.doPost(url, objs);
+
 
             fixedThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
+                        HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
+                        Map<String, Object> objs = new HashMap<>();
+                        objs.put("pin", pin);
+                        objs.put("upPin", recommendId == null ? "0" : recommendId);
+                        objs.put("proxyId", proxyId);
+                        String url = "http://" + server + ":" + port + "/recommend/init";
+                        httpClientFactory.doPost(url, objs);
                         limitInfoService.addIpRegisterNum(ip);
                     } catch (Exception e) {
                         logger.error("推荐人初始化失败", e);
@@ -1346,7 +1346,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 upEntity.setPin(String.valueOf(info.getId()));
                 up(upEntity);
                 info.setPin(upEntity.getPin());
-                recommendRPCService.init(info.getPin(), "0", proxyId);
+//                recommendRPCService.init(info.getPin(), "0", proxyId);
                 limitInfoService.addIpRegisterNum(ip);
             }
 
