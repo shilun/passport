@@ -15,6 +15,7 @@ import com.passport.service.constant.MessageConstant;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -186,6 +187,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
             Pageable page = pageinfo.getPage();
             Page<ClientUserInfo> pages = clientUserInfoService.queryByPage(entity, page);
+
             List<ClientUserInfo> list = pages.getContent();
             result.setTotalPage(pages.getTotalPages());
             result.setPageSize(page.getPageSize());
