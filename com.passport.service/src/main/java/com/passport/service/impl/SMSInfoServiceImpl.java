@@ -22,6 +22,8 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 
@@ -44,7 +46,7 @@ public class SMSInfoServiceImpl extends AbstractMongoService<SMSInfo> implements
     @Resource
     private RedisTemplate redisTemplate;
 
-
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
     @Value("${app.sms.limit.daytotal}")
     private Integer smsDayCount;
 
@@ -69,7 +71,10 @@ public class SMSInfoServiceImpl extends AbstractMongoService<SMSInfo> implements
             incr(key,endDate.getTime()-System.currentTimeMillis());
         }
         super.insert(entity);
-        smsWorker.execute(entity);
+        fixedThreadPool.execute(()->{
+            smsWorker.execute(entity);
+        });
+
         return entity.getId();
     }
 
