@@ -40,7 +40,7 @@ public class MnsUtils {
     public String doSend(String mobole, String content,String sign) {
         try {
 
-            content="【"+sign+"】"+content;
+            content="【九州】"+content;
             HttpPost post = new HttpPost(smsUrl);
             post.setHeader("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
