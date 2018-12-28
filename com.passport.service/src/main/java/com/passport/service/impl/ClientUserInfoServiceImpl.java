@@ -100,7 +100,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LogLoginService logLoginService;
     @Resource
     private LimitInfoService limitInfoService;
-    @Reference(lazy = true)
+    @Reference(check = false)
     private RecommendRPCService recommendRPCService;
 
     @Resource
