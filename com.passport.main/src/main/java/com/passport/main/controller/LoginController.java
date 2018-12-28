@@ -34,8 +34,6 @@ public class LoginController extends AbstractClientController {
     private AdminUserInfoService adminUserInfoService;
     @Resource
     private AdminRPCService adminRPCService;
-    @Reference
-    private GoodsRPCService goodsRPCService;
 
     @RequestMapping("in")
     @ResponseBody
