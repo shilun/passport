@@ -25,6 +25,7 @@ import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
+import com.passport.service.util.HttpClientFactory;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
 import com.platform.rpc.RecommendRPCService;
@@ -93,6 +94,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Value("${app.sms.limit.forgetPass}")
     private Integer forgetPassSmsLimit;
+
+    @Value("${app.platform.server}")
+    private String server;
+
+    @Value("${app.platform.port}")
+    private String port;
 
     @Resource
     private SMSInfoService smsInfoService;
@@ -790,78 +797,93 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public UserDTO regist(ProxyDto proxydto, String recommendId, String refId, String pass, String phone, String nick, String email,
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
-        //查询此ip是否被限制注册
-        if (isRegisterLimit(ip)) {
-            throw new BizException("regist.error", "当前ip被限制注册");
-        }
-
-        if (proxydto == null) {
-            throw new BizException("proxyId.error", "代理商id错误");
-        }
-        if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
-            throw new BizException("phone.error", "电话号码错误");
-        }
-        if (StringUtils.isBlank(refId)) {
-            throw new BizException("refId.error", "参考账户不能为空");
-        }
-        if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
-            throw new BizException("email.error", "邮件地址错误");
-        }
-        Date date = null;
-        if (!StringUtils.isBlank(birth)) {
-            date = DateUtil.parseDate(birth);
-        }
-        Long proxyId = proxydto.getId();
-
-        ClientUserInfo entity = findByPhone(proxyId, phone);
-        if (entity != null) {
-            throw new BizException("该账号已经注册过了");
-        }
-        if (StringUtils.isBlank(nick)) {
-            nick = "玩家" + phone.substring(7);
-        }
-
-        entity = new ClientUserInfo();
-        entity.setProxyId(proxyId);
-        entity.setRefId(refId);
-        entity.setPhone(phone);
-        entity.setNickName(nick);
-        entity.setSexType(sexEnum.getValue());
-        entity.setStatus(UserStatusEnum.Normal.getValue());
-        entity.setPasswd(MD5.MD5Str(pass, passKey));
-        entity.setBirthDay(date);
-        entity.setEmail(email);
-        entity.setHeadUrl(headUrl);
-        entity.setWechat(wechat);
-        entity.setIdCard(idCard);
-        entity.setRealName(realName);
-        entity.setQq(qq);
-        entity.setRegisterIp(ip);
-
-        save(entity);
-
-
-        ClientUserInfo upEntity = new ClientUserInfo();
-        upEntity.setId(entity.getId());
-        upEntity.setUpPin(recommendId);
-        upEntity.setPin(String.valueOf(entity.getId()));
-        up(upEntity);
-        entity.setPin(upEntity.getPin());
-
-        UserDTO dto = new UserDTO();
-        BeanCoper.copyProperties(dto, entity);
-        String pin = entity.getPin();
-        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
-        fixedThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    limitInfoService.addIpRegisterNum(ip);
-                } catch (Exception e) {
-                    logger.error("推荐人初始化失败", e);
-                }
+        UserDTO dto = null;
+        try {
+            //查询此ip是否被限制注册
+            if (isRegisterLimit(ip)) {
+                throw new BizException("regist.error", "当前ip被限制注册");
             }
-        });
+
+            if (proxydto == null) {
+                throw new BizException("proxyId.error", "代理商id错误");
+            }
+            if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
+                throw new BizException("phone.error", "电话号码错误");
+            }
+            if (StringUtils.isBlank(refId)) {
+                throw new BizException("refId.error", "参考账户不能为空");
+            }
+            if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
+                throw new BizException("email.error", "邮件地址错误");
+            }
+            Date date = null;
+            if (!StringUtils.isBlank(birth)) {
+                date = DateUtil.parseDate(birth);
+            }
+            Long proxyId = proxydto.getId();
+
+            ClientUserInfo entity = findByPhone(proxyId, phone);
+            if (entity != null) {
+                throw new BizException("该账号已经注册过了");
+            }
+            if (StringUtils.isBlank(nick)) {
+                nick = "玩家" + phone.substring(7);
+            }
+
+            entity = new ClientUserInfo();
+            entity.setProxyId(proxyId);
+            entity.setRefId(refId);
+            entity.setPhone(phone);
+            entity.setNickName(nick);
+            entity.setSexType(sexEnum.getValue());
+            entity.setStatus(UserStatusEnum.Normal.getValue());
+            entity.setPasswd(MD5.MD5Str(pass, passKey));
+            entity.setBirthDay(date);
+            entity.setEmail(email);
+            entity.setHeadUrl(headUrl);
+            entity.setWechat(wechat);
+            entity.setIdCard(idCard);
+            entity.setRealName(realName);
+            entity.setQq(qq);
+            entity.setRegisterIp(ip);
+
+            save(entity);
+
+
+            ClientUserInfo upEntity = new ClientUserInfo();
+            upEntity.setId(entity.getId());
+            upEntity.setUpPin(recommendId);
+            upEntity.setPin(String.valueOf(entity.getId()));
+            up(upEntity);
+            entity.setPin(upEntity.getPin());
+
+            dto = new UserDTO();
+            BeanCoper.copyProperties(dto, entity);
+            String pin = entity.getPin();
+//        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
+
+            //调用HTTP接口初始化推荐人信息
+            HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
+            Map<String, Object> objs = new HashMap<>();
+            objs.put("pin", pin);
+            objs.put("upPin", recommendId == null ? "0" : recommendId);
+            objs.put("proxyId", proxyId);
+            String url = "http://" + server + ":" + port + "/recommend/init";
+            httpClientFactory.doPost(url, objs);
+
+            fixedThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        limitInfoService.addIpRegisterNum(ip);
+                    } catch (Exception e) {
+                        logger.error("推荐人初始化失败", e);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            logger.error("推荐人初始化异常", e);
+        }
         return dto;
     }
 
