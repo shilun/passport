@@ -64,7 +64,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private final String FOTGETPASS_SEND_SMS = "passport.send.sms.forget.pass.count.{0}";
     private final String REGISTER_SEND_SMS = "passport.send.sms.register.count.{0}";
     /**
-     * 用户session 时间时长
+     * 用户session   时间时长
      */
     public final static int USER_SESSION_TIME = 60 * 24 * 30;
     @Value("${app.passKey}")
