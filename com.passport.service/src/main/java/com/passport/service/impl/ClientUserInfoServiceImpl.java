@@ -860,13 +860,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             dto = new UserDTO();
             BeanCoper.copyProperties(dto, entity);
             String pin = entity.getPin();
+            limitInfoService.addIpRegisterNum(ip);
 //        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
             //调用HTTP接口初始化推荐人信息
 
-
-            fixedThreadPool.execute(new Runnable() {
-                @Override
-                public void run() {
+//
+//            fixedThreadPool.execute(new Runnable() {
+//                @Override
+//                public void run() {
                     try {
                         HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
                         Map<String, Object> objs = new HashMap<>();
@@ -874,16 +875,19 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                         objs.put("upPin", recommendId == null ? "0" : recommendId);
                         objs.put("proxyId", proxyId);
                         String url = "http://" + server + ":" + port + "/api/recommend/init";
+
                         httpClientFactory.doPost(url, objs);
-                        limitInfoService.addIpRegisterNum(ip);
+
                     } catch (Exception e) {
                         logger.error("推荐人初始化失败", e);
                     }
-                }
-            });
+//                }
+//            });
+
         } catch (Exception e) {
             logger.error("推荐人初始化异常", e);
         }
+
         return dto;
     }
 
