@@ -1,31 +1,24 @@
 package com.passport.service.impl;
 
 import com.common.mongo.AbstractMongoService;
-import com.common.util.BeanCoper;
 import com.common.util.StringUtils;
-import com.common.util.model.YesOrNoEnum;
 import com.mongodb.*;
-import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
 import com.passport.service.LogLoginService;
 import com.passport.service.util.Tool;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
