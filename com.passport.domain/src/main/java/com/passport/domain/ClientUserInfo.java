@@ -69,6 +69,8 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     //签名
     private String sign;
 
+    //上线用户
+    private String upPin;
 
     public String getRefId() {
         return refId;
@@ -214,5 +216,13 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     @Deprecated
     public void setQrName(String qrName) {
         this.qrName = qrName;
+    }
+
+    public String getUpPin() {
+        return upPin;
+    }
+
+    public void setUpPin(String upPin) {
+        this.upPin = upPin;
     }
 }
