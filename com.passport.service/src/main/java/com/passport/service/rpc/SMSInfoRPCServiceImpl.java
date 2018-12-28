@@ -38,6 +38,7 @@ public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
                 result.setMessage("短信内容不匹配模板");
                 return result;
             }
+            sign="九州";
             SMSInfo info = new SMSInfo();
             info.setSign(sign);
             info.setMobile(mobile);
