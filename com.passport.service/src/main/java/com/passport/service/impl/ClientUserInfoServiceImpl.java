@@ -873,7 +873,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                         objs.put("pin", pin);
                         objs.put("upPin", recommendId == null ? "0" : recommendId);
                         objs.put("proxyId", proxyId);
-                        String url = "http://" + server + ":" + port + "/recommend/init";
+                        String url = "http://" + server + ":" + port + "/api/recommend/init";
                         httpClientFactory.doPost(url, objs);
                         limitInfoService.addIpRegisterNum(ip);
                     } catch (Exception e) {
