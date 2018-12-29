@@ -72,7 +72,7 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
     public ProxyUserInfo login(Long proxyId, String account, String pass) {
         ProxyUserInfo query = new ProxyUserInfo();
         query.setStatus(YesOrNoEnum.YES.getValue());
-
+        query.setProxyId(proxyId);
         boolean setLoginName = false;
         if (StringUtils.isMobileNO(account)) {
             setLoginName = true;
