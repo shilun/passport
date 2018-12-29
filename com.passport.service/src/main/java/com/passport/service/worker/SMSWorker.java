@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 
 /**
  * 短信发送worker
- * Created by shilun on 10/26/16.
+ * Created by sl on 10/26/16.
  */
 @Service
 public class SMSWorker {
