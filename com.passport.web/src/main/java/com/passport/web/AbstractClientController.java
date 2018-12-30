@@ -81,7 +81,9 @@ public abstract class AbstractClientController extends AbstractController {
             proxyMap.put(domain, dto);
             return dto;
         }
-        throw new BizException("server.domain.error", "服务器域名错误");
+        LOGGER.error("domain error"+domain);
+        LOGGER.error("url->"+getRequest().getRequestURL().toString());
+        throw new BizException("server.domain.error:domain->"+domain, "服务器域名错误");
 
     }
 

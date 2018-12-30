@@ -65,6 +65,10 @@ public class AdminRPCServiceImpl implements AdminRPCService {
         return result;
     }
 
+    public static void main(String[] args) {
+        System.out.println(StringUtils.getUUID());
+    }
+
     @Override
     public RPCResult<List<String>> queryAdminRoles(String pin) {
         RPCResult<List<String>> result = new RPCResult<>();
