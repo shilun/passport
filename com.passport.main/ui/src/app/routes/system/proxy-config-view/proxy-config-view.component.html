@@ -1,0 +1,47 @@
+<div class="content-heading">
+  代理商用户管理--{{actionType}}
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="valForm" class="form-validate form-horizontal" (submit)="submitForm($event, valForm.value)"
+            novalidate="">
+        <!-- START panel-->
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">代理商</label>
+                <div class="col-sm-6">
+                  <select id="status" name="status" [(ngModel)]='entity.proxyId' class="form-control"
+                          [formControl]="valForm.controls['proxyId']" formControlName="proxyId">
+                    <option *ngFor="let item of proxyes" [value]="item.value">{{item.name}}</option>
+                  </select>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['proxyId'].hasError('required') && (valForm.controls['proxyId'].dirty || valForm.controls['proxyId'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">内容</label>
+                <div class="col-sm-6">
+                  <textarea class="form-control" id="content" rows="20" formControlName="content" [formControl]="valForm.controls['content']" [(ngModel)]="entity.content">
+
+                  </textarea>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="panel-footer text-center">
+            <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>
+            <a class="btn btn-default" routerLink="/system/proxyconfig/list" >取消</a>
+          </div>
+        </div>
+        <!-- END panel-->
+      </form>
+    </div>
+  </div>
+  <!-- END row-->
+
+</div>

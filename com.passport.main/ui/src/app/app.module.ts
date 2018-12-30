@@ -21,6 +21,7 @@ import {ProxyService} from './services/proxy.service';
 import {ServerService} from "./services/server.service";
 import {SoftwareService} from "./services/software.service";
 import {ProxyUserService} from "./services/proxy.user.service";
+import {ProxyconfigService} from "./services/proxyconfig.service";
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -54,6 +55,7 @@ export function createTranslateLoader(http: HttpClient) {
     GlobalService,
     ProxyService,
     ProxyUserService,
+    ProxyconfigService,
     ServerService,
     SoftwareService,
     {

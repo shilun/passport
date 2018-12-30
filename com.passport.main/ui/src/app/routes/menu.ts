@@ -31,6 +31,10 @@ export const menu = [
       text: '代理商管理',
       link: '/system/proxy/list'
     },
+      {
+        text: '代理商配置管理',
+        link: '/system/proxyconfig/list'
+      },
     {
       text: '服务器配置管理',
       link: '/system/server/list'

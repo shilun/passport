@@ -24,6 +24,8 @@ import {FileUploadModule} from 'ng2-file-upload';
 import {ProxyUserListComponent} from "./proxy-user-list/proxy-user-list.component";
 import {ProxyUserViewComponent} from "./proxy-user-view/proxy-user-view.component";
 import {ProxyUserPassComponent} from "./proxy-user-pass/proxy-user-pass.component";
+import {ProxyConfigListComponent} from "./proxy-confg-list/proxy-config-list.component";
+import {ProxyConfigViewComponent} from "./proxy-config-view/proxy-config-view.component";
 
 
 const routes: Routes = [
@@ -39,6 +41,8 @@ const routes: Routes = [
   {path: 'proxy/list', component: ProxyListComponent},
   {path: 'proxy/view', component: ProxyViewComponent},
   {path: 'proxyuser/list', component: ProxyUserListComponent},
+  {path: 'proxyconfig/list', component: ProxyConfigListComponent},
+  {path: 'proxyconfig/view', component: ProxyConfigViewComponent},
   {path: 'proxyuser/view', component: ProxyUserViewComponent},
   {path: 'proxyuser/pass', component: ProxyUserPassComponent},
   {path: 'proxy/changePass', component: ProxyPassComponent},
@@ -61,7 +65,9 @@ const routes: Routes = [
   declarations: [
     ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,
     AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent,ProxyPassComponent,
-    ServerListComponent,ServerViewComponent, SoftwareListComponent, SoftwareViewComponent,ProxyUserListComponent,ProxyUserViewComponent,ProxyUserPassComponent]
+    ServerListComponent,ServerViewComponent, SoftwareListComponent, SoftwareViewComponent,ProxyUserListComponent,ProxyUserViewComponent,ProxyUserPassComponent,
+    ProxyConfigListComponent,ProxyConfigViewComponent
+  ]
 })
 
 
