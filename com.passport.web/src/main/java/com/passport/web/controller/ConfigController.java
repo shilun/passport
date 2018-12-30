@@ -15,7 +15,7 @@ public class ConfigController extends AbstractClientController {
     @Resource
     private AppConfigService appConfigService;
 
-    @RequestMapping(value = "AppConfig", method = {RequestMethod.GET})
+    @RequestMapping(value = "appConfig", method = {RequestMethod.GET})
     public String AppConfig() {
         Long id = getDomain().getId();
         AppConfig config = new AppConfig();
