@@ -20,24 +20,11 @@ public class ConfigController extends AbstractClientController {
     @Resource
     private AppConfigService appConfigService;
 
-    @Resource
-    private RedisTemplate template;
-
-    private static String APP_CONFIG_KEY="passport.app.config.{0}";
 
     @RequestMapping(value = "appConfig", method = {RequestMethod.GET})
     @ResponseBody
     public String AppConfig() {
         Long id = getDomain().getId();
-        String key= MessageFormat.format(APP_CONFIG_KEY,id);
-        Object content = template.opsForValue().get(key);
-        if(content!=null){
-            return (String) content;
-        }
-        AppConfig config = new AppConfig();
-        config.setProxyId(id);
-        String data=appConfigService.findByOne(config).getContent();
-        template.opsForValue().set(key,data,30, TimeUnit.MINUTES);
-        return data;
+        return appConfigService.findByProxyId(id);
     }
 }
