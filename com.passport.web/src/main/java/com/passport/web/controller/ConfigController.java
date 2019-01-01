@@ -2,14 +2,12 @@ package com.passport.web.controller;
 
 import com.passport.service.AppConfigService;
 import com.passport.web.AbstractClientController;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 
-@Controller
+@RestController
 public class ConfigController extends AbstractClientController {
 
     @Resource
@@ -17,10 +15,8 @@ public class ConfigController extends AbstractClientController {
 
 
     @RequestMapping(value = "/appConfig")
-    @ResponseBody
-    public String AppConfig(HttpServletResponse rsp) {
+    public String AppConfig() {
         Long id = getDomain().getId();
-        rsp.setHeader("Content-Type", "application/json;charset=UTF-8");
         return appConfigService.findByProxyId(id);
     }
 }
