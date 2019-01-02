@@ -106,7 +106,7 @@ public class LoginController extends AbstractClientController {
                 if (dto == null) {
                     return true;
                 }
-                loginService.loginOut(dto.getProxyId(),dto.getPin(), dto.getToken());
+                loginService.loginOut(dto.getProxyId(), dto.getPin(), dto.getToken());
             } catch (Exception e) {
                 return false;
             }
@@ -235,14 +235,14 @@ public class LoginController extends AbstractClientController {
     @RequestMapping("wxLogin")
     @ApiOperation(value = "微信登陆")
     @ResponseBody
-    public Map<String, Object> wxLogin(@RequestBody WxLoginDto dto,HttpServletResponse response) {
+    public Map<String, Object> wxLogin(@RequestBody WxLoginDto dto, HttpServletResponse response) {
         return buildMessage(() -> {
             getRequest().getSession().removeAttribute("userDto");
-            UserDTO login = loginService.wxLogin(getDomain().getId(),getIP(), dto.getCode(), dto.getNick(), dto.getHeadImg(),dto.getSex());
-            if(login != null) {
+            UserDTO login = loginService.wxLogin(getDomain().getId(), getIP(), dto.getCode(), dto.getNick(), dto.getHeadImg(), dto.getSex());
+            if (login != null) {
                 putCookie("cToken", login.getToken(), response);
                 return login;
-            }else{
+            } else {
                 throw new BizException("登陆失败");
             }
         });
@@ -254,6 +254,10 @@ public class LoginController extends AbstractClientController {
     public String reg(String q, Model model) {
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
+        String[] domains = getDomain().getDomain();
+        if (domains.length > 2 && domains[0].equals(domain)) {
+            return "redirect:https://passport." + domains[1] + "/login/reg?q=" + q;
+        }
         AgentTypeEnum agentType = getAgentType();
         if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
             model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
