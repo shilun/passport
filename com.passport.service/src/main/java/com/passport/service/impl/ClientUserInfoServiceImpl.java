@@ -101,6 +101,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Value("${app.platform.port}")
     private String port;
 
+    @Value("${app.platform.url}")
+    private String url;
+
+
     @Resource
     private SMSInfoService smsInfoService;
     @Resource
@@ -108,7 +112,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Resource
     private LimitInfoService limitInfoService;
 //    @Reference(check = false)
-//    private RecommendRPCService recommendRPCService;
+//    private RecommendRPCSer vice recommendRPCService;
 
     @Resource
     private ProxyInfoService proxyInfoService;
@@ -874,9 +878,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                         objs.put("pin", pin);
                         objs.put("upPin", recommendId == null ? "0" : recommendId);
                         objs.put("proxyId", proxyId);
-                        String url = "http://" + server + ":" + port + "/api/recommend/init";
+                        String host = "http://" + server + ":" + port + url;
 
-                        httpClientFactory.doPost(url, objs);
+                        httpClientFactory.doPost(host, objs);
 
                     } catch (Exception e) {
                         logger.error("推荐人初始化失败", e);
