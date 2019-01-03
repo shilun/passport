@@ -256,7 +256,7 @@ public class LoginController extends AbstractClientController {
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         String[] domains = getDomain().getDomain();
         if (domains.length > 2 && domains[0].equals(domain)) {
-            return "redirect:https://passport." + domains[1] + "/login/reg?q=" + q;
+            return "redirect:http://passport." + domains[1] + "/login/reg?q=" + q;
         }
         AgentTypeEnum agentType = getAgentType();
         if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
