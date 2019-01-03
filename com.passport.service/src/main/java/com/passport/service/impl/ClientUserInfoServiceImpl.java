@@ -1185,7 +1185,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();
             if (length < 6 || length > 16) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "密码长度在6-16位");
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "密码长度 在6-16位");
             }
 
 //            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
