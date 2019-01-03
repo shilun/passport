@@ -4,6 +4,9 @@ import com.common.exception.BizException;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.web.AbstractController;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.passport.rpc.ProxyRpcService;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.ProxyDto;
@@ -16,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by shilun on 2017/5/12.
@@ -37,10 +41,10 @@ public abstract class AbstractClientController extends AbstractController {
 
 
     protected UserDTO getUserDto() {
-        if(getRequest().getSession().getAttribute("userDto")!=null){
+        if (getRequest().getSession().getAttribute("userDto") != null) {
             return (UserDTO) getRequest().getSession().getAttribute("userDto");
         }
-        HttpServletRequest request=getRequest();
+        HttpServletRequest request = getRequest();
         String token = request.getHeader("cToken");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
@@ -50,7 +54,7 @@ public abstract class AbstractClientController extends AbstractController {
                     break;
                 }
             }
-            if(tokenCookie == null){
+            if (tokenCookie == null) {
                 return null;
             }
             token = tokenCookie.getValue();
@@ -72,20 +76,33 @@ public abstract class AbstractClientController extends AbstractController {
      */
     protected ProxyDto getDomain() {
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
-        if (proxyMap.get(domain) != null) {
-            return proxyMap.get(domain);
+        try {
+            ProxyDto proxyDto = cache.get(domain);
+        } catch (Exception e) {
+            LOGGER.error("domain error" + domain);
+            LOGGER.error("url->" + getRequest().getRequestURL().toString());
+            LOGGER.error(e);
         }
-        RPCResult<ProxyDto> result = proxyRpcService.findByDomain(domain);
-        if (result.getSuccess()) {
-            ProxyDto dto = result.getData();
-            proxyMap.put(domain, dto);
-            return dto;
-        }
-        LOGGER.error("domain error"+domain);
-        LOGGER.error("url->"+getRequest().getRequestURL().toString());
-        throw new BizException("server.domain.error:domain->"+domain, "服务器域名错误");
+        throw new BizException("server.domain.error:domain->" + domain, "服务器域名错误");
 
     }
+
+    private LoadingCache<String, ProxyDto> cache = CacheBuilder.newBuilder().refreshAfterWrite(2, TimeUnit.SECONDS)
+            .expireAfterAccess(2, TimeUnit.SECONDS).
+                    build(new CacheLoader<String, ProxyDto>() {
+                        @Override
+                        /** 当本地缓存命没有中时，调用load方法获取结果并将结果缓存 **/
+                        public ProxyDto load(String domain) {
+                            RPCResult<ProxyDto> result = proxyRpcService.findByDomain(domain);
+                            if (result.getSuccess()) {
+                                ProxyDto dto = result.getData();
+                                proxyMap.put(domain, dto);
+                                return dto;
+                            }
+                            return null;
+                        }
+
+                    });
 
     /**
      * 获取IP
