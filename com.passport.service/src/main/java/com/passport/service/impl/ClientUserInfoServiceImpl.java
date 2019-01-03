@@ -1185,17 +1185,17 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();
             if (length < 6 || length > 16) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "密码长度在6-16位");
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "密码长度 在6-16位");
             }
 
-            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
-            if (!redisTemplate.hasKey(key)) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码过期");
-            }
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (!o.equals(vcode)) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码错误");
-            }
+//            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+//            if (!redisTemplate.hasKey(key)) {
+//                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码过期");
+//            }
+//            String o = (String) redisTemplate.opsForValue().get(key);
+//            if (!o.equals(vcode)) {
+//                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码错误");
+//            }
             UserDTO userDTO = regist(proxydto, recommendId, account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if (userDTO == null) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "注册失败");

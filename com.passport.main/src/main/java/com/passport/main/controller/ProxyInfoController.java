@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -73,7 +75,13 @@ public class ProxyInfoController extends AbstractClientController {
             entity.setToken(info.getToken());
             entity.setEndTime(DateUtil.parseDate(info.getEndTime()));
             entity.setEncodingKey(info.getEncodingKey());
-            entity.setDomain(info.getDomain());
+            List<String> domains=new ArrayList();
+            for(String domain:info.getDomain()){
+                if(StringUtils.isNotEmpty(domain)){
+                    domains.add(domain);
+                }
+            }
+            entity.setDomain(domains.toArray(new String[domains.size()]));
             entity.setRemark(info.getRemark());
             entity.setStatus(info.getStatus());
             entity.setId(info.getId());
