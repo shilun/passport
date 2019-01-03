@@ -862,7 +862,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String pin = entity.getPin();
             limitInfoService.addIpRegisterNum(ip);
 //        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
-            //调用HTTP接口初始化推荐人信息
+            //调用HTTP接口初始化推荐 人信息
 
 //
 //            fixedThreadPool.execute(new Runnable() {
