@@ -47,6 +47,7 @@
                   <input class="form-control col-sm-4" type="text"  id="url" formControlName="url" [formControl]="valForm.controls['url']" [(ngModel)]="entity.url"/>
                   <span class="text-danger" *ngIf="valForm.controls['url'].hasError('required') && (valForm.controls['url'].dirty || valForm.controls['url'].touched)">必选项</span>
                 </div>
+
               </div>
             </fieldset>
 
