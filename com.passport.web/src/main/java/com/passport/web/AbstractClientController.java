@@ -77,7 +77,7 @@ public abstract class AbstractClientController extends AbstractController {
     protected ProxyDto getDomain() {
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         try {
-            ProxyDto proxyDto = cache.get(domain);
+            return cache.get(domain);
         } catch (Exception e) {
             LOGGER.error("domain error" + domain);
             LOGGER.error("url->" + getRequest().getRequestURL().toString());
