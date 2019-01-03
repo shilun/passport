@@ -255,7 +255,7 @@ public class LoginController extends AbstractClientController {
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         String[] domains = getDomain().getDomain();
-        if (domains.length > 2 && domains[0].equals(domain)) {
+        if (domains.length >= 2 && domains[0].equals(domain)) {
             return "redirect:http://passport." + domains[1] + "/login/reg?q=" + q;
         }
         AgentTypeEnum agentType = getAgentType();
