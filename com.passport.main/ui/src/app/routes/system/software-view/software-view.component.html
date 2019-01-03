@@ -44,12 +44,10 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">文件</label>
                 <div class="col-sm-6">
-                  <input class="form-control col-sm-4" type="text" readonly id="url" formControlName="url" [formControl]="valForm.controls['url']" [(ngModel)]="entity.url"/>
+                  <input class="form-control col-sm-4" type="text"  id="url" formControlName="url" [formControl]="valForm.controls['url']" [(ngModel)]="entity.url"/>
+                  <span class="text-danger" *ngIf="valForm.controls['url'].hasError('required') && (valForm.controls['url'].dirty || valForm.controls['url'].touched)">必选项</span>
                 </div>
-                <label for="image-input" class="file-upload col-sm-2">
-                  <button class="btn btn-info"><em class="fa fa-upload mr"></em>UPLOAD</button>
-                  <input id="image-input" type="file" ng2FileSelect [uploader]="uploader"/>
-                </label>
+
               </div>
             </fieldset>
 
