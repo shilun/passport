@@ -230,7 +230,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             throw new BizException("账号格式不正确");
         }
         ClientUserInfo entity = findByPhone(proxyId, account);
-        if (entity != null) {
+        if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
             throw new BizException("该账号已存在");
         }
         //检查验证码限制
@@ -1226,7 +1226,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "参数不能为空");
             }
             ClientUserInfo info = findByPhone(proxyId, phone);
-            if (info != null) {
+            if (info != null && info.getStatus().equals(UserStatusEnum.Normal.getValue())) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "该账号已存在");
             }
 
