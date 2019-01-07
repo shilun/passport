@@ -1,6 +1,5 @@
 package com.passport.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.common.exception.ApplicationException;
 import com.common.exception.BizException;
 import com.common.httpclient.HttpClientUtil;
@@ -13,13 +12,13 @@ import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
-import com.passport.domain.SMSInfo;
 import com.passport.domain.LimitInfo;
+import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
 import com.passport.rpc.dto.LimitType;
 import com.passport.rpc.dto.ProxyDto;
-import com.passport.service.*;
 import com.passport.rpc.dto.UserDTO;
+import com.passport.service.*;
 import com.passport.service.constant.ChangeType;
 import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.constant.MessageConstant;
@@ -28,7 +27,6 @@ import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.HttpClientFactory;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
-import com.platform.rpc.RecommendRPCService;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -355,8 +353,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
 
         ClientUserInfo userInfo = findByPhone(proxyId, account);
-        if (userInfo == null) {
-            throw new BizException("无法找到该用户");
+        if (userInfo == null || !userInfo.getStatus().equals(UserStatusEnum.Normal.getValue())) {
+            throw new BizException("无法找到该用户,请注册");
         }
 
         //查询此用户是否被限制登陆
@@ -827,7 +825,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             Long proxyId = proxydto.getId();
 
             ClientUserInfo entity = findByPhone(proxyId, phone);
-            if (entity != null) {
+            if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
                 throw new BizException("该账号已经注册过了");
             }
             if (StringUtils.isBlank(nick)) {
@@ -840,7 +838,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setPhone(phone);
             entity.setNickName(nick);
             entity.setSexType(sexEnum.getValue());
-            entity.setStatus(UserStatusEnum.Normal.getValue());
             entity.setPasswd(MD5.MD5Str(pass, passKey));
             entity.setBirthDay(date);
             entity.setEmail(email);
@@ -872,19 +869,30 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 //            fixedThreadPool.execute(new Runnable() {
 //                @Override
 //                public void run() {
-                    try {
-                        HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
-                        Map<String, Object> objs = new HashMap<>();
-                        objs.put("pin", pin);
-                        objs.put("upPin", recommendId == null ? "0" : recommendId);
-                        objs.put("proxyId", proxyId);
-                        String host = "http://" + server + ":" + port + url;
+            try {
+                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
+                Map<String, Object> objs = new HashMap<>();
+                objs.put("pin", pin);
+                objs.put("upPin", recommendId == null ? "0" : recommendId);
+                objs.put("proxyId", proxyId);
+                String host = "http://" + server + ":" + port + url;
 
-                        httpClientFactory.doPost(host, objs);
-
-                    } catch (Exception e) {
-                        logger.error("推荐人初始化失败", e);
-                    }
+                String result = httpClientFactory.doPost(host, objs);
+                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
+                if (!(boolean) resultMap.get("success")) {
+                    logger.error("推荐人初始化失败");
+                    entity.setStatus(UserStatusEnum.Disable.getValue());
+                    save(entity);
+                    return null;
+                }
+                entity.setStatus(UserStatusEnum.Normal.getValue());
+                save(entity);
+            } catch (Exception e) {
+                logger.error("推荐人初始化失败", e);
+                entity.setStatus(UserStatusEnum.Disable.getValue());
+                save(entity);
+                return null;
+            }
 //                }
 //            });
 
