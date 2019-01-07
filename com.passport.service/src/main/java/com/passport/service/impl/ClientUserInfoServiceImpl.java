@@ -230,7 +230,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             throw new BizException("账号格式不正确");
         }
         ClientUserInfo entity = findByPhone(proxyId, account);
-        if (entity != null) {
+        if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
             throw new BizException("该账号已存在");
         }
         //检查验证码限制
@@ -831,8 +831,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (StringUtils.isBlank(nick)) {
                 nick = "玩家" + phone.substring(7);
             }
-
-            entity = new ClientUserInfo();
+            if(entity==null){
+                entity = new ClientUserInfo();
+            }
             entity.setProxyId(proxyId);
             entity.setRefId(refId);
             entity.setPhone(phone);
@@ -847,15 +848,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setRealName(realName);
             entity.setQq(qq);
             entity.setRegisterIp(ip);
-
-            save(entity);
+            super.save(entity);
 
 
             ClientUserInfo upEntity = new ClientUserInfo();
             upEntity.setId(entity.getId());
             upEntity.setUpPin(recommendId);
             upEntity.setPin(String.valueOf(entity.getId()));
-            up(upEntity);
+            super.up(upEntity);
             entity.setPin(upEntity.getPin());
 
             dto = new UserDTO();
@@ -882,15 +882,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 if (!(boolean) resultMap.get("success")) {
                     logger.error("推荐人初始化失败");
                     entity.setStatus(UserStatusEnum.Disable.getValue());
-                    save(entity);
+                    super.up(entity);
                     return null;
                 }
                 entity.setStatus(UserStatusEnum.Normal.getValue());
-                save(entity);
+                super.up(entity);
             } catch (Exception e) {
                 logger.error("推荐人初始化失败", e);
                 entity.setStatus(UserStatusEnum.Disable.getValue());
-                save(entity);
+                super.up(entity);
                 return null;
             }
 //                }
@@ -1181,15 +1181,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK, HttpStatusCode.MSG_OK);
     }
 
-    @Override
-    public Long save(ClientUserInfo entity) {
-        String userKey = MessageFormat.format(CLIENT_USER_CACHE, entity.getPin());
-        ClientUserInfo cacheUser = (ClientUserInfo) redisTemplate.opsForValue().get(userKey);
-        if (cacheUser != null) {
-            redisTemplate.delete(userKey);
-        }
-        return super.save(entity);
-    }
+//    @Override
+//    public Long save(ClientUserInfo entity) {
+////        String userKey = MessageFormat.format(CLIENT_USER_CACHE, entity.getPin());
+////        ClientUserInfo cacheUser = (ClientUserInfo) redisTemplate.opsForValue().get(userKey);
+////        if (cacheUser != null) {
+////            redisTemplate.delete(userKey);
+////        }
+//        return super.save(entity);
+//    }
 
     @Override
     public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip, String recommendId) {
@@ -1226,7 +1226,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "参数不能为空");
             }
             ClientUserInfo info = findByPhone(proxyId, phone);
-            if (info != null) {
+            if (info != null && info.getStatus().equals(UserStatusEnum.Normal.getValue())) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "该账号已存在");
             }
 

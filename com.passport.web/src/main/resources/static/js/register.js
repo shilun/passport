@@ -116,16 +116,16 @@ $(document).ready(function(){
                 success: function (data) {
                     if (data.code === '200') {
                         $.toast(data.msg, 'success');
+                        addCookie('secondsremained', 60, 60);
+                        setTime(obj);
                     } else {
-                        $.toast(dataJson.msg, 'cancel');
+                        $.toast(data.msg, 'cancel');
                     }
                 },
                 error: function (responseText) {
                     console.log(responseText);
                 }
             });
-            addCookie('secondsremained', 60, 60);
-            setTime(obj);
         }
     }
     //开始倒计时

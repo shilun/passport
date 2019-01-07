@@ -48,10 +48,10 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
         cachedThreadPool.submit(() -> {
             StringBuffer sb = new StringBuffer();
             try {
-                //获取ip物理地址
+                // 获取ip物理地址
                 URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + ip);
                 JSONObject jsonObject = tool.httpGet(url);
-                if (jsonObject.getInt("code") == 0) {
+                if(jsonObject != null && jsonObject.containsKey("code") && jsonObject.getInt("code") == 0){
                     JSONObject data = jsonObject.getJSONObject("data");
                     if (data.containsKey("country")) {
                         sb.append(data.getString("country")).append(",");
