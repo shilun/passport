@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -251,7 +252,11 @@ public class LoginController extends AbstractClientController {
 
     @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")
-    public String reg(String q, Model model) {
+    public String reg(String q, Model model, HttpServletRequest request) {
+        String userAgent = request.getHeader("user-agent").toLowerCase();
+        if (userAgent.indexOf("micromessenger") > -1) {//判断是否是微信浏览器
+            return "/intercept";
+        }
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         String[] domains = getDomain().getDomain();
@@ -262,11 +267,19 @@ public class LoginController extends AbstractClientController {
         if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
             model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
         }
-        if (agentType == AgentTypeEnum.IOS) {
-            model.addAttribute("url", "itms-services://?action=download-manifest&url=https://passport." + domain + "/AppDownload/download.plist");
-        }
+        model.addAttribute("agentType", agentType.getValue());
         return "/register";
     }
+
+
+    @RequestMapping(value = "proIOS", method = {RequestMethod.GET})
+    @ApiOperation(value = "IOS用户注册提示")
+    public String proIOS(Model model) {
+        String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
+        model.addAttribute("url", "itms-services://?action=download-manifest&url=https://passport." + domain + "/AppDownload/download.plist");
+        return "/promptIOS";
+    }
+
 
     public AgentTypeEnum getAgentType() {
         String agent = getRequest().getHeader("user-agent").toLowerCase();
