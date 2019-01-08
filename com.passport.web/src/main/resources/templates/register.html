@@ -11,58 +11,77 @@
     <link rel="stylesheet" href="/static/css/public.css"/>
 </head>
 <body>
-    <div class="register-box">
-        <div class="register-top">
-            <div class="logo"></div>
+<div class="register-box">
+    <div class="register-top">
+        <div class="logo"></div>
+        <div th:if="${agentType} == 2">
+            <button onclick="iosRe()" id="iosBut" class="downGame"></button>
+        </div>
+        <div th:if="${agentType} != 2">
             <a th:href="${url}" class="downGame"></a>
         </div>
-        <div class="register-container">
-            <div class="register-title">
-            </div>
-            <!--<div class="register-group">-->
-                <!--<label for="inputId">上线ID</label>-->
-                <input type="hidden" class="form-control" placeholder="1234567" id="inputId" maxlength="6" th:value="${recommendId}"/>
-            <!--</div>-->
-            <div class="register-group">
-                <label for="inputPhone">手机号</label>
-                <input type="tel" placeholder="请输入手机号" id="inputPhone" maxlength="11"/>
-            </div>
-            <div class="register-group">
-                <label for="inputCode">验证码</label>
-                <input type="number" placeholder="获取验证码" id="inputCode" class="code" maxlength="6"/>
-                <span class="getCode">验证码</span>
-            </div>
-            <div class="register-group">
-                <label for="inputPwd">密码</label>
-                <input type="password" placeholder="请输入密码" id="inputPwd"/>
-            </div>
-            <div class="register-group">
-                <label for="inputRepwd">确认密码</label>
-                <input type="password" placeholder="再次输入密码" id="inputRepwd"/>
-            </div>
-            <div class="register-btn">
-                确认注册
-            </div>
+    </div>
+    <div class="register-container">
+        <div class="register-title">
+        </div>
+        <!--<div class="register-group">-->
+        <!--<label for="inputId">上线ID</label>-->
+        <input type="hidden" class="form-control" placeholder="1234567" id="inputId" maxlength="6"
+               th:value="${recommendId}"/>
+        <!--</div>-->
+        <div class="register-group">
+            <label for="inputPhone">手机号</label>
+            <input type="tel" placeholder="请输入手机号" id="inputPhone" maxlength="11"/>
+        </div>
+        <div class="register-group">
+            <label for="inputCode">验证码</label>
+            <input type="number" placeholder="获取验证码" id="inputCode" class="code" maxlength="6"/>
+            <span class="getCode">验证码</span>
+        </div>
+        <div class="register-group">
+            <label for="inputPwd">密码</label>
+            <input type="password" placeholder="请输入密码" id="inputPwd"/>
+        </div>
+        <div class="register-group">
+            <label for="inputRepwd">确认密码</label>
+            <input type="password" placeholder="再次输入密码" id="inputRepwd"/>
+        </div>
+        <div class="register-btn">
+            确认注册
         </div>
     </div>
-    <div class="cover" id="cover">
-        <div class="modal" id="modal">
-            <div class="success-box">
-                <div class="title">恭喜您注册成功！</div>
-                <p>
-                    注&nbsp;册&nbsp;账&nbsp;号&nbsp;:
-                    <label id="regAccount"></label>
-                </p>
-                <div class="btn-group actions" id="actions">
-                    <a class="btn btn-apple" th:href="${url}">下载安装</a>
+</div>
+<div class="cover" id="cover">
+    <div class="modal" id="modal">
+        <div class="success-box">
+            <div class="title">恭喜您注册成功！</div>
+            <p>
+                注&nbsp;册&nbsp;账&nbsp;号&nbsp;:
+                <label id="regAccount"></label>
+            </p>
+            <div class="btn-group actions" id="actions">
+                <div th:if="${agentType} == 1">
+                    <button onclick="iosRe()" class="btn btn-apple"></button>
                 </div>
+                <div th:if="${agentType} != 1">
+                    <a th:if="${agentType}" class="btn btn-apple" th:href="${url}">下载安装</a>
+                </div>
+
             </div>
         </div>
     </div>
-    <script src="/static/js/jquery-1.11.3.min.js"></script>
-    <script src="/static/js/jqeuryUI.js"></script>
-    <script src="/static/js/public.js"></script>
-    <script src="/static/js/register.js"></script>
+</div>
+<script src="/static/js/jquery-1.11.3.min.js"></script>
+<script src="/static/js/jqeuryUI.js"></script>
+<script src="/static/js/public.js"></script>
+<script src="/static/js/register.js"></script>
 
+
+<script>
+    function iosRe(){
+        window.location.href='/login/proIOS';
+    }
+
+</script>
 </body>
 </html>

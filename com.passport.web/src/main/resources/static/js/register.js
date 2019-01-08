@@ -4,7 +4,8 @@ $(document).ready(function(){
         if (!$(this).hasClass('disabled')) {
             sendCode($(this));
         }
-    })
+    });
+
     $(".register-btn").click(function(){
         var phone = $('#inputPhone').val(),
             code = $('#inputCode').val(),
