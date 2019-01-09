@@ -1,4 +1,4 @@
-var myLayer;
+
 
 (function() {
 
@@ -38,6 +38,6 @@ var myLayer;
         this.layer.classList.add('hide');
     }
 
-    myLayer = TipsLayer.init('#tips-layer');
+    window.myLayer = TipsLayer.init('#tips-layer');
 
 })();

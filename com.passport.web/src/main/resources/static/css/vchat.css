@@ -11,6 +11,7 @@
 
 .tips-layer.hide {
     transform: translateY(200%);
+    display: none;
 }
 
 .tips-layer .layer-container {

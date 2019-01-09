@@ -175,7 +175,7 @@ $(document).ready(function(){
             }
         });
     }
-    setTimeout("initCheck()",500);
+    setTimeout("initCheck()",50);
 })
 function isWeiXin() {
     var ua = window.navigator.userAgent.toLowerCase();
