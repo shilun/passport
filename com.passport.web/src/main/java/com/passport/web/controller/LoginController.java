@@ -258,6 +258,9 @@ public class LoginController extends AbstractClientController {
         String[] domains = getDomain().getDomain();
         if (domains.length >= 2 && domains[0].equals(domain)) {
             model.addAttribute("url","http://passport." + domains[1] + "/login/reg?q=" + q);
+            if(isWechat()){
+                return "/intercept";
+            }
             return "/redirectUrl";
         }
         AgentTypeEnum agentType = getAgentType();
@@ -266,6 +269,14 @@ public class LoginController extends AbstractClientController {
         }
         model.addAttribute("agentType", agentType.getValue());
         return "/register";
+    }
+
+    public  boolean isWechat() {
+        String ua = getRequest().getHeader("User-Agent").toLowerCase();
+        if (ua.indexOf("micromessenger") > -1) {
+            return true;
+        }
+        return false;
     }
 
 

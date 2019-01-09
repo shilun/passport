@@ -177,19 +177,17 @@ $(document).ready(function(){
     }
     setTimeout("initCheck()",50);
 })
-function isWeiXin() {
+function isWeiXin(){
     var ua = window.navigator.userAgent.toLowerCase();
-    console.log(ua);//mozilla/5.0 (iphone; cpu iphone os 9_1 like mac os x) applewebkit/601.1.46 (khtml, like gecko)version/9.0 mobile/13b143 safari/601.1
-    if (ua.indexOf("micromessenger") != -1) {
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
         return true;
-    } else {
+    }else{
         return false;
     }
 }
 
-
 function initCheck() {
-    var result=isWeiXin();
+    var result=is_weixin();
     if(result){
         myLayer.show();
     }
