@@ -1,3 +1,5 @@
+var myLayer;
+
 (function() {
 
     TipsLayer.instance = null;
@@ -16,7 +18,10 @@
 
         this.closeBtn = this.layer.querySelector('#layer-close');
 
-        
+        var _this = this;
+        this.closeBtn.addEventListener('click', function(e) {
+            _this.hide();
+        });
     }
 
 
@@ -33,8 +38,6 @@
         this.layer.classList.add('hide');
     }
 
-    var myLayer = TipsLayer.init('#tips-layer');
-
-    console.log(myLayer);
+    myLayer = TipsLayer.init('#tips-layer');
 
 })();
