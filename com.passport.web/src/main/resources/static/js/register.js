@@ -192,6 +192,8 @@ function initCheck() {
     var result=isWeiXin();
     if(result){
         myLayer.show();
-        return;
+    }
+    else{
+        myLayer.hide();
     }
 }
