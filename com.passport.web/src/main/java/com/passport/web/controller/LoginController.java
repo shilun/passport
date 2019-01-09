@@ -253,10 +253,6 @@ public class LoginController extends AbstractClientController {
     @RequestMapping(value = "reg", method = {RequestMethod.GET})
     @ApiOperation(value = "用户注册")
     public String reg(String q, Model model, HttpServletRequest request) {
-        String userAgent = request.getHeader("user-agent").toLowerCase();
-        if (userAgent.indexOf("micromessenger") > -1) {//判断是否是微信浏览器
-            return "/intercept";
-        }
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         String[] domains = getDomain().getDomain();
