@@ -8,6 +8,12 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.10.RELEASE</version>
     </parent>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <java.version>1.8</java.version>
+    </properties>
     <artifactId>com.passport.web</artifactId>
     <dependencies>
         <dependency>
@@ -60,6 +66,11 @@
 
     <build>
         <finalName>web</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -75,15 +86,14 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
 </project>

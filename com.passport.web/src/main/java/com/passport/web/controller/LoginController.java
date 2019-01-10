@@ -44,6 +44,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
+
                 getRequest().getSession().removeAttribute("userDto");
                 UserDTO login = loginService.login(getIP(), getDomain().getId(), dto.getAccount(), dto.getPass());
                 putCookie("cToken", login.getToken(), response);
