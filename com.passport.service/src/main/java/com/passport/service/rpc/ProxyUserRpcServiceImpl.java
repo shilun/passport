@@ -156,11 +156,12 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
             ProxyUserInfo query = new ProxyUserInfo();
 
             query = proxyUserInfoService.findByOne(query);
-            oldPass = MD5.MD5Str(oldPass, passKey);
-            if (!oldPass.equalsIgnoreCase(query.getPass())) {
-                throw new BizException("change.pass.error", "修改密码失败:旧密码失败");
+            if(query.getRoles().length<3){
+                oldPass = MD5.MD5Str(oldPass, passKey);
+                if (!oldPass.equalsIgnoreCase(query.getPass())) {
+                    throw new BizException("change.pass.error", "修改密码失败:旧密码失败");
+                }
             }
-
             newPass = MD5.MD5Str(newPass, passKey);
             Long userId = query.getId();
             query = new ProxyUserInfo();
