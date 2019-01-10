@@ -132,7 +132,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
     }
 
     @Override
-    public RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass) {
+    public RPCResult<Boolean> changePass(Long cId, Long proxyId, Long id, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             if (proxyId == null) {
@@ -141,22 +141,23 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("代理商是标识不能为空");
                 return result;
             }
-            if(StringUtils.isBlank(newPass)){
+            if (StringUtils.isBlank(newPass)) {
                 result.setSuccess(false);
                 result.setCode("newPass.error");
                 result.setMessage("新密码不能为空");
                 return result;
             }
             ProxyUserInfo byId = proxyUserInfoService.findById(id);
-            if(byId.getProxyId().longValue()!=proxyId){
+            if (byId.getProxyId().longValue() != proxyId) {
                 result.setSuccess(false);
                 result.setCode("data.error");
                 result.setMessage("数据失败");
             }
             ProxyUserInfo query = new ProxyUserInfo();
 
+            ProxyUserInfo cProxyUserInfo = proxyUserInfoService.findById(cId);
             query = proxyUserInfoService.findByOne(query);
-            if(query.getRoles().length<3){
+            if (cProxyUserInfo.getRoles().length < 3) {
                 oldPass = MD5.MD5Str(oldPass, passKey);
                 if (!oldPass.equalsIgnoreCase(query.getPass())) {
                     throw new BizException("change.pass.error", "修改密码失败:旧密码失败");
@@ -229,7 +230,7 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
                 result.setMessage("数据失败");
                 return result;
             }
-            proxyUserInfoService.upUser(proxyId, id, phone, desc, status,roles);
+            proxyUserInfoService.upUser(proxyId, id, phone, desc, status, roles);
             result.setSuccess(true);
             result.setData(true);
             return result;
