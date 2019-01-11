@@ -162,6 +162,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
         regValueObj.append("$lte", regEndTime);
 
         BasicDBObject matchValueObj = new BasicDBObject();
+        matchValueObj.append("proxyId",proxyId);
         matchValueObj.append("loginDay", loginValueObj);
         matchValueObj.append("registerDate", regValueObj);
 
@@ -206,6 +207,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
     @Override
     public LogLoginInfo getUserLastLoginInfo(Long proxyId, String pin) throws Exception {
         Query query = new Query();
+        query.addCriteria(Criteria.where("proxyId").is(proxyId));
         query.addCriteria(Criteria.where("pin").is(pin));
         query.with(new Sort(Sort.Direction.DESC, "loginDay"));
         query.limit(1);

@@ -992,6 +992,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public Long queryCountByRegTime(Long proxyId, Date startRegTime, Date endRegTime) {
         try {
             ClientUserInfo info = new ClientUserInfo();
+            info.setProxyId(proxyId);
             info.setStartCreateTime(startRegTime);
             info.setEndCreateTime(endRegTime);
             return queryCount(info);
