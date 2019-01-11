@@ -79,7 +79,7 @@ public class AppDownloadController extends AbstractClientController {
         context.append("        <key>items</key>\n");
         context.append("        <array>\n");
         context.append("            <dict>\n");
-        context.append("                <key>vchat</key>\n");
+        context.append("                <key>assets</key>\n");
         context.append("                <array>\n");
         context.append("                    <dict>\n");
         context.append("                        <key>kind</key>\n");
