@@ -799,8 +799,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     public UserDTO regist(ProxyDto proxydto, String recommendId, String refId, String pass, String phone, String nick, String email,
                           SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
                           String realName, Long qq) {
+
         UserDTO dto = null;
         try {
+
             //查询此ip是否被限制注册
             if (isRegisterLimit(ip)) {
                 throw new BizException("regist.error", "当前ip被限制注册");
@@ -823,7 +825,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 date = DateUtil.parseDate(birth);
             }
             Long proxyId = proxydto.getId();
-
+            if(StringUtils.isNotBlank(recommendId)&&!StringUtils.equals("0",recommendId)) {
+                ClientUserInfo recommendUser = findByPin(proxyId, recommendId);
+                if (recommendUser == null) {
+                    recommendId = "0";
+                }
+            }
+            else{
+                recommendId="0";
+            }
             ClientUserInfo entity = findByPhone(proxyId, phone);
             if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
                 throw new BizException("该账号已经注册过了");
@@ -862,6 +872,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             BeanCoper.copyProperties(dto, entity);
             String pin = entity.getPin();
             limitInfoService.addIpRegisterNum(ip);
+
+
 //        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
             //调用HTTP接口初始化推荐 人信息
 
@@ -873,7 +885,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
                 Map<String, Object> objs = new HashMap<>();
                 objs.put("pin", pin);
-                objs.put("upPin", recommendId == null ? "0" : recommendId);
+                objs.put("upPin", recommendId);
                 objs.put("proxyId", proxyId);
                 String host = "http://" + server + ":" + port + url;
 
