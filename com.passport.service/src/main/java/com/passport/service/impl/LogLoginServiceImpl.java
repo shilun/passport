@@ -105,7 +105,9 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
         loginValueObj.append("$gte", startTime);
         loginValueObj.append("$lte", endTime);
 
-        BasicDBObject matchValueObj = new BasicDBObject("loginDay", loginValueObj);
+        BasicDBObject matchValueObj = new BasicDBObject();
+        matchValueObj.append("proxyId",proxyId);
+        matchValueObj.append("loginDay", loginValueObj);
 
         BasicDBObject matchObj = new BasicDBObject("$match", matchValueObj);
 
