@@ -281,7 +281,7 @@ public class LoginController extends AbstractClientController {
     }
 
 
-    @RequestMapping(value = "proIOS", method = {RequestMethod.GET})
+    @RequestMapping(value = "proios", method = {RequestMethod.GET})
     @ApiOperation(value = "IOS用户注册提示")
     public String proIOS(Model model) {
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());

@@ -165,7 +165,8 @@ $(document).ready(function(){
                 // }
                 if(data.success){
                     // $.toast(data.msg,'cancel');
-                    $(".cover").show();
+                    // $(".cover").show();
+                    $.toast('注册成功');
                 }else{
                     $.toast(data.msg,'cancel');
 
