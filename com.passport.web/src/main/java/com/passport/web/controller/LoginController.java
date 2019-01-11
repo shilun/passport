@@ -257,11 +257,11 @@ public class LoginController extends AbstractClientController {
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         String[] domains = getDomain().getDomain();
+        if(isWechat()){
+            return "/intercept";
+        }
         if (domains.length >= 2 && domains[0].equals(domain)) {
             model.addAttribute("url","http://passport." + domains[1] + "/login/reg?q=" + q);
-            if(isWechat()){
-                return "/intercept";
-            }
             return "/redirectUrl";
         }
         AgentTypeEnum agentType = getAgentType();
