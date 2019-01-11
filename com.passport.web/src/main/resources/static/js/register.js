@@ -176,7 +176,7 @@ $(document).ready(function(){
             }
         });
     }
-    setTimeout("initCheck()",50);
+
 })
 function isWeiXin(){
     var ua = window.navigator.userAgent.toLowerCase();
@@ -184,15 +184,5 @@ function isWeiXin(){
         return true;
     }else{
         return false;
-    }
-}
-
-function initCheck() {
-    var result=is_weixin();
-    if(result){
-        myLayer.show();
-    }
-    else{
-        myLayer.hide();
     }
 }
