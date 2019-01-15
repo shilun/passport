@@ -94,9 +94,10 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return rpcResult;
     }
-
+    private String PROXY_PIN="passport.findByPin.proxy:{0}.pin:{1}";
     @Override
     public RPCResult<UserDTO> findByPin(Long proxyId, String pin) {
+        String key=MessageFormat.format(PROXY_PIN,proxyId,pin);
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
             if (StringUtils.isBlank(pin)) {

@@ -117,9 +117,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
-
-
     @Resource
     private Tool tool;
 
@@ -825,14 +822,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 date = DateUtil.parseDate(birth);
             }
             Long proxyId = proxydto.getId();
-            if(StringUtils.isNotBlank(recommendId)&&!StringUtils.equals("0",recommendId)) {
+            if (StringUtils.isNotBlank(recommendId) && !StringUtils.equals("0", recommendId)) {
                 ClientUserInfo recommendUser = findByPin(proxyId, recommendId);
                 if (recommendUser == null) {
                     recommendId = "0";
                 }
-            }
-            else{
-                recommendId="0";
+            } else {
+                recommendId = "0";
             }
             ClientUserInfo entity = findByPhone(proxyId, phone);
             if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
@@ -841,7 +837,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (StringUtils.isBlank(nick)) {
                 nick = "玩家" + phone.substring(7);
             }
-            if(entity==null){
+            if (entity == null) {
                 entity = new ClientUserInfo();
             }
             entity.setProxyId(proxyId);
@@ -1194,7 +1190,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return OldPackageMapUtil.toSuccessMap(HttpStatusCode.CODE_OK, HttpStatusCode.MSG_OK);
     }
 
-//    @Override
+    //    @Override
 //    public Long save(ClientUserInfo entity) {
 ////        String userKey = MessageFormat.format(CLIENT_USER_CACHE, entity.getPin());
 ////        ClientUserInfo cacheUser = (ClientUserInfo) redisTemplate.opsForValue().get(userKey);
@@ -1203,6 +1199,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 ////        }
 //        return super.save(entity);
 //    }
+    @Value("${app.batch.register}")
+    private Boolean batctReg;
 
     @Override
     public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip, String recommendId) {
@@ -1212,14 +1210,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (length < 6 || length > 16) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "密码长度 在6-16位");
             }
-
-            String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
-            if (!redisTemplate.hasKey(key)) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码过期");
-            }
-            String o = (String) redisTemplate.opsForValue().get(key);
-            if (!o.equals(vcode)) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码错误");
+            if (!batctReg) {
+                String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+                if (!redisTemplate.hasKey(key)) {
+                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码过期");
+                }
+                String o = (String) redisTemplate.opsForValue().get(key);
+                if (!o.equals(vcode)) {
+                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "验证码错误");
+                }
             }
             UserDTO userDTO = regist(proxydto, recommendId, account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if (userDTO == null) {
