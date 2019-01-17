@@ -1,61 +1,29 @@
-package com.passport.domain;
+package com.passport.rpc.dto;
 
-import com.common.util.AbstractBaseEntity;
-import com.common.util.IUserEntity;
+import com.common.util.AbstractDTO;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 客户用户信息
+ * Created by shilun on 16-12-5.
  */
-public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
-    /**
-     * 用户pin
-     */
-    private String pin;
-
-    /**
-     * 第三方账户
-     */
-    private String refId;
-    /**
-     * 代理商id
-     */
-    private Long proxyId;
-    /**
-     * 昵称
-     */
-    private String nickName;
-    /**
-     * 电话
-     */
-    private String phone;
-    /**
-     * 邮件
-     */
+public class PopUserDTO extends AbstractDTO implements Serializable {
+    private static final long serialVersionUID = 8642175623513171274L;
     private String email;
-    /**密码*/
-    private String passwd;
-    /**
-     * 性别
-     */
+    private String pin;
+    private String nickName;
+    private String phone;
+    private String birthday;
     private Integer sexType;
-    /**
-     * 用户状态
-     */
-    private Integer status;
-    /**
-     * 是否推广用户 1是  2否
-     */
-    private Integer popularize;
-
-
+    private Boolean initPass;
+    private String token;
+    private Long proxyId;
     private Date birthDay;
-
-    /**
-     * 注册ip
-     */
+    private String realName;
     private String registerIp;
+    private String upPin;
+    private String passwd;
 
     // 头像URL
     private String headUrl;
@@ -64,32 +32,40 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     private String wechat;
     //身份证号
     private String idCard;
-    //身份证上的名字
-    private String realName;
     //qq
     private Long qq;
-    //(推荐)二维码图片名字
+    /**
+     * 用户状态
+     */
+    private Integer status;
+    //二维码图片地址
     private String qrName;
 
+    private Date createTime;
+    //是否机器人  1.否  2.是
+    private Integer robot;
     //签名
     private String sign;
+    /**
+     * 是否推广用户 1是  2否
+     */
+    private Integer popularize;
 
-    //上线用户
-    private String upPin;
 
-    public String getRefId() {
-        return refId;
+    public String getToken() {
+        return token;
     }
 
-    public void setRefId(String refId) {
-        this.refId = refId;
-    }
-    public Long getProxyId() {
-        return proxyId;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public void setProxyId(Long proxyId) {
-        this.proxyId = proxyId;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPin() {
@@ -116,20 +92,20 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
         this.phone = phone;
     }
 
-    public String getEmail() {
-        return email;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
-    public String getPasswd() {
-        return passwd;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setPasswd(String passwd) {
-        this.passwd = passwd;
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 
     public Integer getSexType() {
@@ -140,13 +116,20 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
         this.sexType = sexType;
     }
 
-
-    public Integer getStatus() {
-        return status;
+    public Boolean getInitPass() {
+        return initPass;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setInitPass(Boolean initPass) {
+        this.initPass = initPass;
+    }
+
+    public Long getProxyId() {
+        return proxyId;
+    }
+
+    public void setProxyId(Long proxyId) {
+        this.proxyId = proxyId;
     }
 
     public Date getBirthDay() {
@@ -156,6 +139,7 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
     }
+
 
     public String getRegisterIp() {
         return registerIp;
@@ -189,14 +173,6 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
         this.idCard = idCard;
     }
 
-    public String getRealName() {
-        return realName;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
-    }
-
     public Long getQq() {
         return qq;
     }
@@ -205,20 +181,18 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
         this.qq = qq;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public String getQrName() {
         return qrName;
     }
 
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    @Deprecated
     public void setQrName(String qrName) {
         this.qrName = qrName;
     }
@@ -231,11 +205,43 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
         this.upPin = upPin;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Integer getRobot() {
+        return robot;
+    }
+
+    public void setRobot(Integer robot) {
+        this.robot = robot;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
     public Integer getPopularize() {
         return popularize;
     }
 
     public void setPopularize(Integer popularize) {
         this.popularize = popularize;
+    }
+
+    public String getPasswd() {
+        return passwd;
+    }
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
     }
 }

@@ -1,10 +1,10 @@
 package com.passport.service.rpc;
 
 import com.common.security.DesDecrypter;
-import com.common.util.BeanCoper;
-import com.common.util.PageInfo;
-import com.common.util.RPCResult;
-import com.common.util.StringUtils;
+import com.common.security.MD5;
+import com.common.util.*;
+import com.common.util.model.SexEnum;
+import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
 import com.passport.rpc.UserRPCService;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +43,9 @@ public class UserRPCServiceImpl implements UserRPCService {
     private final String LOGIN_TOKEN = "passport.login.token.{0}";
     @Value("${app.token.encode.key}")
     private String appTokenEncodeKey;
+    @Value("${app.passKey}")
+    private String passKey;
+
 
     @Override
     public RPCResult<Long> findUserCodeByPin(Long proxyId, String pin) {
@@ -358,4 +362,30 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return result;
     }
+
+    @Override
+    public RPCResult<Boolean> addPopUser(Long proxyId, String nickName, String pass) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            PopUserDTO dto = new PopUserDTO();
+            String head = String.valueOf(1 + (int) (Math.random() * 20));
+            dto.setProxyId(proxyId);
+            dto.setNickName(nickName);
+            dto.setHeadUrl(head);
+            dto.setPasswd(MD5.MD5Str(pass, passKey));
+            dto.setSexType(SexEnum.MALE.getValue());
+            dto.setStatus(YesOrNoEnum.YES.getValue());
+            dto.setBirthDay(new Date());
+            dto.setPopularize(YesOrNoEnum.YES.getValue());
+            Boolean isTrue = clientUserInfoService.addPopUser(dto);
+            result.setSuccess(isTrue);
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setCode("addPopUser.error");
+            result.setMessage("添加用户失败");
+            logger.error("添加用户失败", e);
+        }
+        return result;
+    }
+
 }
