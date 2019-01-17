@@ -316,6 +316,10 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 String oldTokenKey = o1.toString();
                 redisTemplate.delete(oldTokenKey);
             }
+            //默认用户无该数据则设置为 不是推广人
+            if(userInfo.getPopularize()==null){
+                userInfo.setPopularize(YesOrNoEnum.NO.getValue());
+            }
             dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
 
@@ -372,6 +376,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
             redisTemplate.delete(oldTokenKey);
             redisTemplate.delete(login_pin_key);
+        }
+        if(userInfo.getPopularize()==null){
+            userInfo.setPopularize(YesOrNoEnum.NO.getValue());
         }
         String newToken = StringUtils.getUUID();
         UserDTO dto = new UserDTO();
