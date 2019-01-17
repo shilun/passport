@@ -9,9 +9,6 @@
         <version>1.5.10.RELEASE</version>
     </parent>
     <artifactId>com.passport.main</artifactId>
-    <properties>
-        <log.level>debug</log.level>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>passport</groupId>
