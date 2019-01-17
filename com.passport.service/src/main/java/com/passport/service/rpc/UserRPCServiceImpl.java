@@ -98,10 +98,12 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return rpcResult;
     }
-    private String PROXY_PIN="passport.findByPin.proxy:{0}.pin:{1}";
+
+    private String PROXY_PIN = "passport.findByPin.proxy:{0}.pin:{1}";
+
     @Override
     public RPCResult<UserDTO> findByPin(Long proxyId, String pin) {
-        String key=MessageFormat.format(PROXY_PIN,proxyId,pin);
+        String key = MessageFormat.format(PROXY_PIN, proxyId, pin);
         RPCResult<UserDTO> rpcResult = new RPCResult<>();
         try {
             if (StringUtils.isBlank(pin)) {
@@ -132,7 +134,6 @@ public class UserRPCServiceImpl implements UserRPCService {
         }
         return rpcResult;
     }
-
 
 
     @Override
@@ -265,7 +266,7 @@ public class UserRPCServiceImpl implements UserRPCService {
                 result.setCode("find.result.null");
                 return result;
             }
-            BeanCoper.copyProperties(info,dto);
+            BeanCoper.copyProperties(info, dto);
             clientUserInfoService.save(info);
             result.setSuccess(true);
         } catch (Exception e) {
@@ -336,17 +337,17 @@ public class UserRPCServiceImpl implements UserRPCService {
     public RPCResult<UserDTO> queryUser(Long proxyId, Long userCode) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
-            if(proxyId == null || userCode == null){
+            if (proxyId == null || userCode == null) {
                 result.setSuccess(false);
                 result.setCode("param.null");
                 return result;
             }
-            
+
             ClientUserInfo info = new ClientUserInfo();
             info.setProxyId(proxyId);
             info.setId(userCode);
             List<ClientUserInfo> list = clientUserInfoService.query(info);
-            if(list == null || list.size() < 1){
+            if (list == null || list.size() < 1) {
                 result.setSuccess(false);
                 result.setCode("find.result.null");
                 return result;
@@ -379,10 +380,35 @@ public class UserRPCServiceImpl implements UserRPCService {
             dto.setPopularize(YesOrNoEnum.YES.getValue());
             Boolean isTrue = clientUserInfoService.addPopUser(dto);
             result.setSuccess(isTrue);
-        }catch (Exception e){
+        } catch (Exception e) {
             result.setSuccess(false);
             result.setCode("addPopUser.error");
             result.setMessage("添加用户失败");
+            logger.error("添加用户失败", e);
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> resetPass(Long proxyId, Long id) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            ClientUserInfo clientUserInfo = clientUserInfoService.findById(id);
+            if (clientUserInfo == null) {
+                result.setSuccess(false);
+                result.setMessage("用户不存在");
+                return result;
+            }
+            clientUserInfo = new ClientUserInfo();
+            clientUserInfo.setId(id);
+            clientUserInfo.setPasswd(MD5.MD5Str("9zfd888", passKey));
+            clientUserInfoService.save(clientUserInfo);
+            result.setSuccess(true);
+            result.setMessage("重置密码成功");
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode("resetPass.error");
+            result.setMessage("重置密码失败");
             logger.error("添加用户失败", e);
         }
         return result;

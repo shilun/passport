@@ -1518,6 +1518,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 Map<String, Object> objs = new HashMap<>();
                 objs.put("pin", upEntity.getPin());
                 objs.put("upPin", "0");
+                objs.put("popularize", "1");
                 objs.put("proxyId", proxyId);
                 String host = "http://" + server + ":" + port + url;
 
