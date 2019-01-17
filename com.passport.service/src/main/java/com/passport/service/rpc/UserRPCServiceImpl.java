@@ -390,7 +390,7 @@ public class UserRPCServiceImpl implements UserRPCService {
     }
 
     @Override
-    public RPCResult<Boolean> resetPass(Long proxyId, Long id) {
+    public RPCResult<Boolean> resetPass(Long proxyId, Long id,String pass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             ClientUserInfo clientUserInfo = clientUserInfoService.findById(id);
@@ -401,7 +401,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             }
             clientUserInfo = new ClientUserInfo();
             clientUserInfo.setId(id);
-            clientUserInfo.setPasswd(MD5.MD5Str("9zfd888", passKey));
+            clientUserInfo.setPasswd(MD5.MD5Str(pass, passKey));
             clientUserInfoService.save(clientUserInfo);
             result.setSuccess(true);
             result.setMessage("重置密码成功");

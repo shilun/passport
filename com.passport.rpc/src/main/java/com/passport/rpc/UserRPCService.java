@@ -83,5 +83,5 @@ public interface UserRPCService {
     RPCResult<Boolean> addPopUser(Long proxyId,String nickName,String pass);
 
 
-    RPCResult<Boolean> resetPass(Long proxyId,Long id);
+    RPCResult<Boolean> resetPass(Long proxyId,Long id,String pass);
 }
