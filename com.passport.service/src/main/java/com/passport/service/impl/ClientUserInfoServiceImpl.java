@@ -16,6 +16,7 @@ import com.passport.domain.LimitInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
 import com.passport.rpc.dto.LimitType;
+import com.passport.rpc.dto.PopUserDTO;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.*;
@@ -42,8 +43,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -853,6 +852,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setIdCard(idCard);
             entity.setRealName(realName);
             entity.setQq(qq);
+            entity.setPopularize(YesOrNoEnum.NO.getValue());
             entity.setRegisterIp(ip);
             super.save(entity);
 
@@ -869,14 +869,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String pin = entity.getPin();
             limitInfoService.addIpRegisterNum(ip);
 
-
-//        recommendRPCService.init(pin, recommendId == null ? "0" : recommendId, proxyId);
-            //调用HTTP接口初始化推荐 人信息
-
-//
-//            fixedThreadPool.execute(new Runnable() {
-//                @Override
-//                public void run() {
             try {
                 HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
                 Map<String, Object> objs = new HashMap<>();
@@ -901,11 +893,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 super.up(entity);
                 return null;
             }
-//                }
-//            });
-
         } catch (Exception e) {
             logger.error("推荐人初始化异常", e);
+            return null;
         }
 
         return dto;
@@ -1502,4 +1492,55 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         return true;
     }
+
+    @Override
+    public Boolean addPopUser(PopUserDTO dto) {
+        try {
+            Long proxyId = dto.getProxyId();
+            ClientUserInfo entity = new ClientUserInfo();
+            BeanCoper.copyProperties(entity, dto);
+            super.save(entity);
+            ClientUserInfo upEntity = new ClientUserInfo();
+            upEntity.setId(entity.getId());
+            upEntity.setUpPin("0");
+            upEntity.setPin(String.valueOf(entity.getId()));
+            upEntity.setPhone(entity.getProxyId() + "_" + entity.getId());
+            super.up(upEntity);
+            try {
+                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
+                Map<String, Object> objs = new HashMap<>();
+                objs.put("pin", upEntity.getPin());
+                objs.put("upPin", "0");
+                objs.put("proxyId", proxyId);
+                String host = "http://" + server + ":" + port + url;
+
+                String result = httpClientFactory.doPost(host, objs);
+                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
+                ClientUserInfo newEntity = new ClientUserInfo();
+                if (!(boolean) resultMap.get("success")) {
+                    logger.error("推荐人初始化失败");
+                    newEntity.setId(entity.getId());
+                    newEntity.setStatus(UserStatusEnum.Disable.getValue());
+                    super.up(newEntity);
+                    return false;
+                }
+                newEntity.setId(entity.getId());
+                newEntity.setStatus(UserStatusEnum.Normal.getValue());
+                super.up(newEntity);
+            } catch (Exception e) {
+                logger.error("推荐人初始化失败", e);
+                ClientUserInfo newEntity = new ClientUserInfo();
+                newEntity.setId(entity.getId());
+                newEntity.setStatus(UserStatusEnum.Disable.getValue());
+                super.up(newEntity);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("推荐人初始化异常", e);
+            return false;
+        }
+        return true;
+    }
+
+
 }

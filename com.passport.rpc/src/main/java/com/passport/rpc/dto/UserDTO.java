@@ -45,6 +45,11 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private Integer robot;
     //签名
     private String sign;
+    /**
+     * 是否推广用户 1是  2否
+     */
+    private Integer popularize;
+
 
     public String getToken() {
         return token;
@@ -221,5 +226,13 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     public void setSign(String sign) {
         this.sign = sign;
+    }
+
+    public Integer getPopularize() {
+        return popularize;
+    }
+
+    public void setPopularize(Integer popularize) {
+        this.popularize = popularize;
     }
 }

@@ -71,4 +71,14 @@ public interface UserRPCService {
     RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto);
 
     RPCResult<UserDTO> queryUser(Long proxyId,Long userCode);
+
+
+    /**
+     * 添加推广用户
+     * @param proxyId
+     * @param nickName
+     * @param pass
+     * @return
+     */
+    RPCResult<Boolean> addPopUser(Long proxyId,String nickName,String pass);
 }
