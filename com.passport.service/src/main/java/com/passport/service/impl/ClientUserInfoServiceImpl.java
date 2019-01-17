@@ -344,12 +344,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             throw new BizException("login.error", "当前ip被限制登陆");
         }
 
-
         if (StringUtils.isBlank(passwrd)) {
             throw new BizException("参数不能为空");
         }
-        if (!StringUtils.isMobileNO(account)) {
-            throw new BizException("手机号格式不正确");
+
+        if(account.indexOf("_") < 0 && !StringUtils.isMobileNO(account)){
+             throw new BizException("手机号格式不正确");
         }
 
         ClientUserInfo userInfo = findByPhone(proxyId, account);
