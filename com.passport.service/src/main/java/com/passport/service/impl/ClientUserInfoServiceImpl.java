@@ -373,6 +373,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             redisTemplate.delete(oldTokenKey);
             redisTemplate.delete(login_pin_key);
         }
+        if(userInfo.getPopularize()==null){
+            userInfo.setPopularize(YesOrNoEnum.NO.getValue());
+        }
         String newToken = StringUtils.getUUID();
         UserDTO dto = new UserDTO();
         BeanCoper.copyProperties(dto, userInfo);
