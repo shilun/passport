@@ -74,7 +74,7 @@ public interface UserRPCService {
 
 
     /**
-     * 添加推广用户
+     * 添加推广 用户
      * @param proxyId
      * @param nickName
      * @param pass
