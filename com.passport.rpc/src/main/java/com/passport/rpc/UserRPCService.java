@@ -74,11 +74,14 @@ public interface UserRPCService {
 
 
     /**
-     * 添加推广用户
+     * 添加推广 用户
      * @param proxyId
      * @param nickName
      * @param pass
      * @return
      */
     RPCResult<Boolean> addPopUser(Long proxyId,String nickName,String pass);
+
+
+    RPCResult<Boolean> resetPass(Long proxyId,Long id,String pass);
 }
