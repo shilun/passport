@@ -233,9 +233,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         String key = MessageFormat.format(REGISTER_SEND_SMS, account);
         int count = 0;
         if (redisTemplate.hasKey(key)) {
-            count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
-            if (count >= regSmsLimit) {
-                throw new BizException("今日获取注册验证码超过限制");
+            long expire = redisTemplate.getExpire(key);
+            long now = System.currentTimeMillis() / 1000;
+            if(now > expire){
+                redisTemplate.delete(key);
+            }else{
+                count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
+                if (count >= regSmsLimit) {
+                    throw new BizException("今日获取注册验证码超过限制");
+                }
             }
         }
         String code = AliyunMnsUtil.randomSixCode();
@@ -1244,9 +1250,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String key = MessageFormat.format(REGISTER_SEND_SMS, phone);
             int count = 0;
             if (redisTemplate.hasKey(key)) {
-                count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
-                if (count >= regSmsLimit) {
-                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取注册验证码超过限制");
+                long expire = redisTemplate.getExpire(key);
+                long now = System.currentTimeMillis() / 1000;
+                if(now > expire){
+                    redisTemplate.delete(key);
+                }else{
+                    count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
+                    if (count >= regSmsLimit) {
+                        return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取注册验证码超过限制");
+                    }
                 }
             }
 
@@ -1277,9 +1289,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String key = MessageFormat.format(FOTGETPASS_SEND_SMS, phone);
             int count = 0;
             if (redisTemplate.hasKey(key)) {
-                count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
-                if (count >= forgetPassSmsLimit) {
-                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取该验证码超过限制");
+                long expire = redisTemplate.getExpire(key);
+                long now = System.currentTimeMillis() / 1000;
+                if(now > expire){
+                    redisTemplate.delete(key);
+                }else{
+                    count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
+                    if (count >= forgetPassSmsLimit) {
+                        return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取该验证码超过限制");
+                    }
                 }
             }
 
