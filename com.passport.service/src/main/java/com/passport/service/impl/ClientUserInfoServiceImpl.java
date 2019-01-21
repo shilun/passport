@@ -1,5 +1,6 @@
 package com.passport.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.common.exception.ApplicationException;
 import com.common.exception.BizException;
 import com.common.httpclient.HttpClientUtil;
@@ -8,6 +9,7 @@ import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.DateUtil;
+import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
@@ -28,6 +30,7 @@ import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.HttpClientFactory;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
+import com.platform.rpc.RecommendRPCService;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,9 +111,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LogLoginService logLoginService;
     @Resource
     private LimitInfoService limitInfoService;
-//    @Reference(check = false)
-//    private RecommendRPCSer vice recommendRPCService;
-
+    @Reference
+    private RecommendRPCService recommendRPCService;
     @Resource
     private ProxyInfoService proxyInfoService;
     @Resource
@@ -233,9 +235,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         String key = MessageFormat.format(REGISTER_SEND_SMS, account);
         int count = 0;
         if (redisTemplate.hasKey(key)) {
-            count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
-            if (count >= regSmsLimit) {
-                throw new BizException("今日获取注册验证码超过限制");
+            long expire = redisTemplate.getExpire(key);
+            long now = System.currentTimeMillis() / 1000;
+            if(now > expire){
+                redisTemplate.delete(key);
+            }else{
+                count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
+                if (count >= regSmsLimit) {
+                    throw new BizException("今日获取注册验证码超过限制");
+                }
             }
         }
         String code = AliyunMnsUtil.randomSixCode();
@@ -861,6 +869,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setQq(qq);
             entity.setPopularize(YesOrNoEnum.NO.getValue());
             entity.setRegisterIp(ip);
+            entity.setStatus(UserStatusEnum.Disable.getValue());
             super.save(entity);
 
 
@@ -877,34 +886,37 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             limitInfoService.addIpRegisterNum(ip);
 
             try {
-                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
-                Map<String, Object> objs = new HashMap<>();
-                objs.put("pin", pin);
-                objs.put("upPin", recommendId);
-                objs.put("proxyId", proxyId);
-                String host = "http://" + server + ":" + port + url;
+//                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
+//                Map<String, Object> objs = new HashMap<>();
+//                objs.put("pin", pin);
+//                objs.put("upPin", recommendId);
+//                objs.put("proxyId", proxyId);
+//                String host = "http://" + server + ":" + port + url;
 
-                String result = httpClientFactory.doPost(host, objs);
-                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
-                if (!(boolean) resultMap.get("success")) {
-                    logger.error("推荐人初始化失败");
-                    entity.setStatus(UserStatusEnum.Disable.getValue());
-                    super.up(entity);
+//                String result = httpClientFactory.doPost(host, objs);
+//                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
+//                if (!(boolean) resultMap.get("success")) {
+//                    logger.error("推荐人初始化失败");
+//                    entity.setStatus(UserStatusEnum.Disable.getValue());
+//                    super.up(entity);
+//                    return null;
+//                }
+
+                RPCResult<Boolean> result = recommendRPCService.init(pin, recommendId, proxyId, null);
+                if (!result.getSuccess()) {
+                    logger.error(result.getMessage());
                     return null;
                 }
                 entity.setStatus(UserStatusEnum.Normal.getValue());
                 super.up(entity);
             } catch (Exception e) {
-                logger.error("推荐人初始化失败", e);
-                entity.setStatus(UserStatusEnum.Disable.getValue());
-                super.up(entity);
+                logger.error("推荐人初始化异常", e);
                 return null;
             }
         } catch (Exception e) {
             logger.error("推荐人初始化异常", e);
             return null;
         }
-
         return dto;
     }
 
@@ -1244,9 +1256,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String key = MessageFormat.format(REGISTER_SEND_SMS, phone);
             int count = 0;
             if (redisTemplate.hasKey(key)) {
-                count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
-                if (count >= regSmsLimit) {
-                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取注册验证码超过限制");
+                long expire = redisTemplate.getExpire(key);
+                long now = System.currentTimeMillis() / 1000;
+                if(now > expire){
+                    redisTemplate.delete(key);
+                }else{
+                    count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
+                    if (count >= regSmsLimit) {
+                        return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取注册验证码超过限制");
+                    }
                 }
             }
 
@@ -1277,9 +1295,15 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String key = MessageFormat.format(FOTGETPASS_SEND_SMS, phone);
             int count = 0;
             if (redisTemplate.hasKey(key)) {
-                count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
-                if (count >= forgetPassSmsLimit) {
-                    return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取该验证码超过限制");
+                long expire = redisTemplate.getExpire(key);
+                long now = System.currentTimeMillis() / 1000;
+                if(now > expire){
+                    redisTemplate.delete(key);
+                }else{
+                    count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
+                    if (count >= forgetPassSmsLimit) {
+                        return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "今日获取该验证码超过限制");
+                    }
                 }
             }
 
