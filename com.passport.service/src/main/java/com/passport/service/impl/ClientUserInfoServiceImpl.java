@@ -816,19 +816,21 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             //查询此ip是否被限制注册
             if (isRegisterLimit(ip)) {
-                throw new BizException("regist.error", "当前ip被限制注册");
+                throw new BizException("regist.error", "当前ip被限制注册 phone:"+phone);
             }
 
             if (proxydto == null) {
-                throw new BizException("proxyId.error", "代理商id错误");
+                throw new BizException("proxyId.error", "代理商id错误 "+phone);
             }
             if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
-                throw new BizException("phone.error", "电话号码错误");
+                logger.error("电话号码错误 "+phone);
+                throw new BizException("phone.error", "电话号码错误 "+phone);
             }
             if (StringUtils.isBlank(refId)) {
-                throw new BizException("refId.error", "参考账户不能为空");
+                throw new BizException("refId.error", "参考账户不能为空 ");
             }
             if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
+                logger.error("邮件地址错误 "+email);
                 throw new BizException("email.error", "邮件地址错误");
             }
             Date date = null;
@@ -846,6 +848,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             ClientUserInfo entity = findByPhone(proxyId, phone);
             if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
+                logger.error("该账号已经注册过了 "+phone);
                 throw new BizException("该账号已经注册过了");
             }
             if (StringUtils.isBlank(nick)) {
@@ -911,11 +914,16 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 super.up(entity);
             } catch (Exception e) {
                 logger.error("推荐人初始化异常", e);
-                return null;
+                throw new BizException("recommendRPCService.init.error","推荐人初始化异常 ");
             }
-        } catch (Exception e) {
+        }
+        catch (BizException e){
+            logger.error(e.getCode()+",message:"+e.getMessage());
+            throw e;
+        }
+        catch (Exception e) {
             logger.error("推荐人初始化异常", e);
-            return null;
+           throw new BizException("recommendRPCService.init.error","推荐人初始化异常");
         }
         return dto;
     }
@@ -1233,7 +1241,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             if (userDTO == null) {
                 return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "注册失败");
             }
-        } catch (Exception e) {
+        }
+        catch (BizException e) {
+            logger.error(e.getMessage(), e);
+            return OldPackageMapUtil.toFailMap(e.getCode(), e.getMessage());
+        }
+        catch (Exception e) {
             logger.error("", e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, e.getMessage());
         }
