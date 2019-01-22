@@ -849,7 +849,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             ClientUserInfo entity = findByPhone(proxyId, phone);
             if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
                 logger.error("该账号已经注册过了 "+phone);
-                throw new BizException("该账号已经注册过了");
+                throw new BizException("该账号已经注册过");
             }
             if (StringUtils.isBlank(nick)) {
                 nick = "玩家" + phone.substring(7);
@@ -1222,10 +1222,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip, String recommendId) {
         try {
-            ClientUserInfo info = findByPhone(proxydto.getId(), account);
-            if (info != null && info.getStatus().equals(UserStatusEnum.Normal.getValue())) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "该账号已存在");
-            }
+
 
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();
