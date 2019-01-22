@@ -26,6 +26,7 @@ import {ProxyUserViewComponent} from "./proxy-user-view/proxy-user-view.componen
 import {ProxyUserPassComponent} from "./proxy-user-pass/proxy-user-pass.component";
 import {ProxyConfigListComponent} from "./proxy-confg-list/proxy-config-list.component";
 import {ProxyConfigViewComponent} from "./proxy-config-view/proxy-config-view.component";
+import {SmsListComponent} from "./sms-list/sms-list.component";
 
 
 const routes: Routes = [
@@ -49,7 +50,8 @@ const routes: Routes = [
   {path: 'server/list', component: ServerListComponent},
   {path: 'server/view', component: ServerViewComponent},
   {path: 'software/list', component: SoftwareListComponent},
-  {path: 'software/view', component: SoftwareViewComponent}
+  {path: 'software/view', component: SoftwareViewComponent},
+  {path: 'sms/list', component: SmsListComponent},
 
 ];
 

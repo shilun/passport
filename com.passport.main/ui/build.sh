@@ -1,3 +1,3 @@
 cd $uipath
 npm i
-ng build
+ng build --prod --build--optimizer

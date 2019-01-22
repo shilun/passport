@@ -22,6 +22,7 @@ import {ServerService} from "./services/server.service";
 import {SoftwareService} from "./services/software.service";
 import {ProxyUserService} from "./services/proxy.user.service";
 import {ProxyconfigService} from "./services/proxyconfig.service";
+import {SmsService} from "./services/sms.service";
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -57,6 +58,7 @@ export function createTranslateLoader(http: HttpClient) {
     ProxyUserService,
     ProxyconfigService,
     ServerService,
+    SmsService,
     SoftwareService,
     {
       provide: LocationStrategy
