@@ -1,18 +1,15 @@
 package com.passport.service.rpc;
 
 import com.common.exception.BizException;
-import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.passport.domain.SMSInfo;
 import com.passport.rpc.SMSInfoRPCService;
-import com.passport.rpc.dto.SmsInfoDto;
 import com.passport.service.SMSInfoService;
 import com.passport.service.util.AliyunMnsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * Created by shilun on 2017/5/13.
