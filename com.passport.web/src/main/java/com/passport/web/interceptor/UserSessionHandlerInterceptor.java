@@ -44,13 +44,16 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         String token = request.getHeader("cToken");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
+            if (request.getCookies() == null) {
+                return null;
+            }
             for (Cookie item : request.getCookies()) {
                 if (StringUtils.equals(item.getName(), "cToken")) {
                     tokenCookie = item;
                     break;
                 }
             }
-            if(tokenCookie == null){
+            if (tokenCookie == null) {
                 return null;
             }
             token = tokenCookie.getValue();
@@ -64,7 +67,6 @@ public class UserSessionHandlerInterceptor implements HandlerInterceptor {
         }
         return result.getData();
     }
-
 
 
     @Override
