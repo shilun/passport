@@ -68,7 +68,7 @@ const routes: Routes = [
     ConfigListComponent, ConfigViewComponent, UserListComponent, UserViewComponent, AdminListComponent, AdminViewComponent,
     AdminPassComponent, RoleListComponent, RoleViewComponent, ProxyListComponent, ProxyViewComponent,ProxyPassComponent,
     ServerListComponent,ServerViewComponent, SoftwareListComponent, SoftwareViewComponent,ProxyUserListComponent,ProxyUserViewComponent,ProxyUserPassComponent,
-    ProxyConfigListComponent,ProxyConfigViewComponent
+    ProxyConfigListComponent,ProxyConfigViewComponent,SmsListComponent
   ]
 })
 
