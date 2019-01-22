@@ -914,7 +914,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 super.up(entity);
             } catch (Exception e) {
                 logger.error("推荐人初始化异常", e);
-                throw new BizException("recommendRPCService.init.error","推荐人初始化异常 ");
+                throw new BizException("recommendRPCService.init.error","注册异常");
             }
         }
         catch (BizException e){
@@ -923,7 +923,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         catch (Exception e) {
             logger.error("推荐人初始化异常", e);
-           throw new BizException("recommendRPCService.init.error","推荐人初始化异常");
+           throw new BizException("reg.error","注册异常");
         }
         return dto;
     }
