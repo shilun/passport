@@ -7,6 +7,7 @@ import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LogLoginInfo;
+import com.passport.domain.module.UserStatusEnum;
 import com.passport.rpc.UserRPCService;
 import com.passport.rpc.dto.*;
 import com.passport.service.ClientUserInfoService;
@@ -375,7 +376,7 @@ public class UserRPCServiceImpl implements UserRPCService {
             dto.setHeadUrl(head);
             dto.setPasswd(MD5.MD5Str(pass, passKey));
             dto.setSexType(SexEnum.MALE.getValue());
-            dto.setStatus(YesOrNoEnum.YES.getValue());
+            dto.setStatus(UserStatusEnum.Disable.getValue());
             dto.setBirthDay(new Date());
             dto.setPopularize(YesOrNoEnum.YES.getValue());
             Boolean isTrue = clientUserInfoService.addPopUser(dto);

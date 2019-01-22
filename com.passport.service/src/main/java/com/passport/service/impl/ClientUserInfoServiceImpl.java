@@ -1222,6 +1222,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip, String recommendId) {
         try {
+            ClientUserInfo info = findByPhone(proxydto.getId(), account);
+            if (info != null && info.getStatus().equals(UserStatusEnum.Normal.getValue())) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "该账号已存在");
+            }
+
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();
             if (length < 6 || length > 16) {
@@ -1239,7 +1244,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             UserDTO userDTO = regist(proxydto, recommendId, account, pass, account, null, null, SexEnum.MALE, null, ip, head, null, null, null, null);
             if (userDTO == null) {
-                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "注册失败");
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "注册失败,请重新注册");
             }
         }
         catch (BizException e) {
@@ -1291,7 +1296,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
 
             return map;
-        } catch (Exception e) {
+        }
+        catch (BizException e) {
+            logger.error(e.getMessage(), e);
+            return OldPackageMapUtil.toFailMap(e.getCode(), e.getMessage());
+        }
+        catch (Exception e) {
             logger.error("", e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, e.getMessage());
         }
@@ -1551,33 +1561,26 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             upEntity.setPhone(entity.getProxyId() + "_" + entity.getId());
             super.up(upEntity);
             try {
-                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
-                Map<String, Object> objs = new HashMap<>();
-                objs.put("pin", upEntity.getPin());
-                objs.put("upPin", "0");
-                objs.put("popularize", "1");
-                objs.put("proxyId", proxyId);
-                String host = "http://" + server + ":" + port + url;
-
-                String result = httpClientFactory.doPost(host, objs);
-                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
-                ClientUserInfo newEntity = new ClientUserInfo();
-                if (!(boolean) resultMap.get("success")) {
-                    logger.error("推荐人初始化失败");
-                    newEntity.setId(entity.getId());
-                    newEntity.setStatus(UserStatusEnum.Disable.getValue());
-                    super.up(newEntity);
+//                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
+//                Map<String, Object> objs = new HashMap<>();
+//                objs.put("pin", upEntity.getPin());
+//                objs.put("upPin", "0");
+//                objs.put("popularize", "1");
+//                objs.put("proxyId", proxyId);
+//                String host = "http://" + server + ":" + port + url;
+//                String result = httpClientFactory.doPost(host, objs);
+//                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
+                RPCResult<Boolean> result = recommendRPCService.init(upEntity.getPin(), "0", proxyId, "1");
+                if (!result.getSuccess()) {
+                    logger.error(result.getMessage());
                     return false;
                 }
+                ClientUserInfo newEntity = new ClientUserInfo();
                 newEntity.setId(entity.getId());
                 newEntity.setStatus(UserStatusEnum.Normal.getValue());
                 super.up(newEntity);
             } catch (Exception e) {
                 logger.error("推荐人初始化失败", e);
-                ClientUserInfo newEntity = new ClientUserInfo();
-                newEntity.setId(entity.getId());
-                newEntity.setStatus(UserStatusEnum.Disable.getValue());
-                super.up(newEntity);
                 return false;
             }
         } catch (Exception e) {
