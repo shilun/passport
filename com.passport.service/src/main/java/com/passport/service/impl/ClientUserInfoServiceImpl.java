@@ -1222,6 +1222,11 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public Map<String, Object> oldRegist(ProxyDto proxydto, String account, String vcode, String pass, String ip, String recommendId) {
         try {
+            ClientUserInfo info = findByPhone(proxydto.getId(), account);
+            if (info != null && info.getStatus().equals(UserStatusEnum.Normal.getValue())) {
+                return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, "该账号已存在");
+            }
+
             String head = String.valueOf(1 + (int) (Math.random() * 20));
             int length = pass.trim().length();
             if (length < 6 || length > 16) {
@@ -1291,7 +1296,12 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
 
             return map;
-        } catch (Exception e) {
+        }
+        catch (BizException e) {
+            logger.error(e.getMessage(), e);
+            return OldPackageMapUtil.toFailMap(e.getCode(), e.getMessage());
+        }
+        catch (Exception e) {
             logger.error("", e);
             return OldPackageMapUtil.toFailMap(HttpStatusCode.CODE_BAD_REQUEST, e.getMessage());
         }
