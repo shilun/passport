@@ -42,6 +42,10 @@ export const menu = [
       {
         text: '软件管理',
         link: '/system/software/list'
+      },
+      {
+        text: '短信管理',
+        link: '/system/sms/list'
       }
     ]
   }
