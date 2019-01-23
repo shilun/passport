@@ -361,7 +361,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
 
         ClientUserInfo userInfo = findByPhone(proxyId, account);
-        if (userInfo == null || !userInfo.getStatus().equals(UserStatusEnum.Normal.getValue())) {
+        if (userInfo == null || UserStatusEnum.Disable.getValue()==userInfo.getStatus().intValue()) {
             throw new BizException("无法找到该用户,请注册");
         }
 
