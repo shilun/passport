@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title>请在浏览器中打开</title>
+    <link rel="stylesheet" href="/static/css/vchat.css"/>
 </head>
 <body>
 
-<div><h1></h1>请在浏览器中打开</div>
-<div th:text="${url}"></div>
+<div class="tips-layer" id="tips-layer">
+    <div class="layer-container">
+        <div class="layer-top">
+            <div class="layer-arrow">
+                <img src="/static/imgs/vchat/jiantou.png" alt=""/>
+            </div>
+        </div>
+        <div class="layer-tips-text">
+            <img src="/static/imgs/vchat/pic2.png" alt=""/>
+        </div>
+        <div class="layer-button">
+            <span class="layer-icon-more"><img src="/static/imgs/vchat/gengduo.png" alt=""/></span>
+            <span class="layer-icon-btn"><img src="/static/imgs/vchat/pic1.png" alt=""/></span>
+        </div>
+    </div>
+</div>
 
+
+<script src="/static/js/vchat.js"></script>
 </body>
 </html>
