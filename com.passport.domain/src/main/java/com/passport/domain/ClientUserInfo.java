@@ -2,6 +2,7 @@ package com.passport.domain;
 
 import com.common.util.AbstractBaseEntity;
 import com.common.util.IUserEntity;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.Date;
 
@@ -34,7 +35,9 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
      * 邮件
      */
     private String email;
-    /**密码*/
+    /**
+     * 密码
+     */
     private String passwd;
     /**
      * 性别
@@ -84,6 +87,7 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
     public void setRefId(String refId) {
         this.refId = refId;
     }
+
     public Long getProxyId() {
         return proxyId;
     }
@@ -237,5 +241,10 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
 
     public void setPopularize(Integer popularize) {
         this.popularize = popularize;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this).toString();
     }
 }
