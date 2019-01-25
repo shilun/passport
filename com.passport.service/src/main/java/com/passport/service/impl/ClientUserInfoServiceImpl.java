@@ -27,7 +27,6 @@ import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
-import com.passport.service.util.HttpClientFactory;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
 import com.platform.rpc.RecommendRPCService;
