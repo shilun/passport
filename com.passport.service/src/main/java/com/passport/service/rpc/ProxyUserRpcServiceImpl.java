@@ -131,6 +131,14 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
         return result;
     }
 
+    /**
+     * @param cId     修改密码操作者的ID
+     * @param proxyId
+     * @param id      被修改密码的ID
+     * @param oldPass
+     * @param newPass
+     * @return
+     */
     @Override
     public RPCResult<Boolean> changePass(Long cId, Long proxyId, Long id, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
@@ -151,26 +159,29 @@ public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
             if (byId.getProxyId().longValue() != proxyId) {
                 result.setSuccess(false);
                 result.setCode("data.error");
-                result.setMessage("数据失败");
+                result.setMessage("proxyId验证失败");
+                return result;
             }
-            ProxyUserInfo query = new ProxyUserInfo();
 
             ProxyUserInfo cProxyUserInfo = proxyUserInfoService.findById(cId);
-            query = proxyUserInfoService.findByOne(query);
+            //权限长度小于3表示非超级管理员，修改密码需要验证旧密码
             if (cProxyUserInfo.getRoles().length < 3) {
                 oldPass = MD5.MD5Str(oldPass, passKey);
-                if (!oldPass.equalsIgnoreCase(query.getPass())) {
-                    throw new BizException("change.pass.error", "修改密码失败:旧密码失败");
+                if (!oldPass.equalsIgnoreCase(cProxyUserInfo.getPass())) {
+                    result.setData(false);
+                    result.setSuccess(false);
+                    result.setMessage("旧密码与新密码不一致");
+                    return result;
                 }
             }
             newPass = MD5.MD5Str(newPass, passKey);
-            Long userId = query.getId();
-            query = new ProxyUserInfo();
-            query.setId(userId);
+            ProxyUserInfo query = new ProxyUserInfo();
+            query.setId(id);
             query.setPass(newPass);
-            result.setData(true);
             proxyUserInfoService.save(query);
+            result.setData(true);
             result.setSuccess(true);
+            result.setMessage("修改成功");
         } catch (Exception e) {
             logger.error("修改密码失败", e);
             result.setSuccess(false);
