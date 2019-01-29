@@ -53,6 +53,7 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
     private LimitInfoService limitInfoService;
 
     private final String loginTokenKey="passport.proxy.token.{0}";
+    private final String LOGIN_PIN = "passport.login.{0}.{1}";
     @Resource
     private RedisTemplate redisTemplate;
 
@@ -538,11 +539,20 @@ public class ProxyRpcServiceImpl implements ProxyRpcService {
             Long proxyId = dto.getProxyId();
             String pin = dto.getPin();
             LimitInfo limitInfo = new LimitInfo();
+
             if(StringUtils.isNotBlank(ip)){
                 limitInfo.setIp(ip);
             }else if(proxyId != null && StringUtils.isNotBlank(pin)){
                 limitInfo.setProxyId(proxyId);
                 limitInfo.setPin(pin);
+
+                //如果是对pin限制，查找redis中是否有token的缓存
+                String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId,pin);
+                if(redisTemplate.hasKey(login_pin_key)){
+                    String tokenKey = redisTemplate.opsForValue().get(login_pin_key).toString();
+                    redisTemplate.delete(tokenKey);
+                    redisTemplate.delete(login_pin_key);
+                }
             }else{
                 result.setSuccess(false);
                 result.setCode("param.null");
