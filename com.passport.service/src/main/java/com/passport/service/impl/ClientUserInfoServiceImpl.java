@@ -315,7 +315,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 throw new BizException("login.error", "当前用户被限制登陆");
             }
 
-            String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId,userInfo.getPin());
             Object o1 = redisTemplate.opsForValue().get(login_pin_key);
             String newToken = StringUtils.getUUID();
             UserDTO dto = null;
@@ -331,7 +331,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             BeanCoper.copyProperties(dto, userInfo);
 
             String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
-            redisTemplate.opsForValue().set(login_pin_key, newTokenKey, 7, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
             redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
             //删除验证码
             redisTemplate.delete(key);
