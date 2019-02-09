@@ -1,6 +1,7 @@
 package com.passport.service.rpc;
 
 import com.common.exception.BizException;
+import com.common.rpc.StatusRpcServiceImpl;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
