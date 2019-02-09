@@ -1,6 +1,7 @@
 package com.passport.rpc;
 
 
+import com.common.rpc.StatusRpcService;
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.UserDTO;
 
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * 管理员接口
  */
-public interface AdminRPCService {
+public interface AdminRPCService extends StatusRpcService {
     /**
      * 管理员登录1
      *

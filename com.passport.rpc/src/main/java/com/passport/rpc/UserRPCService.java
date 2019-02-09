@@ -1,5 +1,6 @@
 package com.passport.rpc;
 
+import com.common.rpc.StatusRpcService;
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * 客户webservice接口
  * Created by shilun on 16-12-5.
  */
-public interface UserRPCService {
+public interface UserRPCService extends StatusRpcService {
 
     /**
      * 查询用户code

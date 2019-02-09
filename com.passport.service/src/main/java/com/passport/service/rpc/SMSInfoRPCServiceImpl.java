@@ -1,6 +1,7 @@
 package com.passport.service.rpc;
 
 import com.common.exception.BizException;
+import com.common.rpc.StatusRpcServiceImpl;
 import com.common.util.RPCResult;
 import com.passport.domain.SMSInfo;
 import com.passport.rpc.SMSInfoRPCService;
@@ -17,7 +18,7 @@ import javax.annotation.Resource;
 
 @Service
 @com.alibaba.dubbo.config.annotation.Service
-public class SMSInfoRPCServiceImpl implements SMSInfoRPCService {
+public class SMSInfoRPCServiceImpl extends StatusRpcServiceImpl implements SMSInfoRPCService {
 
     @Resource
     private SMSInfoService smsInfoService;

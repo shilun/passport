@@ -2,6 +2,7 @@ package com.passport.service.rpc;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.common.exception.BizException;
+import com.common.rpc.StatusRpcServiceImpl;
 import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
@@ -36,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service(timeout = 1000)
 @org.springframework.stereotype.Service
-public class ProxyRpcServiceImpl implements ProxyRpcService {
+public class ProxyRpcServiceImpl extends StatusRpcServiceImpl implements ProxyRpcService {
 
     private final static Logger logger = Logger.getLogger(ProxyRpcServiceImpl.class);
     @Value("${app.passKey}")

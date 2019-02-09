@@ -1,11 +1,12 @@
 package com.passport.rpc;
 
+import com.common.rpc.StatusRpcService;
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.ProxyUserDto;
 
 import java.util.List;
 
-public interface ProxyUserRpcService {
+public interface ProxyUserRpcService extends StatusRpcService {
 
 
     /**

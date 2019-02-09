@@ -1,5 +1,6 @@
 package com.passport.service.rpc;
 
+import com.common.rpc.StatusRpcServiceImpl;
 import com.common.security.DesDecrypter;
 import com.common.security.MD5;
 import com.common.util.*;
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @com.alibaba.dubbo.config.annotation.Service(timeout = 1000)
-public class UserRPCServiceImpl implements UserRPCService {
+public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCService {
 
     private final Logger logger = Logger.getLogger(UserRPCServiceImpl.class);
 

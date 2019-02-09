@@ -1,5 +1,6 @@
 package com.passport.rpc;
 
+import com.common.rpc.StatusRpcService;
 import com.common.util.RPCResult;
 import com.passport.rpc.dto.*;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * 查询代理商信息
  */
-public interface ProxyRpcService {
+public interface ProxyRpcService extends StatusRpcService {
     /**
      * 查询所有代理商
      *

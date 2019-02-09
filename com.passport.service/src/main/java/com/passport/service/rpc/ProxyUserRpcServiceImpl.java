@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @com.alibaba.dubbo.config.annotation.Service(interfaceClass = ProxyUserRpcService.class)
-public class ProxyUserRpcServiceImpl implements ProxyUserRpcService {
+public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements ProxyUserRpcService {
     private static final Logger logger = Logger.getLogger(ProxyUserRpcServiceImpl.class);
     @Resource
     private ProxyUserInfoService proxyUserInfoService;
