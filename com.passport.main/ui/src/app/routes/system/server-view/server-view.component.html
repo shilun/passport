@@ -24,12 +24,12 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">代理商</label>
                 <div class="col-sm-6">
-                  <select id="proxy" name="status" [(ngModel)]='entity.proxy' class="form-control"
-                          [formControl]="valForm.controls['status']" formControlName="status">
+                  <select id="proxy" name="proxyId" [(ngModel)]='entity.proxyId' class="form-control"
+                          [formControl]="valForm.controls['proxyId']" formControlName="proxyId">
                     <option *ngFor="let item of statuses" [value]="item.value">{{item.name}}</option>
                   </select>
                   <span class="text-danger"
-                        *ngIf="valForm.controls['proxy'].hasError('required') && (valForm.controls['proxy'].dirty || valForm.controls['proxy'].touched)">必选项</span>
+                        *ngIf="valForm.controls['proxyId'].hasError('required') && (valForm.controls['proxyId'].dirty || valForm.controls['proxyId'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>
