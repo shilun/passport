@@ -26,7 +26,7 @@
                 <div class="col-sm-6">
                   <select id="proxy" name="proxyId" [(ngModel)]='entity.proxyId' class="form-control"
                           [formControl]="valForm.controls['proxyId']" formControlName="proxyId">
-                    <option *ngFor="let item of statuses" [value]="item.value">{{item.name}}</option>
+                    <option *ngFor="let item of proxyes" [value]="item.value">{{item.name}}</option>
                   </select>
                   <span class="text-danger"
                         *ngIf="valForm.controls['proxyId'].hasError('required') && (valForm.controls['proxyId'].dirty || valForm.controls['proxyId'].touched)">必选项</span>
