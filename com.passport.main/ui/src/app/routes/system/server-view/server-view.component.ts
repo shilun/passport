@@ -16,7 +16,7 @@ export class ServerViewComponent extends AbstractController implements OnInit {
   proxyes: Array<any>;
   constructor(fm: FormBuilder, baseService: ServerService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
-    this.entity = {id:'',gameType: '',gameId:'',status:'', serverId: '', ip: '', port: '', evironment: ''};
+    this.entity = {id:'',gameType: '',proxyId:'',gameId:'',status:'', serverId: '', ip: '', port: '', evironment: ''};
     this.valForm = this.buildFormGroup(fm);
   }
 
@@ -26,6 +26,7 @@ export class ServerViewComponent extends AbstractController implements OnInit {
       'ip': [null],
       'port': [null],
       'evironment': [null],
+      'proxyId': [null, Validators.required],
       'serverId': [null, Validators.required],
       'gameType': [null, Validators.required],
       'gameId': [null, Validators.required],
@@ -34,6 +35,7 @@ export class ServerViewComponent extends AbstractController implements OnInit {
   }
 
   async ngOnInit() {
+    await this.viewById();
     let result = await this.globalService.list('yesorno');
     if (result.success) {
       this.statuses = result.data.list;
@@ -42,9 +44,6 @@ export class ServerViewComponent extends AbstractController implements OnInit {
     if (result.success) {
       this.proxyes = result.data.list;
     }
-    await this.viewById();
-
-
   }
 
   public save() {

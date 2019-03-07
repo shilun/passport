@@ -47,11 +47,6 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
         return info;
     }
 
-    public static void main(String[] args) {
-        String s = MD5.MD5Str("superadmin!Q@W", "389be01753974410b384ee45a4bc8517");
-        System.out.println(s);
-
-    }
     public AdminUserInfo findByPin(String pin) {
         AdminUserInfo query = new AdminUserInfo();
         query.setPin(pin);

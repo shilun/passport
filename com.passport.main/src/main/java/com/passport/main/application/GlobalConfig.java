@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 @Configuration
-public class GlobalConfig {
+public class  GlobalConfig {
 
     @Value("${app.sms.aliyun.accessId}")
     private String smsAliyunAccessId;

@@ -121,6 +121,12 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
         try {
             String loginPinToken = MessageFormat.format(loginTokenKey, loginToken);
             Object o = redisTemplate.opsForValue().get(loginPinToken);
+            if(o==null){
+                result.setSuccess(false);
+                result.setCode("verfiyToken.error");
+                result.setMessage("验证token失败");
+                return result;
+            }
             result.setData((ProxyUserDto) o);
             result.setSuccess(true);
         } catch (Exception e) {
