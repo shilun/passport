@@ -6,6 +6,7 @@ import com.common.util.AbstractBaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Transient;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -65,6 +66,42 @@ public class ProxyInfo extends AbstractBaseEntity {
     private String pass;
     private String headImgUrl;
     private String realName;
+    /**
+     * 彩票费率
+     */
+    private BigDecimal cpRate;
+    /**
+     * 棋牌费率
+     */
+    private BigDecimal qpRate;
+    /**
+     * 服务费
+     */
+    private BigDecimal serviceMoney;
+
+    public BigDecimal getCpRate() {
+        return cpRate;
+    }
+
+    public void setCpRate(BigDecimal cpRate) {
+        this.cpRate = cpRate;
+    }
+
+    public BigDecimal getQpRate() {
+        return qpRate;
+    }
+
+    public void setQpRate(BigDecimal qpRate) {
+        this.qpRate = qpRate;
+    }
+
+    public BigDecimal getServiceMoney() {
+        return serviceMoney;
+    }
+
+    public void setServiceMoney(BigDecimal serviceMoney) {
+        this.serviceMoney = serviceMoney;
+    }
 
     public Date getEndTime() {
         return endTime;

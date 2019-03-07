@@ -16,7 +16,8 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
 
   constructor(fm: FormBuilder, baseService: ProxyService, protected globalService: GlobalService, route: ActivatedRoute, router: Router) {
     super(baseService, route, router);
-    this.entity = { name: '', status: '', phone: '', id: '', domain: '', linkMan: '',games:[], remark: '',endTime:'',token:'',encodingKey:''};
+    this.entity = { name: '', status: '', phone: '', id: '', domain: '', linkMan: '',games:[], remark: '',
+      endTime:'',token:'',encodingKey:'',cpRate:'',qpRate:'',serviceMoney:''};
     this.valForm = this.buildFormGroup(fm);
   }
 
@@ -31,7 +32,10 @@ export class ProxyViewComponent extends AbstractController implements OnInit {
       'remark': [null],
       'status': [null, Validators.required],
       'phone': [null, Validators.required],
-      'linkMan': [null, Validators.required]
+      'linkMan': [null, Validators.required],
+      'cpRate': [null, Validators.required],
+      'qpRate': [null, Validators.required],
+      'serviceMoney': [null, Validators.required]
     });
   }
 
