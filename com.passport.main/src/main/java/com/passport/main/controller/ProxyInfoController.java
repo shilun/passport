@@ -6,10 +6,10 @@ import com.common.util.DateUtil;
 import com.common.util.StringUtils;
 import com.passport.domain.ProxyInfo;
 import com.passport.main.controller.dto.IdChangePassDto;
+import com.passport.rpc.dto.ProxyDto;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyInfoService;
 import com.passport.main.AbstractClientController;
-import com.passport.main.controller.dto.ProxyDto;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -85,6 +85,10 @@ public class ProxyInfoController extends AbstractClientController {
             entity.setRemark(info.getRemark());
             entity.setStatus(info.getStatus());
             entity.setId(info.getId());
+            //新加代理商配置
+            entity.setCpRate(info.getCpRate());
+            entity.setQpRate(info.getQpRate());
+            entity.setServiceMoney(info.getServiceMoney());
             return proxyInfoService.save(entity);
         });
     }

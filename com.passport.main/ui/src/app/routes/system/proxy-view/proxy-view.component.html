@@ -119,6 +119,39 @@
                 </div>
               </div>
             </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">彩票费率</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="cpRate" formControlName="cpRate"
+                         [formControl]="valForm.controls['cpRate']" [(ngModel)]="entity.cpRate"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['cpRate'].hasError('required') && (valForm.controls['cpRate'].dirty || valForm.controls['cpRate'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">棋牌费率</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="qpRate" formControlName="qpRate"
+                         [formControl]="valForm.controls['qpRate']" [(ngModel)]="entity.qpRate"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['qpRate'].hasError('required') && (valForm.controls['qpRate'].dirty || valForm.controls['qpRate'].qpRate)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">服务费</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="text" id="serviceMoney" formControlName="serviceMoney"
+                         [formControl]="valForm.controls['serviceMoney']" [(ngModel)]="entity.serviceMoney"/>
+                  <span class="text-danger"
+                        *ngIf="valForm.controls['serviceMoney'].hasError('required') && (valForm.controls['serviceMoney'].dirty || valForm.controls['serviceMoney'].touched)">必选项</span>
+                </div>
+              </div>
+            </fieldset>
           </div>
           <div class="panel-footer text-center">
             <button class="btn btn-info" type="submit" [disabled]="!valForm.valid">保存</button>

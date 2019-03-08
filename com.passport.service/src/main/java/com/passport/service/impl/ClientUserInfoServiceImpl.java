@@ -1165,8 +1165,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             if (StringUtils.isNotBlank(sex) && tool.isNo(sex)) {
                 int sexInt = Integer.parseInt(sex);
-                if (SexEnum.MALE.getValue() == sexInt || SexEnum.FEMALE.getValue() == sexInt) {
+                if (SexEnum.MALE.getValue() == sexInt ) {
                     userInfo.setSexType(sexInt);
+                    userInfo.setHeadUrl(String.valueOf((int)Math.random()*10));
+                }
+                if(SexEnum.FEMALE.getValue() == sexInt){
+                    userInfo.setSexType(sexInt);
+                    userInfo.setHeadUrl(String.valueOf((int)Math.random()*10+10));
                 }
             }
             if (StringUtils.isNotBlank(sign)) {

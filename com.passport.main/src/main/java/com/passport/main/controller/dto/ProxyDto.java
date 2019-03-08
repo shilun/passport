@@ -2,6 +2,7 @@ package com.passport.main.controller.dto;
 
 import com.common.util.AbstractDTO;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -57,6 +58,43 @@ public class ProxyDto  extends AbstractDTO {
      * 状态
      */
     private Integer status;
+
+    /**
+     * 彩票费率
+     */
+    private BigDecimal cpRate;
+    /**
+     * 棋牌费率
+     */
+    private BigDecimal qpRate;
+    /**
+     * 服务费
+     */
+    private BigDecimal serviceMoney;
+
+    public BigDecimal getCpRate() {
+        return cpRate;
+    }
+
+    public void setCpRate(BigDecimal cpRate) {
+        this.cpRate = cpRate;
+    }
+
+    public BigDecimal getQpRate() {
+        return qpRate;
+    }
+
+    public void setQpRate(BigDecimal qpRate) {
+        this.qpRate = qpRate;
+    }
+
+    public BigDecimal getServiceMoney() {
+        return serviceMoney;
+    }
+
+    public void setServiceMoney(BigDecimal serviceMoney) {
+        this.serviceMoney = serviceMoney;
+    }
 
     public String getEndTime() {
         return endTime;
