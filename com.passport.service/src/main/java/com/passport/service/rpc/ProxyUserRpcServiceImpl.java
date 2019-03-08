@@ -121,7 +121,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
         try {
             String loginPinToken = MessageFormat.format(loginTokenKey, loginToken);
             Object o = redisTemplate.opsForValue().get(loginPinToken);
-            if(o==null){
+            if (o == null) {
                 result.setSuccess(false);
                 result.setCode("verfiyToken.error");
                 result.setMessage("验证token失败");
@@ -196,6 +196,23 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
             result.setMessage("修改密码失败");
         }
         return result;
+    }
+
+
+    @Override
+    public RPCResult<Boolean> changePass(Long proxyId, Long id, String newPass) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            proxyUserInfoService.changePass(proxyId, id, newPass);
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            logger.error("修改密码失败", e);
+            result.setSuccess(false);
+            result.setCode("change.pass.error");
+            result.setMessage("修改密码失败");
+        }
+        return null;
     }
 
     @Override
@@ -288,6 +305,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
             result.setSuccess(true);
             ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
             result.setData(dto);
+            dto.setPass(null);
 
             result.setSuccess(true);
             return result;

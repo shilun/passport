@@ -110,6 +110,22 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         save(upEntity);
     }
 
+
+    @Override
+    public void changePass(Long proxyId, long id, String newpass) {
+        ProxyUserInfo query= findById(id);
+        if (query == null) {
+            throw new BizException("user.password.error", "用户不存在");
+        }
+        if (proxyId.longValue()!=query.getProxyId()) {
+            throw new BizException("user.password.error", "修改账户失败");
+        }
+        ProxyUserInfo upEntity = new ProxyUserInfo();
+        upEntity.setId(query.getId());
+        upEntity.setPass(MD5.MD5Str(newpass, passKey));
+        save(upEntity);
+    }
+
     @Override
     public void changeRole(Long proxyId, Long id, Long[] roles) {
         ProxyUserInfo entity = findById(id);

@@ -55,6 +55,16 @@ public interface ProxyUserRpcService extends StatusRpcService {
      */
     RPCResult<Boolean> changePass(Long cId,Long proxyId, Long id, String oldPass, String newPass);
 
+
+    /**
+     * 管理员修改密码
+     * @param proxyId
+     * @param id
+     * @param newPass
+     * @return
+     */
+    RPCResult<Boolean> changePass(Long proxyId,Long id,String newPass);
+
     /**
      * 修改用户角色
      *

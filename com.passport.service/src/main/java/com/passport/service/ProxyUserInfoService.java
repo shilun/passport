@@ -26,6 +26,15 @@ public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
     void changePass(Long id, String password, String vpassword);
 
     /**
+     *
+     * @param proxyId
+     * @param id
+     * @param newpass
+     */
+    void changePass(Long proxyId, long id, String newpass);
+
+
+    /**
      * 修改用户角色
      *
      * @param proxyId
