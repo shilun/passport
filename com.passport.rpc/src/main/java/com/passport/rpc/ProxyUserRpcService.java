@@ -53,7 +53,7 @@ public interface ProxyUserRpcService extends StatusRpcService {
      * @param newPass
      * @return
      */
-    RPCResult<Boolean> changePass(Long cId,Long proxyId, Long id, String oldPass, String newPass);
+    RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass);
 
 
     /**

@@ -139,15 +139,14 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
     }
 
     /**
-     * @param cId     修改密码操作者的ID
      * @param proxyId
-     * @param id      被修改密码的ID
+     * @param id 被修改密码的ID
      * @param oldPass
      * @param newPass
      * @return
      */
     @Override
-    public RPCResult<Boolean> changePass(Long cId, Long proxyId, Long id, String oldPass, String newPass) {
+    public RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             if (proxyId == null) {
@@ -169,17 +168,11 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
                 result.setMessage("proxyId验证失败");
                 return result;
             }
-
-            ProxyUserInfo cProxyUserInfo = proxyUserInfoService.findById(cId);
-            //权限长度小于3表示非超级管理员，修改密码需要验证旧密码
-            if (cProxyUserInfo.getRoles().length < 3) {
-                oldPass = MD5.MD5Str(oldPass, passKey);
-                if (!oldPass.equalsIgnoreCase(cProxyUserInfo.getPass())) {
-                    result.setData(false);
-                    result.setSuccess(false);
-                    result.setMessage("旧密码与新密码不一致");
-                    return result;
-                }
+            if (!MD5.MD5Str(oldPass, passKey).equals(byId.getPass())) {
+                result.setSuccess(false);
+                result.setCode("data.error");
+                result.setMessage("旧密码验证失败");
+                return result;
             }
             newPass = MD5.MD5Str(newPass, passKey);
             ProxyUserInfo query = new ProxyUserInfo();
