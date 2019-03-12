@@ -137,7 +137,7 @@
                   <input class="form-control" type="text" id="qpRate" formControlName="qpRate"
                          [formControl]="valForm.controls['qpRate']" [(ngModel)]="entity.qpRate"/>
                   <span class="text-danger"
-                        *ngIf="valForm.controls['qpRate'].hasError('required') && (valForm.controls['qpRate'].dirty || valForm.controls['qpRate'].qpRate)">必选项</span>
+                        *ngIf="valForm.controls['qpRate'].hasError('required') && (valForm.controls['qpRate'].dirty || valForm.controls['qpRate'].touched)">必选项</span>
                 </div>
               </div>
             </fieldset>
