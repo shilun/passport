@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Platfrom extends AbstractHealThIndicator {
 
-    @Reference
+    @Reference(check = false)
     private RecommendRPCService recommendRPCService;
 
     @Override
