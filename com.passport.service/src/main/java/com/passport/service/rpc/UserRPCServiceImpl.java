@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@com.alibaba.dubbo.config.annotation.Service(timeout = 1000)
+@org.apache.dubbo.config.annotation.Service
 public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCService {
 
     private final Logger logger = LoggerFactory.getLogger(UserRPCServiceImpl.class);

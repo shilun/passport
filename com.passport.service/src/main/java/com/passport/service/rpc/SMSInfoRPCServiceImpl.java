@@ -17,7 +17,7 @@ import javax.annotation.Resource;
  */
 
 @Service
-@com.alibaba.dubbo.config.annotation.Service
+@org.apache.dubbo.config.annotation.Service
 public class SMSInfoRPCServiceImpl extends StatusRpcServiceImpl implements SMSInfoRPCService {
 
     @Resource

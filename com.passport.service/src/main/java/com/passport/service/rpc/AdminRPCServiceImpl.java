@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-@org.apache.dubbo.config.annotation.Service()
+@org.apache.dubbo.config.annotation.Service
 @org.springframework.stereotype.Service
 public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRPCService {
 

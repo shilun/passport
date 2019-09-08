@@ -1,9 +1,6 @@
 package com.passport.service.rpc;
 
-import com.common.exception.BizException;
 import com.common.rpc.StatusRpcServiceImpl;
-import com.common.security.DesDecrypter;
-import com.common.security.DesEncrypter;
 import com.common.util.BeanCoper;
 import com.common.util.PageInfo;
 import com.common.util.RPCResult;
@@ -12,11 +9,11 @@ import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
 import com.passport.domain.LimitInfo;
 import com.passport.domain.ProxyInfo;
+import com.passport.rpc.ProxyRpcService;
 import com.passport.rpc.dto.*;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.LimitInfoService;
 import com.passport.service.LogLoginService;
-import com.passport.rpc.ProxyRpcService;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.util.DateUtil;
@@ -29,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
