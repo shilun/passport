@@ -4,7 +4,7 @@ import com.common.upload.UploadUtil;
 import com.mongodb.DBObject;
 import net.sf.json.JSONObject;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 @Component
 public class Tool {
     private static Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-    private Logger logger=Logger.getLogger(Tool.class);
+    private Logger logger=LoggerFactory.getLogger(Tool.class);
     @Autowired(required = false)
     private UploadUtil uploadUtil;
 

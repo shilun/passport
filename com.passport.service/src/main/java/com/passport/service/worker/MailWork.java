@@ -6,7 +6,7 @@ import com.passport.domain.MailInfo;
 import com.passport.domain.module.MailInfoStatusEnum;
 import com.passport.service.MailInfoService;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Service
 public class MailWork {
-    private static Logger logger = Logger.getLogger(MailWork.class);
+    private static Logger logger = LoggerFactory.getLogger(MailWork.class);
     @Resource
     private MailInfoService mailInfoService;
 

@@ -1,6 +1,5 @@
 package com.passport.service.rpc;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.common.exception.BizException;
 import com.common.rpc.StatusRpcServiceImpl;
 import com.common.security.DesDecrypter;
@@ -21,7 +20,9 @@ import com.passport.rpc.ProxyRpcService;
 import com.passport.service.ProxyInfoService;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.util.DateUtil;
-import org.apache.log4j.Logger;
+import org.apache.dubbo.config.annotation.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,13 +34,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-@Service(timeout = 1000)
+@Service()
 @org.springframework.stereotype.Service
 public class ProxyRpcServiceImpl extends StatusRpcServiceImpl implements ProxyRpcService {
 
-    private final static Logger logger = Logger.getLogger(ProxyRpcServiceImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProxyRpcServiceImpl.class);
     @Value("${app.passKey}")
     private String passKey;
     @Value("${app.token.encode.key}")
@@ -206,159 +206,6 @@ public class ProxyRpcServiceImpl extends StatusRpcServiceImpl implements ProxyRp
         return result;
     }
 
-    @Override
-    public RPCResult<Long> queryActiveUsers(Long proxyId, Date startTime, Date endTime) {
-        RPCResult<Long> result = new RPCResult<>();
-        try {
-            if (startTime.getTime() > endTime.getTime()) {
-                result.setSuccess(false);
-                result.setMessage("时间错误");
-                return result;
-            }
-            if (proxyId == null) {
-                result.setSuccess(false);
-                result.setMessage("代理错误");
-                return result;
-            }
-            Long count = logLoginService.QueryActiveUsers(proxyId, startTime, endTime);
-            result.setSuccess(true);
-            result.setData(count);
-        } catch (Exception e) {
-            logger.error("查询活跃人数异常", e);
-            result.setSuccess(false);
-            result.setCode("query.active.users.error");
-            result.setMessage("查询活跃人数异常");
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<Long> queryNewUsers(Long proxyId, Date startTime, Date endTime) {
-        RPCResult<Long> result = new RPCResult<>();
-        try {
-            if (startTime.getTime() > endTime.getTime()) {
-                result.setSuccess(false);
-                result.setMessage("时间错误");
-                return result;
-            }
-
-            if (proxyId == null) {
-                result.setSuccess(false);
-                result.setMessage("代理错误");
-                return result;
-            }
-
-            Long count = clientUserInfoService.queryCountByRegTime(proxyId, startTime, endTime);
-            result.setSuccess(true);
-            result.setData(count);
-        } catch (Exception e) {
-            logger.error("查询新增人数异常", e);
-            result.setSuccess(false);
-            result.setCode("query.new.users.error");
-            result.setMessage("查询新增人数异常");
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<Long> queryActiveUsers(Long proxyId, DateType type) {
-        RPCResult<Long> result = null;
-        try {
-            Date[] arr = DateUtil.getStartAndEndDate(type);
-            result = queryActiveUsers(proxyId, arr[0], arr[1]);
-        } catch (Exception e) {
-            logger.error("查询活跃人数异常", e);
-            result.setSuccess(false);
-            result.setCode("query.active.users.error");
-            result.setMessage("查询活跃人数异常");
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<Long> queryNewUsers(Long proxyId, DateType type) {
-        RPCResult<Long> result = null;
-        try {
-            Date[] arr = DateUtil.getStartAndEndDate(type);
-            result = queryNewUsers(proxyId, arr[0], arr[1]);
-        } catch (Exception e) {
-            logger.error("查询新增人数异常", e);
-            result.setSuccess(false);
-            result.setCode("query.new.users.error");
-            result.setMessage("查询新增人数异常");
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<Double> queryRetention(Long proxyId, Date startTime, Date endTime) {
-        RPCResult<Double> result = null;
-        try {
-            result = new RPCResult<>();
-            if (startTime.getTime() > endTime.getTime()) {
-                result.setSuccess(false);
-                result.setMessage("时间错误");
-                return result;
-            }
-
-            if (proxyId == null) {
-                result.setSuccess(false);
-                result.setMessage("代理错误");
-                return result;
-            }
-
-            int diff = DateUtil.differentDays(startTime, endTime);
-            if (diff <= 0) {
-                result.setSuccess(false);
-                result.setMessage("相隔不足一天，无法计算");
-                return result;
-            }
-            Date endPreOne = DateUtil.setZero(endTime);
-            //查询从startTime到endPreOne之间注册的人数
-            RPCResult<Long> result_1 = queryNewUsers(proxyId, startTime, endPreOne);
-            if (!result_1.getSuccess()) {
-                result.setSuccess(false);
-                result.setMessage("查询 " + startTime + " 至 " + endPreOne + "之间的新注册人数失败，故无法计算");
-                return result;
-            }
-            Long registerNum = result_1.getData();
-            //如果在startTime到endPreOne之间注册的人数为0
-            if(registerNum == 0){
-                result.setSuccess(false);
-                result.setMessage(startTime + " 至 " + endPreOne + "之间的新注册人数为0，故无法计算");
-                return result;
-            }
-            //查询在endTime这一天的登陆人数(即endPreOne到endTime之间)，且注册时间在startTime到endPreOne之间
-            Long loginNum = this.logLoginService.QueryLoginUsersByRegDate(proxyId, endPreOne, endTime, startTime, endPreOne);
-            //计算
-            BigDecimal regBd = BigDecimal.valueOf(registerNum);
-            BigDecimal loginBd = BigDecimal.valueOf(loginNum);
-            Double res = loginBd.divide(regBd, 4, BigDecimal.ROUND_HALF_UP).doubleValue();
-            result.setSuccess(true);
-            result.setData(res);
-        } catch (Exception e) {
-            logger.error("查询留存异常", e);
-            result.setSuccess(false);
-            result.setCode("query.retention.users.error");
-            result.setMessage("查询留存异常");
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<Double> queryRetention(Long proxyId, DateType type) {
-        RPCResult<Double> result = null;
-        try {
-            Date[] arr = DateUtil.getStartAndEndDate(type);
-            result = queryRetention(proxyId, arr[0], arr[1]);
-        } catch (Exception e) {
-            logger.error("查询留存异常", e);
-            result.setSuccess(false);
-            result.setCode("query.retention.users.error");
-            result.setMessage("查询留存异常");
-        }
-        return result;
-    }
 
     @Override
     public RPCResult<List<UserDTO>> queryUsersByRegTime(Date startTime, Date endTime,UserDTO dto) {

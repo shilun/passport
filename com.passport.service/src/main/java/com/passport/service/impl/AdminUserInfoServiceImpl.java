@@ -7,14 +7,14 @@ import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.AdminUserInfo;
 import com.passport.service.AdminUserInfoService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo> implements AdminUserInfoService {
 
-    private static Logger logger= Logger.getLogger(AdminUserInfoServiceImpl.class);
+    private static Logger logger= LoggerFactory.getLogger(AdminUserInfoServiceImpl.class);
     @Value("${app.passKey}")
     private String passKey;
 

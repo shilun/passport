@@ -5,7 +5,7 @@ import com.passport.domain.SMSInfo;
 import com.passport.service.SMSInfoService;
 import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.MnsUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 @Service
 public class SMSWorker {
 
-    private static final Logger logger = Logger.getLogger(SMSWorker.class);
+    private static final Logger logger = LoggerFactory.getLogger(SMSWorker.class);
 
     @Autowired(required =false)
     private AliyunMnsUtil aliyunMnsUtil;

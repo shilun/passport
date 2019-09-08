@@ -2,16 +2,14 @@ package com.passport.service.impl;
 
 import com.common.exception.BizException;
 import com.common.mongo.AbstractMongoService;
-import com.common.util.AbstractBaseDao;
 import com.common.util.DateUtil;
-import com.common.util.DefaultBaseService;
 import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 
 import com.passport.domain.SMSInfo;
 import com.passport.service.SMSInfoService;
 import com.passport.service.worker.SMSWorker;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class SMSInfoServiceImpl extends AbstractMongoService<SMSInfo> implements SMSInfoService {
 
-    private static final Logger logger = Logger.getLogger(SMSInfoServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SMSInfoServiceImpl.class);
 
     @Override
     protected Class getEntityClass() {

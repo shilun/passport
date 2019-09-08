@@ -52,61 +52,6 @@ public interface ProxyRpcService extends StatusRpcService {
      */
     RPCResult<ProxyDto> findByDomain(String domain);
 
-
-    /**
-     * 查询活跃人数
-     *
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    RPCResult<Long> queryActiveUsers(Long proxyId, Date startTime, Date endTime);
-
-    /**
-     * 查询新增用户
-     *
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    RPCResult<Long> queryNewUsers(Long proxyId, Date startTime, Date endTime);
-
-    /**
-     * 查询活跃人数
-     *
-     * @param proxyId
-     * @param type
-     * @return
-     */
-    RPCResult<Long> queryActiveUsers(Long proxyId, DateType type);
-
-    /**
-     * 查询新增人数
-     *
-     * @param proxyId
-     * @param type
-     * @return
-     */
-    RPCResult<Long> queryNewUsers(Long proxyId, DateType type);
-
-    /**
-     * 查询留存率
-     *
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    RPCResult<Double> queryRetention(Long proxyId, Date startTime, Date endTime);
-
-    /**
-     * 查询留存率
-     *
-     * @param proxyId
-     * @param type
-     * @return
-     */
-    RPCResult<Double> queryRetention(Long proxyId, DateType type);
-
     /**
      * 根据注册时间段筛选用户
      *

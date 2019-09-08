@@ -1,6 +1,5 @@
 package com.passport.web.application;
 
-import com.alibaba.dubbo.spring.boot.annotation.EnableDubboConfiguration;
 import com.common.application.AbstractApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +9,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-@EnableDubboConfiguration
 @ComponentScan(basePackages = {"com.passport", "com.common.config"})
 public class WebApplication extends AbstractApplication {
     private static Logger logger = LoggerFactory.getLogger("starting");

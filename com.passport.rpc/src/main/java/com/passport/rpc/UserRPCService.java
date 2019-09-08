@@ -22,6 +22,15 @@ public interface UserRPCService extends StatusRpcService {
     RPCResult<Long> findUserCodeByPin(Long proxyId,String pin);
 
     /**
+     *
+     * @param proxyId
+     * @param deviceId
+     * @param agentType
+     * @return
+     */
+    RPCResult<UserDTO> registerByDeviceId(Long proxyId,String deviceId,String agentType);
+
+    /**
      * 根据用户pin查找用户
      * @param proxyId
      * @param pin
@@ -72,17 +81,6 @@ public interface UserRPCService extends StatusRpcService {
     RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto);
 
     RPCResult<UserDTO> queryUser(Long proxyId,Long userCode);
-
-
-    /**
-     * 添加推广 用户
-     * @param proxyId
-     * @param nickName
-     * @param pass
-     * @return
-     */
-    RPCResult<Boolean> addPopUser(Long proxyId,String nickName,String pass);
-
 
     RPCResult<Boolean> resetPass(Long proxyId,Long id,String pass);
 }

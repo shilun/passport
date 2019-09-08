@@ -12,7 +12,7 @@ import com.common.exception.BizException;
 import com.common.util.JaxbUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStream;
@@ -31,7 +31,7 @@ public class AliyunMnsUtil {
     static final String product = "Dysmsapi";
     //产品域名,开发者无需替换
     static final String domain = "dysmsapi.aliyuncs.com";
-    private final static Logger logger = Logger.getLogger(AliyunMnsUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(AliyunMnsUtil.class);
 
     private String accessId = null;
 

@@ -1,7 +1,7 @@
 package com.passport.service.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Charsets;
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpResponseException;

@@ -6,7 +6,7 @@ import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.rpc.AdminRPCService;
 import com.passport.rpc.dto.UserDTO;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Component
 public class ResourceHandlerInterceptor implements HandlerInterceptor {
-    private Logger logger = Logger.getLogger(ResourceHandlerInterceptor.class);
+    private Logger logger = LoggerFactory.getLogger(ResourceHandlerInterceptor.class);
     @Resource
     private AdminRPCService adminRPCService;
 

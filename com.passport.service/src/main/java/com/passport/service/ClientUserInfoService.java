@@ -3,7 +3,6 @@ package com.passport.service;
 import com.common.mongo.MongoService;
 import com.common.util.model.SexEnum;
 import com.passport.domain.ClientUserInfo;
-import com.passport.rpc.dto.PopUserDTO;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.constant.ChangeType;
@@ -375,11 +374,5 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      */
     UserDTO wxLogin(Long proxyId,String ip,String code,String nick,String headImg,Integer sex);
 
-    /***
-     * 添加推广用户
-     * @param
-     * @return
-     */
-    Boolean addPopUser(PopUserDTO dto);
 
 }

@@ -3,11 +3,13 @@ package com.passport.service.impl;
 import com.common.mongo.AbstractMongoService;
 import com.common.util.StringUtils;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.passport.domain.LogLoginInfo;
 import com.passport.service.LogLoginService;
 import com.passport.service.util.Tool;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.bson.Document;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,7 +31,7 @@ import java.util.concurrent.Executors;
  */
 @Service
 public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> implements LogLoginService {
-    private static Logger logger = Logger.getLogger(LogLoginServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(LogLoginServiceImpl.class);
 
     @Override
     protected Class getEntityClass() {
@@ -85,115 +87,6 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
         Boolean flag = false;
 
         return flag;
-    }
-
-    @Override
-    public Long QueryActiveUsers(Long proxyId, Date startTime, Date endTime) {
-        /*db.logLoginInfo.aggregate
-                ([
-
-                    {$match:{
-                        "loginDay" : {$gte : ISODate("2018-09-26T02:26:13.149Z"),$lte : ISODate("2018-09-26T04:26:13.149Z")}
-                            }
-                     },
-                    {$group:{"_id":"$pin"}},
-                    {$group:{"_id":null,"count":{$sum:1}}}
-                ])
-         */
-        DBCollection collection = template.getCollection("logLoginInfo");
-        BasicDBObject loginValueObj = new BasicDBObject();
-        loginValueObj.append("$gte", startTime);
-        loginValueObj.append("$lte", endTime);
-
-        BasicDBObject matchValueObj = new BasicDBObject();
-        matchValueObj.append("proxyId",proxyId);
-        matchValueObj.append("loginDay", loginValueObj);
-
-        BasicDBObject matchObj = new BasicDBObject("$match", matchValueObj);
-
-        BasicDBObject id_1 = new BasicDBObject("_id", "$pin");
-        BasicDBObject group_1 = new BasicDBObject("$group", id_1);
-
-        BasicDBObject group2ValueObj = new BasicDBObject();
-        group2ValueObj.append("_id", null);
-        BasicDBObject sumObj = new BasicDBObject("$sum", 1);
-        group2ValueObj.append("count", sumObj);
-        BasicDBObject group_2 = new BasicDBObject("$group", group2ValueObj);
-
-        List<BasicDBObject> list = new ArrayList<>();
-        list.add(matchObj);
-        list.add(group_1);
-        list.add(group_2);
-
-        //指定输出方式
-        AggregationOptions build = AggregationOptions.builder()
-                .outputMode(AggregationOptions.OutputMode.CURSOR)
-                .build();
-        Cursor cursor = collection.aggregate(list, build);
-        Long value = 0L;
-        DBObject obj = null;
-        if (cursor.hasNext()) {
-            obj = cursor.next();
-            value = Long.parseLong(obj.get("count").toString());
-        }
-        return value;
-    }
-
-    @Override
-    public Long QueryLoginUsersByRegDate(Long proxyId, Date loginStartTime, Date loginEndTime, Date regStartTime, Date regEndTime) {
-        /*db.logLoginInfo.aggregate
-                ([
-                    {$match:{
-                            "loginDay" : {$gte : ISODate("2018-09-26T02:26:13.149Z"),$lte : ISODate("2018-09-26T04:26:13.149Z")},
-                            "registerDate" : {$gte : ISODate("2018-09-26T02:26:13.149Z"),$lte : ISODate("2018-09-26T04:26:13.149Z")}
-                            }
-                    },
-                    {$group:{"_id":"$pin"}},
-                    {$group:{"_id":null,"count":{$sum:1}}}
-                ])
-        */
-        DBCollection collection = template.getCollection("logLoginInfo");
-        BasicDBObject loginValueObj = new BasicDBObject();
-        loginValueObj.append("$gte", loginStartTime);
-        loginValueObj.append("$lte", loginEndTime);
-
-        BasicDBObject regValueObj = new BasicDBObject();
-        regValueObj.append("$gte", regStartTime);
-        regValueObj.append("$lte", regEndTime);
-
-        BasicDBObject matchValueObj = new BasicDBObject();
-        matchValueObj.append("proxyId",proxyId);
-        matchValueObj.append("loginDay", loginValueObj);
-        matchValueObj.append("registerDate", regValueObj);
-
-        BasicDBObject matchObj = new BasicDBObject("$match", matchValueObj);
-
-        BasicDBObject id_1 = new BasicDBObject("_id", "$pin");
-        BasicDBObject group_1 = new BasicDBObject("$group", id_1);
-
-        BasicDBObject group2ValueObj = new BasicDBObject();
-        group2ValueObj.append("_id", null);
-        BasicDBObject sumObj = new BasicDBObject("$sum", 1);
-        group2ValueObj.append("count", sumObj);
-        BasicDBObject group_2 = new BasicDBObject("$group", group2ValueObj);
-
-        List<BasicDBObject> list = new ArrayList<>();
-        list.add(matchObj);
-        list.add(group_1);
-        list.add(group_2);
-
-        //指定输出方式
-        AggregationOptions build = AggregationOptions.builder()
-                .outputMode(AggregationOptions.OutputMode.CURSOR)
-                .build();
-        Cursor cursor = collection.aggregate(list, build);
-        Long value = 0L;
-        DBObject obj = null;
-        if (cursor.hasNext()) {
-            obj = cursor.next();
-            value = Long.parseLong(obj.get("count").toString());
-        }
-        return value;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.passport.service;
 
 import com.common.mongo.MongoService;
-import com.common.util.AbstractBaseService;
 import com.passport.domain.SMSInfo;
 
 /**

@@ -16,6 +16,8 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String phone;
     private String birthday;
     private Integer sexType;
+    private String deviceId;
+    private String agentType;
     private Boolean initPass;
     private String token;
     private Long proxyId;
@@ -23,6 +25,22 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String realName;
     private String registerIp;
     private String upPin;
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getAgentType() {
+        return agentType;
+    }
+
+    public void setAgentType(String agentType) {
+        this.agentType = agentType;
+    }
 
     // 头像URL
     private String headUrl;

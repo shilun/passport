@@ -10,7 +10,7 @@ import com.passport.rpc.AdminRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.AdminUserInfoService;
 import com.passport.service.RoleInfoService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-@Service()
-@com.alibaba.dubbo.config.annotation.Service(interfaceClass =AdminRPCService.class,timeout = 4000)
+@org.apache.dubbo.config.annotation.Service()
+@org.springframework.stereotype.Service
 public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRPCService {
 
 
-    private Logger logger = Logger.getLogger(AdminRPCServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(AdminRPCServiceImpl.class);
 
     @Value("${app.passKey}")
     private String passKey;
@@ -49,6 +49,9 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             AdminUserInfo login = adminUserInfoService.login(loginName, password);
+            if(login==null){
+                return result;
+            }
             UserDTO dto = new UserDTO();
             dto.setToken(StringUtils.getUUID());
             dto.setPin(login.getPin());

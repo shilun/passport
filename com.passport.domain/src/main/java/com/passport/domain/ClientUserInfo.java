@@ -9,8 +9,10 @@ import java.util.Date;
 /**
  * 客户用户信息
  */
-public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
-    /**
+public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity{
+        private String deviceId;
+        private String agentType;
+        /**
      * 用户pin
      */
     private String pin;
@@ -47,10 +49,6 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
      * 用户状态
      */
     private Integer status;
-    /**
-     * 是否推广用户 1是  2否
-     */
-    private Integer popularize;
 
 
     private Date birthDay;
@@ -59,6 +57,7 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
      * 注册ip
      */
     private String registerIp;
+
 
     // 头像URL
     private String headUrl;
@@ -76,9 +75,6 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
 
     //签名
     private String sign;
-
-    //上线用户
-    private String upPin;
 
     public String getRefId() {
         return refId;
@@ -227,24 +223,24 @@ public class ClientUserInfo extends AbstractBaseEntity implements IUserEntity {
         this.qrName = qrName;
     }
 
-    public String getUpPin() {
-        return upPin;
-    }
-
-    public void setUpPin(String upPin) {
-        this.upPin = upPin;
-    }
-
-    public Integer getPopularize() {
-        return popularize;
-    }
-
-    public void setPopularize(Integer popularize) {
-        this.popularize = popularize;
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this).toString();
     }
+
+        public String getDeviceId() {
+            return deviceId;
+        }
+
+        public void setDeviceId(String deviceId) {
+            this.deviceId = deviceId;
+        }
+
+        public String getAgentType() {
+            return agentType;
+        }
+
+        public void setAgentType(String agentType) {
+            this.agentType = agentType;
+        }
 }

@@ -15,10 +15,6 @@ import java.util.Date;
 public interface LogLoginService extends MongoService<LogLoginInfo> {
     Boolean addLoginLog(String pin,Long proxyId,Date registerDate,String ip,Long userCode);
 
-    Long QueryActiveUsers(Long proxyId,Date startTime, Date endTime);
-
-    Long QueryLoginUsersByRegDate(Long proxyId,Date loginStartTime, Date loginEndTime,Date regStartTime, Date regEndTime);
-
     /**
      * 根据IP查询用户列表
      * @param proxyId

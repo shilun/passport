@@ -11,7 +11,7 @@ import com.passport.domain.ProxyUserInfo;
 import com.passport.rpc.ProxyUserRpcService;
 import com.passport.rpc.dto.ProxyUserDto;
 import com.passport.service.ProxyUserInfoService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @com.alibaba.dubbo.config.annotation.Service(interfaceClass = ProxyUserRpcService.class)
 public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements ProxyUserRpcService {
-    private static final Logger logger = Logger.getLogger(ProxyUserRpcServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProxyUserRpcServiceImpl.class);
     @Resource
     private ProxyUserInfoService proxyUserInfoService;
 

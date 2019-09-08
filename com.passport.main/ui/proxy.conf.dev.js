@@ -3,7 +3,7 @@
 
 const PROXY_CONFIG = {
   "/api": {
-    "target": "http://main.passport.jiahou.com:8000",
+    "target": "http://main.passport.movie.com:8000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",

@@ -1,6 +1,5 @@
 package com.passport.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.common.exception.ApplicationException;
 import com.common.exception.BizException;
 import com.common.httpclient.HttpClientUtil;
@@ -18,7 +17,6 @@ import com.passport.domain.LimitInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
 import com.passport.rpc.dto.LimitType;
-import com.passport.rpc.dto.PopUserDTO;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.*;
@@ -29,9 +27,8 @@ import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
 import com.passport.service.util.OldPackageMapUtil;
 import com.passport.service.util.Tool;
-import com.platform.rpc.RecommendRPCService;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserInfo> implements ClientUserInfoService {
-    private static Logger logger = Logger.getLogger(ClientUserInfoServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(ClientUserInfoServiceImpl.class);
 
     private final String CLIENT_USER_CACHE = "passport.cache.{0}";
     private final String PASS_USER_REG = "passport.userrpc.reg.account.{0}.proxyid.{1}";
@@ -110,8 +107,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     private LogLoginService logLoginService;
     @Resource
     private LimitInfoService limitInfoService;
-    @Reference(check = false)
-    private RecommendRPCService recommendRPCService;
     @Resource
     private ProxyInfoService proxyInfoService;
     @Resource
@@ -323,10 +318,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 String oldTokenKey = o1.toString();
                 redisTemplate.delete(oldTokenKey);
             }
-            //默认用户无该数据则设置为 不是推广人
-            if(userInfo.getPopularize()==null){
-                userInfo.setPopularize(YesOrNoEnum.NO.getValue());
-            }
             dto = new UserDTO();
             BeanCoper.copyProperties(dto, userInfo);
 
@@ -383,9 +374,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
             redisTemplate.delete(oldTokenKey);
             redisTemplate.delete(login_pin_key);
-        }
-        if(userInfo.getPopularize()==null){
-            userInfo.setPopularize(YesOrNoEnum.NO.getValue());
         }
         String newToken = StringUtils.getUUID();
         UserDTO dto = new UserDTO();
@@ -869,7 +857,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             entity.setIdCard(idCard);
             entity.setRealName(realName);
             entity.setQq(qq);
-            entity.setPopularize(YesOrNoEnum.NO.getValue());
             entity.setRegisterIp(ip);
             entity.setStatus(UserStatusEnum.Disable.getValue());
             super.save(entity);
@@ -877,7 +864,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             ClientUserInfo upEntity = new ClientUserInfo();
             upEntity.setId(entity.getId());
-            upEntity.setUpPin(recommendId);
             upEntity.setPin(String.valueOf(entity.getId()));
             super.up(upEntity);
             entity.setPin(upEntity.getPin());
@@ -886,35 +872,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             BeanCoper.copyProperties(dto, entity);
             String pin = entity.getPin();
             limitInfoService.addIpRegisterNum(ip);
-
-            try {
-//                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
-//                Map<String, Object> objs = new HashMap<>();
-//                objs.put("pin", pin);
-//                objs.put("upPin", recommendId);
-//                objs.put("proxyId", proxyId);
-//                String host = "http://" + server + ":" + port + url;
-
-//                String result = httpClientFactory.doPost(host, objs);
-//                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
-//                if (!(boolean) resultMap.get("success")) {
-//                    logger.error("推荐人初始化失败");
-//                    entity.setStatus(UserStatusEnum.Disable.getValue());
-//                    super.up(entity);
-//                    return null;
-//                }
-
-                RPCResult<Boolean> result = recommendRPCService.init(pin, recommendId, proxyId, null);
-                if (!result.getSuccess()) {
-                    logger.error(result.getMessage());
-                    return null;
-                }
-                entity.setStatus(UserStatusEnum.Normal.getValue());
-                super.up(entity);
-            } catch (Exception e) {
-                logger.error("推荐人初始化异常", e);
-                throw new BizException("recommendRPCService.init.error","注册异常");
-            }
         }
         catch (BizException e){
             logger.error(e.getCode()+",message:"+e.getMessage());
@@ -1543,49 +1500,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         Long limitStartTime = limitStartDate.getTime();
         Long limitEndTime = limitEndDate.getTime();
         if (now < limitStartTime || now > limitEndTime) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public Boolean addPopUser(PopUserDTO dto) {
-        try {
-            Long proxyId = dto.getProxyId();
-            ClientUserInfo entity = new ClientUserInfo();
-            BeanCoper.copyProperties(entity, dto);
-            super.save(entity);
-            ClientUserInfo upEntity = new ClientUserInfo();
-            upEntity.setId(entity.getId());
-            upEntity.setUpPin("0");
-            upEntity.setPin(String.valueOf(entity.getId()));
-            upEntity.setPhone(entity.getProxyId() + "_" + entity.getId());
-            super.up(upEntity);
-            try {
-//                HttpClientFactory httpClientFactory = HttpClientFactory.createInstance();
-//                Map<String, Object> objs = new HashMap<>();
-//                objs.put("pin", upEntity.getPin());
-//                objs.put("upPin", "0");
-//                objs.put("popularize", "1");
-//                objs.put("proxyId", proxyId);
-//                String host = "http://" + server + ":" + port + url;
-//                String result = httpClientFactory.doPost(host, objs);
-//                Map<String, Object> resultMap = (Map<String, Object>) com.alibaba.fastjson.JSONObject.parse(result);
-                RPCResult<Boolean> result = recommendRPCService.init(upEntity.getPin(), "0", proxyId, "1");
-                if (!result.getSuccess()) {
-                    logger.error(result.getMessage());
-                    return false;
-                }
-                ClientUserInfo newEntity = new ClientUserInfo();
-                newEntity.setId(entity.getId());
-                newEntity.setStatus(UserStatusEnum.Normal.getValue());
-                super.up(newEntity);
-            } catch (Exception e) {
-                logger.error("推荐人初始化失败", e);
-                return false;
-            }
-        } catch (Exception e) {
-            logger.error("推荐人初始化异常", e);
             return false;
         }
         return true;

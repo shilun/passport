@@ -10,7 +10,7 @@ import com.common.web.IExecute;
 import com.passport.domain.SoftWare;
 import com.passport.main.controller.dto.SoftWareDto;
 import com.passport.service.SoftWareService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/software")
 public class SoftworeController extends AbstractController {
-    private Logger logger = Logger.getLogger(SoftworeController.class);
+    private Logger logger = LoggerFactory.getLogger(SoftworeController.class);
 
     @Resource
     private SoftWareService softWareService;

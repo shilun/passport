@@ -7,7 +7,7 @@ import com.passport.domain.module.AgentTypeEnum;
 import com.passport.service.SoftWareService;
 import com.passport.web.AbstractClientController;
 import io.swagger.annotations.ApiOperation;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +25,7 @@ import java.util.Map;
 @RequestMapping(value = "AppDownload", method = {RequestMethod.GET})
 public class AppDownloadController extends AbstractClientController {
 
-    private static Logger logger = Logger.getLogger(AppDownloadController.class);
+    private static Logger logger = LoggerFactory.getLogger(AppDownloadController.class);
     @Resource
     private SoftWareService softWareService;
 

@@ -14,7 +14,8 @@ import com.passport.rpc.dto.*;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.LogLoginService;
 import com.passport.service.constant.MessageConstant;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 @com.alibaba.dubbo.config.annotation.Service(timeout = 1000)
 public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCService {
 
-    private final Logger logger = Logger.getLogger(UserRPCServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(UserRPCServiceImpl.class);
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -65,6 +66,32 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         }
         result.setCode("findByUserCodeByPin.error");
         result.setMessage("查询用户code失败");
+        return result;
+    }
+
+    @Override
+    public RPCResult<UserDTO> registerByDeviceId(Long proxyId, String deviceId, String agentType) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        ClientUserInfo query = new ClientUserInfo();
+        query.setProxyId(proxyId);
+        query.setDeviceId(deviceId);
+
+        ClientUserInfo userInfo = clientUserInfoService.findByOne(query);
+        if (userInfo != null) {
+            UserDTO userDTO = BeanCoper.copyProperties(UserDTO.class, userInfo);
+            result.setData(userDTO);
+            result.setSuccess(true);
+            return result;
+        }
+        userInfo = new ClientUserInfo();
+        userInfo.setDeviceId(deviceId);
+        ;
+        userInfo.setProxyId(proxyId);
+        userInfo.setSexType(SexEnum.MALE.getValue());
+        userInfo.setStatus(YesOrNoEnum.YES.getValue());
+        result.setSuccess(true);
+        UserDTO userDTO = BeanCoper.copyProperties(UserDTO.class, userInfo);
+        result.setData(userDTO);
         return result;
     }
 
@@ -366,33 +393,9 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         return result;
     }
 
-    @Override
-    public RPCResult<Boolean> addPopUser(Long proxyId, String nickName, String pass) {
-        RPCResult<Boolean> result = new RPCResult<>();
-        try {
-            PopUserDTO dto = new PopUserDTO();
-            String head = String.valueOf(1 + (int) (Math.random() * 20));
-            dto.setProxyId(proxyId);
-            dto.setNickName(nickName);
-            dto.setHeadUrl(head);
-            dto.setPasswd(MD5.MD5Str(pass, passKey));
-            dto.setSexType(SexEnum.MALE.getValue());
-            dto.setStatus(UserStatusEnum.Disable.getValue());
-            dto.setBirthDay(new Date());
-            dto.setPopularize(YesOrNoEnum.YES.getValue());
-            Boolean isTrue = clientUserInfoService.addPopUser(dto);
-            result.setSuccess(isTrue);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("addPopUser.error");
-            result.setMessage("添加用户失败");
-            logger.error("添加用户失败", e);
-        }
-        return result;
-    }
 
     @Override
-    public RPCResult<Boolean> resetPass(Long proxyId, Long id,String pass) {
+    public RPCResult<Boolean> resetPass(Long proxyId, Long id, String pass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             ClientUserInfo clientUserInfo = clientUserInfoService.findById(id);
