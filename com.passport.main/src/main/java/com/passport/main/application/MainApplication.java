@@ -1,6 +1,5 @@
 package com.passport.main.application;
 
-import com.common.application.AbstractApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
