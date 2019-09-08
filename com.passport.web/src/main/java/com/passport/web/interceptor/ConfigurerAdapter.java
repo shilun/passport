@@ -3,12 +3,12 @@ package com.passport.web.interceptor;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 
 @SpringBootConfiguration
-public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
+public class ConfigurerAdapter implements WebMvcConfigurer {
     @Resource
     private UserSessionHandlerInterceptor resourceHandlerInterceptor;
 
