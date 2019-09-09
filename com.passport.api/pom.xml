@@ -8,7 +8,7 @@
         <groupId>passport</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>com.passport.web</artifactId>
+    <artifactId>com.passport.api</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
