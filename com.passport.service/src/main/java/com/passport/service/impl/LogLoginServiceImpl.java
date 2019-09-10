@@ -104,7 +104,7 @@ public class LogLoginServiceImpl extends AbstractMongoService<LogLoginInfo> impl
         query.addCriteria(Criteria.where("pin").is(pin));
         query.with(new Sort(Sort.Direction.DESC, "loginDay"));
         query.limit(1);
-        List<LogLoginInfo> list = template.find(query, LogLoginInfo.class);
+        List<LogLoginInfo> list = secondaryTemplate.find(query, LogLoginInfo.class);
         if(list == null || list.size() <= 0){
             return null;
         }
