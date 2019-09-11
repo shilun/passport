@@ -204,16 +204,14 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
             }
             redisTemplate.opsForValue().set(tokenKey, dto, 7, TimeUnit.DAYS);
             rpcResult.setSuccess(true);
-            rpcResult.setCode("find.userDTO.dto.success");
-            rpcResult.setMessage("获取用户成功");
             dto.setToken(oldToken);
             rpcResult.setData(dto);
             return rpcResult;
         } catch (Exception e) {
             rpcResult.setSuccess(false);
             rpcResult.setCode("find.userDTO.dto.error");
-            rpcResult.setMessage(MessageConstant.FIND_USER_FAIL);
-            logger.error(MessageConstant.FIND_USER_BY_TOKEN, e);
+            rpcResult.setMessage("查找用户失败");
+            logger.error("查找用户失败", e);
         }
         return rpcResult;
     }
