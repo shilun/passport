@@ -30,10 +30,10 @@ public class MailInfoServiceImpl extends AbstractMongoService<MailInfo> implemen
     }
 
     @Override
-    public Long insert(MailInfo entity) {
+    public void insert(MailInfo entity) {
         entity.setExecCount(0);
         entity.setStatus(MailInfoStatusEnum.Wait.getValue());
-        return super.insert(entity);
+        super.insert(entity);
     }
 
     public RPCResult<Boolean> sendMail(String content, String source) {
@@ -70,7 +70,7 @@ public class MailInfoServiceImpl extends AbstractMongoService<MailInfo> implemen
 
 
     @Override
-    public void sendSuccess(Long mailId) {
+    public void sendSuccess(String mailId) {
         MailInfo mail = new MailInfo();
         mail.setId(mailId);
         mail.setStatus(MailInfoStatusEnum.SendSuccess.getValue());
@@ -79,7 +79,7 @@ public class MailInfoServiceImpl extends AbstractMongoService<MailInfo> implemen
     }
 
     @Override
-    public void doUpExecCount(Long mailId, Integer execuCount) {
+    public void doUpExecCount(String mailId, Integer execuCount) {
         MailInfo mail = new MailInfo();
         mail.setId(mailId);
         mail.setExecCount(execuCount);

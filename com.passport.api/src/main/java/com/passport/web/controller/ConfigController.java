@@ -16,7 +16,7 @@ public class ConfigController extends AbstractClientController {
 
     @RequestMapping(value = "/appConfig")
     public String AppConfig() {
-        Long id = getDomain().getId();
+        Long id = getDomain().getSeqId();
         return appConfigService.findByProxyId(id);
     }
 }

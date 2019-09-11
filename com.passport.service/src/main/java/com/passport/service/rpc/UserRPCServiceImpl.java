@@ -1,24 +1,25 @@
 package com.passport.service.rpc;
 
+import com.common.exception.BizException;
 import com.common.rpc.StatusRpcServiceImpl;
 import com.common.security.DesDecrypter;
+import com.common.security.DesEncrypter;
 import com.common.security.MD5;
-import com.common.util.*;
-import com.common.util.model.SexEnum;
+import com.common.util.BeanCoper;
+import com.common.util.PageInfo;
+import com.common.util.RPCResult;
+import com.common.util.StringUtils;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
-import com.passport.domain.LogLoginInfo;
 import com.passport.domain.module.UserStatusEnum;
 import com.passport.rpc.UserRPCService;
-import com.passport.rpc.dto.*;
+import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
-import com.passport.service.LogLoginService;
 import com.passport.service.constant.MessageConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,60 +40,75 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private ClientUserInfoService clientUserInfoService;
-    @Resource
-    private LogLoginService logLoginService;
 
     private final String LOGIN_TOKEN = "passport.login.token.{0}";
+    private final String LOGIN_PIN = "passport.login.{0}.{1}";
     @Value("${app.token.encode.key}")
     private String appTokenEncodeKey;
     @Value("${app.passKey}")
     private String passKey;
 
-
-    @Override
-    public RPCResult<Long> findUserCodeByPin(Long proxyId, String pin) {
-
-        RPCResult<Long> result = new RPCResult<>();
-        try {
-            ClientUserInfo userInfo = clientUserInfoService.findByPin(proxyId, pin);
-            if (userInfo != null) {
-                result.setData(userInfo.getId());
-                result.setSuccess(true);
-                return result;
-            }
-        } catch (Exception e) {
-            logger.error("查询用户失败", e);
-        }
-        result.setCode("findByUserCodeByPin.error");
-        result.setMessage("查询用户code失败");
-        return result;
-    }
-
     @Override
     public RPCResult<UserDTO> registerByDeviceId(Long proxyId, String deviceId, String agentType) {
         RPCResult<UserDTO> result = new RPCResult<>();
-        ClientUserInfo query = new ClientUserInfo();
-        query.setProxyId(proxyId);
-        query.setDeviceId(deviceId);
-
-        ClientUserInfo userInfo = clientUserInfoService.findByOne(query);
-        if (userInfo != null) {
-            UserDTO userDTO = BeanCoper.copyProperties(UserDTO.class, userInfo);
-            result.setData(userDTO);
+        try {
+            UserDTO userDto = null;
+            if (StringUtils.isBlank(deviceId)) {
+                throw new BizException("guestReg.error", "游客注册失败");
+            }
+            ClientUserInfo entity = new ClientUserInfo();
+            entity.setDeviceUid(deviceId);
+            entity.setProxyId(proxyId);
+            entity = clientUserInfoService.findByOne(entity);
+            if (entity == null) {
+                userDto = clientUserInfoService.registGuest(proxyId, deviceId, "");
+            } else {
+                userDto = clientUserInfoService.loginByDeviceUid(proxyId, deviceId);
+            }
+            result.setData(userDto);
             result.setSuccess(true);
             return result;
+        } catch (Exception e) {
+            result.setCode("registerByDeviceId.error");
+            result.setMessage("注册设备失败");
         }
-        userInfo = new ClientUserInfo();
-        userInfo.setDeviceId(deviceId);
-        ;
-        userInfo.setProxyId(proxyId);
-        userInfo.setSexType(SexEnum.MALE.getValue());
-        userInfo.setStatus(YesOrNoEnum.YES.getValue());
-        result.setSuccess(true);
-        UserDTO userDTO = BeanCoper.copyProperties(UserDTO.class, userInfo);
-        result.setData(userDTO);
         return result;
+
     }
+
+
+    public UserDTO loginByDeviceUid(Long proxyId, String deviceUid, String ip) {
+        ClientUserInfo query = new ClientUserInfo();
+        query.setStatus(UserStatusEnum.Normal.getValue());
+        query.setProxyId(proxyId);
+        query.setDeviceUid(deviceUid);
+        query.setDelStatus(YesOrNoEnum.NO.getValue());
+        ClientUserInfo userInfo = clientUserInfoService.findByOne(query);
+        return freshUserDTO(proxyId, ip, userInfo);
+    }
+
+    private UserDTO freshUserDTO(Long proxyId, String ip, ClientUserInfo userInfo) {
+        String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId, userInfo.getPin());
+        Object o = redisTemplate.opsForValue().get(login_pin_key);
+        if (o != null) {
+            String oldTokenKey = o.toString();
+            oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
+            redisTemplate.delete(oldTokenKey);
+            redisTemplate.delete(login_pin_key);
+        }
+        String newToken = StringUtils.getUUID();
+        UserDTO dto = new UserDTO();
+        BeanCoper.copyProperties(dto, userInfo);
+        dto.setToken(newToken);
+        String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
+        redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
+        String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
+        token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+        dto.setToken(token);
+        return dto;
+    }
+
 
     @Override
     public RPCResult<UserDTO> findByMobile(Long proxyId, String mobile) {
@@ -248,33 +263,6 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         return result;
     }
 
-    @Override
-    public RPCResult<LogLoginDto> getUserLastLoginInfo(Long proxyId, String pin) {
-        RPCResult<LogLoginDto> result = null;
-        try {
-            result = new RPCResult<>();
-            if (proxyId == null || StringUtils.isBlank(pin)) {
-                result.setSuccess(false);
-                result.setCode("param.null");
-                return result;
-            }
-            LogLoginInfo info = logLoginService.getUserLastLoginInfo(proxyId, pin);
-            if (info == null) {
-                result.setSuccess(false);
-                result.setCode("find.result.null");
-                return result;
-            }
-            LogLoginDto dto = new LogLoginDto();
-            BeanCoper.copyProperties(dto, info);
-            result.setSuccess(true);
-            result.setData(dto);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("getUserLastLoginInfo.error");
-            logger.error("", e);
-        }
-        return result;
-    }
 
     @Override
     public RPCResult<Boolean> changeInfo(UserDTO dto) {
@@ -325,80 +313,13 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         return result;
     }
 
-    @Override
-    public RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto) {
-        RPCResult<List<LogLoginDto>> result = new RPCResult<>();
-        try {
-            LogLoginInfo logLoginInfo = new LogLoginInfo();
-            BeanCoper.copyProperties(logLoginInfo, dto);
-            PageInfo pageinfo = dto.getPageinfo();
-            if (pageinfo.getSize() == null) {
-                pageinfo.setSize(10);
-            }
-            Pageable page = pageinfo.getPage();
-            Page<LogLoginInfo> pages = logLoginService.queryByPage(logLoginInfo, page);
-            List<LogLoginInfo> list = pages.getContent();
-            result.setTotalPage(pages.getTotalPages());
-            result.setPageSize(page.getPageSize());
-            result.setPageIndex(page.getPageNumber());
-            result.setTotalCount((int) pages.getTotalElements());
-
-            List<LogLoginDto> dtos = new ArrayList<>();
-            for (LogLoginInfo item : list) {
-                LogLoginDto dto1 = new LogLoginDto();
-                BeanCoper.copyProperties(dto1, item);
-                dtos.add(dto1);
-            }
-            result.setSuccess(true);
-            result.setCode("find.LogLoginDto.success");
-            result.setMessage("获取成功");
-            result.setData(dtos);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("find.LogLoginDto.error");
-            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
-            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
-        }
-        return result;
-    }
 
     @Override
-    public RPCResult<UserDTO> queryUser(Long proxyId, Long userCode) {
-        RPCResult<UserDTO> result = new RPCResult<>();
-        try {
-            if (proxyId == null || userCode == null) {
-                result.setSuccess(false);
-                result.setCode("param.null");
-                return result;
-            }
-
-            ClientUserInfo info = new ClientUserInfo();
-            info.setProxyId(proxyId);
-            info.setId(userCode);
-            List<ClientUserInfo> list = clientUserInfoService.query(info);
-            if (list == null || list.size() < 1) {
-                result.setSuccess(false);
-                result.setCode("find.result.null");
-                return result;
-            }
-            UserDTO dto = BeanCoper.copyProperties(UserDTO.class, list.get(0));
-            result.setSuccess(true);
-            result.setData(dto);
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setCode("find.LogLoginDto.error");
-            result.setMessage(MessageConstant.FIND_USER_EXTEND_INFO_FAIL);
-            logger.error(MessageConstant.FIND_USER_EXTEND_INFO_FAIL, e);
-        }
-        return result;
-    }
-
-
-    @Override
-    public RPCResult<Boolean> resetPass(Long proxyId, Long id, String pass) {
+    public RPCResult<Boolean> resetPass(String pin, String pass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            ClientUserInfo clientUserInfo = clientUserInfoService.findById(id);
+            ClientUserInfo clientUserInfo = clientUserInfoService.findById(pin);
+            String id = clientUserInfo.getId();
             if (clientUserInfo == null) {
                 result.setSuccess(false);
                 result.setMessage("用户不存在");

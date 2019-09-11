@@ -1,13 +1,9 @@
 package com.passport.web.controller;
 
-import com.common.security.MD5;
-import com.common.util.StringUtils;
-import com.passport.domain.ProxyInfo;
 import com.passport.service.ClientUserInfoService;
 import com.passport.service.ProxyInfoService;
 import com.passport.web.AbstractClientController;
 import com.passport.web.controller.dto.PageDto;
-import com.passport.web.controller.dto.ProxyAddUserDto;
 import com.passport.web.controller.dto.ProxyChangeUserInfoDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
@@ -32,27 +28,13 @@ public class ProxyController extends AbstractClientController {
     private ProxyInfoService proxyInfoService;
 
 
-    @RequestMapping("add")
-    @ResponseBody
-    @ApiOperation(value = "添加用户")
-    public Map<String, Object> addUser(@RequestBody ProxyAddUserDto dto) {
-        return buildMessage(() -> {
-            if(checkAuth()){
-                return loginService.regist(getDomain(),null, dto.getAccount(),dto.getPass(),dto.getPhone(),dto.getNickName(),dto.getEmail(),dto.getSexType(),
-                        dto.getBirthDay(),getIP(),dto.getHeadUrl(),dto.getWechat(),dto.getIdCard(),dto.getRealName(),dto.getQq());
-            }else{
-                return null;
-            }
-        });
-    }
-
     @RequestMapping("changeInfo")
     @ResponseBody
     @ApiOperation(value = "代理修改用户信息")
     public Map<String, Object> changeInfo(@RequestBody ProxyChangeUserInfoDto dto) {
         return buildMessage(() -> {
             if(checkAuth()){
-                loginService.proxyChangeUserInfo(getDomain().getId(),dto.getAccount(),dto.getType(),dto.getValue());
+                loginService.proxyChangeUserInfo(getDomain().getSeqId(),dto.getAccount(),dto.getType(),dto.getValue());
             }
             return null;
         });
@@ -64,7 +46,7 @@ public class ProxyController extends AbstractClientController {
     public Map<String, Object> getUsres(@RequestBody PageDto dto) {
         return buildMessage(() -> {
             if(checkAuth()){
-                return loginService.proxyGetUsers(getDomain().getId(),dto.getPageNum());
+                return loginService.proxyGetUsers(getDomain().getSeqId(),dto.getPageNum());
             }
             return null;
         });

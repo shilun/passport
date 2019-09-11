@@ -73,7 +73,7 @@ public class SMSWorker {
 
 
     //短信发送成功
-    protected void sendSuccess(Long id,String result) {
+    protected void sendSuccess(String id,String result) {
         SMSInfo entity = new SMSInfo();
         entity.setId(id);
         entity.setResult(result);

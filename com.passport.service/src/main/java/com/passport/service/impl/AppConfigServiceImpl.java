@@ -37,9 +37,9 @@ public class AppConfigServiceImpl extends AbstractMongoService<AppConfig> implem
     }
 
     @Override
-    public Long save(AppConfig entity) {
+    public void save(AppConfig entity) {
         String key = MessageFormat.format(APP_CONFIG_KEY, entity.getProxyId());
         redisTemplate.delete(key);
-        return super.save(entity);
+        super.save(entity);
     }
 }

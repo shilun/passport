@@ -11,7 +11,8 @@ import com.passport.domain.ProxyUserInfo;
 import com.passport.rpc.ProxyUserRpcService;
 import com.passport.rpc.dto.ProxyUserDto;
 import com.passport.service.ProxyUserInfoService;
-import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,22 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
 
 
     @Override
-    public RPCResult addUser(Long proxyId, String phone, String pass, String desc, Long roles[]) {
+    public RPCResult<ProxyUserDto> find(String pin) {
+        RPCResult<ProxyUserDto> result = new RPCResult();
+        try {
+            ProxyUserInfo userInfo = proxyUserInfoService.findByPin(pin);
+            ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, userInfo);
+            result.setData(dto);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            result.setCode("proxy.user.find.error");
+            result.setMessage("查找代理商用户失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult addUser(Long proxyId, String phone, String pass, String desc, String roles[]) {
         RPCResult result = new RPCResult();
         try {
             if (proxyId == null) {
@@ -48,7 +64,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
                 result.setMessage("代理商是标识不能为空");
                 return result;
             }
-            Long id = proxyUserInfoService.addUser(proxyId, phone, pass, desc);
+            String id = proxyUserInfoService.addUser(proxyId, phone, pass, desc);
             proxyUserInfoService.changeRole(proxyId, id, roles);
             result.setSuccess(true);
         } catch (Exception e) {
@@ -139,35 +155,22 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
     }
 
     /**
-     * @param proxyId
-     * @param id 被修改密码的ID
+     * @param pin
      * @param oldPass
      * @param newPass
      * @return
      */
     @Override
-    public RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass) {
+    public RPCResult<Boolean> changePass(String pin, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            if (proxyId == null) {
-                result.setSuccess(false);
-                result.setCode("proxyId.error");
-                result.setMessage("代理商是标识不能为空");
-                return result;
-            }
             if (StringUtils.isBlank(newPass)) {
                 result.setSuccess(false);
                 result.setCode("newPass.error");
                 result.setMessage("新密码不能为空");
                 return result;
             }
-            ProxyUserInfo byId = proxyUserInfoService.findById(id);
-            if (byId.getProxyId().longValue() != proxyId) {
-                result.setSuccess(false);
-                result.setCode("data.error");
-                result.setMessage("proxyId验证失败");
-                return result;
-            }
+            ProxyUserInfo byId = proxyUserInfoService.findByPin(pin);
             if (!MD5.MD5Str(oldPass, passKey).equals(byId.getPass())) {
                 result.setSuccess(false);
                 result.setCode("data.error");
@@ -176,7 +179,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
             }
             newPass = MD5.MD5Str(newPass, passKey);
             ProxyUserInfo query = new ProxyUserInfo();
-            query.setId(id);
+            query.setId(byId.getId());
             query.setPass(newPass);
             proxyUserInfoService.save(query);
             result.setData(true);
@@ -193,10 +196,10 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
 
 
     @Override
-    public RPCResult<Boolean> changePass(Long proxyId, Long id, String newPass) {
+    public RPCResult<Boolean> changePass(String pin, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            proxyUserInfoService.changePass(proxyId, id, newPass);
+            proxyUserInfoService.changePass(pin, newPass);
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
@@ -209,7 +212,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
     }
 
     @Override
-    public RPCResult<Boolean> changeRole(Long proxyId, Long id, Long[] roles) {
+    public RPCResult<Boolean> changeRole(Long proxyId, Long id, String[] roles) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             if (proxyId == null) {
@@ -218,7 +221,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
                 result.setMessage("代理商是标识不能为空");
                 return result;
             }
-            ProxyUserInfo entity = proxyUserInfoService.findById(id);
+            ProxyUserInfo entity = proxyUserInfoService.findBySeqId(id);
             if (entity.getProxyId().longValue() != proxyId.longValue()) {
                 result.setSuccess(false);
                 result.setCode("data.error");
@@ -226,7 +229,7 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
                 return result;
             }
             entity = new ProxyUserInfo();
-            entity.setId(id);
+            entity.setId(entity.getId());
             entity.setRoles(roles);
             proxyUserInfoService.save(entity);
             result.setSuccess(true);
@@ -242,23 +245,10 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
     }
 
     @Override
-    public RPCResult<Boolean> upUser(Long proxyId, Long id, String phone, String desc, Integer status, Long roles[]) {
+    public RPCResult<Boolean> upUser(String pin, String phone, String desc, Integer status, String roles[]) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            if (proxyId == null) {
-                result.setSuccess(false);
-                result.setCode("proxyId.error");
-                result.setMessage("代理商是标识不能为空");
-                return result;
-            }
-            ProxyUserInfo entity = proxyUserInfoService.findById(id);
-            if (entity.getProxyId().longValue() != proxyId.longValue()) {
-                result.setSuccess(false);
-                result.setCode("data.error");
-                result.setMessage("数据失败");
-                return result;
-            }
-            proxyUserInfoService.upUser(proxyId, id, phone, desc, status, roles);
+            proxyUserInfoService.upUser(pin, phone, desc, status, roles);
             result.setSuccess(true);
             result.setData(true);
             return result;
@@ -267,46 +257,6 @@ public class ProxyUserRpcServiceImpl extends StatusRpcServiceImpl implements Pro
             result.setSuccess(false);
             result.setCode("change.role.error");
             result.setMessage("修改角色失败");
-        }
-        return result;
-    }
-
-    @Override
-    public RPCResult<ProxyUserDto> find(Long proxyId, Long id) {
-        RPCResult<ProxyUserDto> result = new RPCResult<>();
-        try {
-            if (proxyId == null) {
-                result.setSuccess(false);
-                result.setCode("proxyId.error");
-                result.setMessage("代理商是标识不能为空");
-                return result;
-            }
-            ProxyUserInfo login = proxyUserInfoService.findById(id);
-            if (login == null) {
-                result.setSuccess(false);
-                result.setCode("data.error");
-                result.setMessage("数据不存在");
-                return result;
-            }
-            if (login.getProxyId().longValue() != proxyId.longValue()) {
-                result.setSuccess(false);
-                result.setCode("data.error");
-                result.setMessage("数据不存在");
-                return result;
-            }
-            login.setPass(null);
-            result.setSuccess(true);
-            ProxyUserDto dto = BeanCoper.copyProperties(ProxyUserDto.class, login);
-            result.setData(dto);
-            dto.setPass(null);
-
-            result.setSuccess(true);
-            return result;
-        } catch (Exception e) {
-            logger.error("查询失败", e);
-            result.setSuccess(false);
-            result.setCode("data.error");
-            result.setMessage("查询失败");
         }
         return result;
     }

@@ -25,6 +25,7 @@ public class ProxyConfigController extends AbstractClientController {
 
     /**
      * 查询
+     *
      * @param info
      * @return
      */
@@ -41,16 +42,15 @@ public class ProxyConfigController extends AbstractClientController {
     /**
      * 查询
      *
-     * @param content
+     * @param params
      * @return
      */
     @RoleResource(resource = "passport")
     @RequestMapping("/proxyconfig/view")
-    public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(() ->{
-            AppConfig byId = appConfigService.findById(getIdByJson(content));
-            return byId;
-        } );
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
+        return buildMessage(() -> {
+            return appConfigService.findById(params.get("id"));
+        });
     }
 
     /**
@@ -67,7 +67,8 @@ public class ProxyConfigController extends AbstractClientController {
             entity.setProxyId(info.getProxyId());
             entity.setContent(info.getContent());
             entity.setId(info.getId());
-            return appConfigService.save(entity);
+            appConfigService.save(entity);
+            return null;
         });
     }
 

@@ -45,16 +45,15 @@ public class ProxyInfoController extends AbstractClientController {
     /**
      * 查询
      *
-     * @param content
      * @return
      */
     @RoleResource(resource = "passport")
     @RequestMapping("/proxy/view")
-    public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(() ->{
-            ProxyInfo byId = proxyInfoService.findById(getIdByJson(content));
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
+        return buildMessage(() -> {
+            ProxyInfo byId = proxyInfoService.findById(params.get("id"));
             return byId;
-        } );
+        });
     }
 
     /**
@@ -74,10 +73,9 @@ public class ProxyInfoController extends AbstractClientController {
             entity.setLinkMan(info.getLinkMan());
             entity.setToken(info.getToken());
             entity.setEndTime(DateUtil.parseDate(info.getEndTime()));
-            entity.setEncodingKey(info.getEncodingKey());
-            List<String> domains=new ArrayList();
-            for(String domain:info.getDomain()){
-                if(StringUtils.isNotEmpty(domain)){
+            List<String> domains = new ArrayList();
+            for (String domain : info.getDomain()) {
+                if (StringUtils.isNotEmpty(domain)) {
                     domains.add(domain);
                 }
             }
@@ -89,7 +87,8 @@ public class ProxyInfoController extends AbstractClientController {
             entity.setCpRate(info.getCpRate());
             entity.setQpRate(info.getQpRate());
             entity.setServiceMoney(info.getServiceMoney());
-            return proxyInfoService.save(entity);
+            proxyInfoService.save(entity);
+            return null;
         });
     }
 

@@ -43,15 +43,14 @@ public class AdminUserInfoController extends AbstractClientController {
     /**
      * 查询
      *
-     * @param content
      * @return
      */
     @RoleResource(resource = "passport")
     @ApiOperation(value = "保存")
     @RequestMapping("/admin/view")
-    public Map<String, Object> view(@RequestBody String content) {
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
         return buildMessage(() ->
-                adminUserInfoService.findById(getIdByJson(content)));
+                adminUserInfoService.findById(params.get("id")));
     }
 
     @RoleResource(resource = "passport")

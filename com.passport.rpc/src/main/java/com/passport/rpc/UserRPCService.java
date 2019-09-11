@@ -14,40 +14,34 @@ import java.util.List;
 public interface UserRPCService extends StatusRpcService {
 
     /**
-     * 查询用户code
-     * @param proxyId
-     * @param pin
-     * @return
-     */
-    RPCResult<Long> findUserCodeByPin(Long proxyId,String pin);
-
-    /**
-     *
      * @param proxyId
      * @param deviceId
      * @param agentType
      * @return
      */
-    RPCResult<UserDTO> registerByDeviceId(Long proxyId,String deviceId,String agentType);
+    RPCResult<UserDTO> registerByDeviceId(Long proxyId, String deviceId, String agentType);
 
     /**
      * 根据用户pin查找用户
+     *
      * @param proxyId
      * @param pin
      * @return
      */
-    RPCResult<UserDTO> findByPin(Long proxyId,String pin);
+    RPCResult<UserDTO> findByPin(Long proxyId, String pin);
 
     /**
      * 根据电话查找用户
+     *
      * @param proxyId
      * @param mobile
      * @return
      */
-    RPCResult<UserDTO> findByMobile(Long proxyId,String mobile);
+    RPCResult<UserDTO> findByMobile(Long proxyId, String mobile);
 
     /**
      * 验证用户token
+     *
      * @param token
      * @return
      */
@@ -55,17 +49,10 @@ public interface UserRPCService extends StatusRpcService {
 
     RPCResult<List<UserDTO>> query(UserDTO dto);
 
-    /**
-     * 获取用户最近一次的登陆信息
-     * @param proxyId
-     * @param pin
-     * @return
-     */
-    RPCResult<LogLoginDto> getUserLastLoginInfo(Long proxyId,String pin);
-
 
     /**
      * 修改基本信息
+     *
      * @param dto
      * @return
      */
@@ -73,14 +60,12 @@ public interface UserRPCService extends StatusRpcService {
 
     /**
      * 根据条件查询人数
+     *
      * @param dto
      * @return
      */
     RPCResult<Long> queryUsersCount(UserDTO dto);
 
-    RPCResult<List<LogLoginDto>> queryLoginLog(LogLoginDto dto);
 
-    RPCResult<UserDTO> queryUser(Long proxyId,Long userCode);
-
-    RPCResult<Boolean> resetPass(Long proxyId,Long id,String pass);
+    RPCResult<Boolean> resetPass(String pin, String pass);
 }

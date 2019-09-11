@@ -1,6 +1,7 @@
 package com.passport.rpc.dto;
 
 import com.common.util.AbstractDTO;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -8,8 +9,10 @@ import java.math.BigDecimal;
 /**
  * 代理商信息
  */
+@Data
 public class ProxyDto extends AbstractDTO implements Serializable {
 
+    private Long seqId;
     /**
      * 代理的游戏
      * 1 棋牌 2 彩票 3 小游戏
@@ -73,139 +76,4 @@ public class ProxyDto extends AbstractDTO implements Serializable {
      */
     private BigDecimal serviceMoney;
 
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-
-    public BigDecimal getCpRate() {
-        return cpRate;
-    }
-
-    public void setCpRate(BigDecimal cpRate) {
-        this.cpRate = cpRate;
-    }
-
-    public BigDecimal getQpRate() {
-        return qpRate;
-    }
-
-    public void setQpRate(BigDecimal qpRate) {
-        this.qpRate = qpRate;
-    }
-
-    public BigDecimal getServiceMoney() {
-        return serviceMoney;
-    }
-
-    public void setServiceMoney(BigDecimal serviceMoney) {
-        this.serviceMoney = serviceMoney;
-    }
-
-    public String getLoginToken() {
-        return loginToken;
-    }
-
-    public void setLoginToken(String loginToken) {
-        this.loginToken = loginToken;
-    }
-
-    public Integer[] getGames() {
-        return games;
-    }
-
-    public void setGames(Integer[] games) {
-        this.games = games;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getLinkMan() {
-        return linkMan;
-    }
-
-    public void setLinkMan(String linkMan) {
-        this.linkMan = linkMan;
-    }
-
-    public String[] getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String[] domain) {
-        this.domain = domain;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getHeadImgUrl() {
-        return headImgUrl;
-    }
-
-    public void setHeadImgUrl(String headImgUrl) {
-        this.headImgUrl = headImgUrl;
-    }
-
-    public String getRealName() {
-        return realName;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getEncodingKey() {
-        return encodingKey;
-    }
-
-    public void setEncodingKey(String encodingKey) {
-        this.encodingKey = encodingKey;
-    }
 }

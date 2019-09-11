@@ -1,24 +1,11 @@
 package com.passport.main.controller.dto;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class ProxyUserDelDto implements Serializable {
     private Long proxyId;
-    private Long id;
-
-    public Long getProxyId() {
-        return proxyId;
-    }
-
-    public void setProxyId(Long proxyId) {
-        this.proxyId = proxyId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String id;
 }

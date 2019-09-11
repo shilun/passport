@@ -90,14 +90,14 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
     @Override
     public void changePass(Long id, String password) {
         AdminUserInfo upEntity = new AdminUserInfo();
-        upEntity.setId(id);
+        upEntity.setSeqId(id);
         upEntity.setPasswd(MD5.MD5Str(password, passKey));
         up(upEntity);
     }
 
     @Override
-    public Long insert(AdminUserInfo entity) {
+    public void insert(AdminUserInfo entity) {
         entity.setPin(StringUtils.getUUID());
-        return super.insert(entity);
+        super.insert(entity);
     }
 }

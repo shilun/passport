@@ -34,16 +34,6 @@ public interface ProxyRpcService extends StatusRpcService {
      */
     public RPCResult<ProxyDto> findById(Long proxyId);
 
-
-    /**
-     * 修改加密串
-     *
-     * @param proxyId
-     * @param encodingKey
-     * @return
-     */
-    public RPCResult upEncodingKey(Long proxyId, String encodingKey);
-
     /**
      * 根据域名查询代理商信息
      *
@@ -52,40 +42,6 @@ public interface ProxyRpcService extends StatusRpcService {
      */
     RPCResult<ProxyDto> findByDomain(String domain);
 
-    /**
-     * 根据注册时间段筛选用户
-     *
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    RPCResult<List<UserDTO>> queryUsersByRegTime(Date startTime, Date endTime, UserDTO dto);
-
-    /**
-     * 根据条件查询用户详细信息
-     *
-     * @param proxyId
-     * @param type
-     * @param data
-     * @return
-     */
-    RPCResult<UserDTO> queryUsersByCondition(Long proxyId, ConditionType type, String data);
-
-    /**
-     * 根据昵称查询用户列表
-     *
-     * @return
-     */
-    RPCResult<List<UserDTO>> queryUsersByNick(UserDTO dto);
-
-    /**
-     * 查询用户的上级信息
-     *
-     * @param proxyId
-     * @param phone
-     * @return
-     */
-    RPCResult<ProxyDto> queryUsersSuperior(Long proxyId, String phone);
 
     /**
      * 根据pin查询用户信息
@@ -97,58 +53,7 @@ public interface ProxyRpcService extends StatusRpcService {
     @Deprecated
     RPCResult<ProxyDto> findByPin(Long proxyId, String pin);
 
-    /**
-     * 对用户登陆或注册时的IP进行限制
-     *
-     * @param dto
-     * @return
-     */
-    RPCResult<Boolean> userlimit(LimitDto dto);
-
-    /**
-     * 限制单ip注册数量
-     *
-     * @param num
-     * @return
-     */
-    RPCResult<Boolean> setLimitRegisterNum(Integer num);
-
-    /**
-     * 查询单ip注册的最大数量
-     *
-     * @return
-     */
-    RPCResult<Integer> findAllLimitNum();
-
-    /**
-     * 查询在min与max之间的信息
-     *
-     * @param min 注册的数量
-     * @param max 注册的数量
-     * @return
-     */
-    RPCResult<List<LimitDto>> getLimitInfo(Integer min, Integer max, LimitDto dto);
-
-    /**
-     * 根据限制类型来查找信息
-     *
-     * @return
-     */
-    RPCResult<List<LimitDto>> getLimitInfo(LimitDto dto);
-
-    RPCResult<Long> queryRegNum(Long proxyId, DateType type);
-
-    RPCResult<Long> queryRegNum(Long proxyId, Date startDate, Date endDate);
-
-    RPCResult<LimitDto> findLimitInfoById(Long id);
 
     RPCResult<Boolean> changeInfo(ProxyDto proxyDto);
 
-    /**
-     * 删除限制信息
-     *
-     * @param dto
-     * @return
-     */
-    RPCResult<Boolean> delLimitInfo(LimitDto dto);
 }

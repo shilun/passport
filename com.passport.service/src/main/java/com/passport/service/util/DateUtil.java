@@ -1,6 +1,5 @@
 package com.passport.service.util;
 
-import com.passport.rpc.dto.DateType;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -71,47 +70,5 @@ public class DateUtil {
         }else{
             return day2-day1;
         }
-    }
-
-    public static Date[] getStartAndEndDate(DateType type) throws Exception{
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = null;
-        String str = null;
-        Date startTime = null;
-        Date nowDate = new Date();
-        cal.setTime(nowDate);
-        switch (type){
-            case ALL:
-                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                str = "2001-01-01 00:00:00";
-                startTime = sdf.parse(str);
-                break;
-            case DAY:
-                startTime = setZero(cal);
-                break;
-            case WEEK:
-                int dayofweek = cal.get(Calendar.DAY_OF_WEEK);
-                if (dayofweek == 1) {
-                    dayofweek += 7;
-                }
-                cal.add(Calendar.DATE, 2 - dayofweek);
-                startTime = setZero(cal);
-                break;
-            case MONTH:
-                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.YEAR));
-                startTime = cal.getTime();
-                break;
-            case YEAY:
-                cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-                cal.set(Calendar.DAY_OF_YEAR, cal.getActualMinimum(Calendar.YEAR));
-                startTime = cal.getTime();
-                break;
-            default:
-                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                str = "2001-01-01 00:00:00";
-                startTime = sdf.parse(str);
-        }
-        return new Date[]{startTime,nowDate};
     }
 }

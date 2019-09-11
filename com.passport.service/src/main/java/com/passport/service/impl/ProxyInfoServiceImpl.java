@@ -42,12 +42,11 @@ public class ProxyInfoServiceImpl extends AbstractMongoService<ProxyInfo> implem
 
 
     @Override
-    public Long save(ProxyInfo entity) {
+    public void save(ProxyInfo entity) {
         if (entity.getId() == null) {
             entity.setToken(StringUtils.getUUID());
         }
-        Long save = super.save(entity);
-        return save;
+        super.save(entity);
     }
 //
 //    @Override
@@ -108,4 +107,12 @@ public class ProxyInfoServiceImpl extends AbstractMongoService<ProxyInfo> implem
 //
 //
 //    }
+
+
+    @Override
+    public ProxyInfo findBySeqId(Long proxyId) {
+        ProxyInfo proxyInfo = new ProxyInfo();
+        proxyInfo.setSeqId(proxyId);
+        return findByOne(proxyInfo);
+    }
 }

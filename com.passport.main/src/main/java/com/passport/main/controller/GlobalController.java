@@ -8,7 +8,6 @@ import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ProxyInfo;
 import com.passport.domain.module.AgentTypeEnum;
 import com.passport.domain.module.VersionTypeEnum;
-import com.passport.rpc.dto.BizTypeEnum;
 import com.passport.main.AbstractClientController;
 import com.passport.service.ProxyInfoService;
 import io.swagger.annotations.Api;
@@ -33,7 +32,6 @@ public class GlobalController extends AbstractClientController {
         glosseryItems = new HashMap<>();
         glosseryItems.put("yesorno", YesOrNoEnum.class);
         glosseryItems.put("sextype", SexEnum.class);
-        glosseryItems.put("games", BizTypeEnum.class);
         glosseryItems.put("agenttype", AgentTypeEnum.class);
         glosseryItems.put("versiontype", VersionTypeEnum.class);
     }

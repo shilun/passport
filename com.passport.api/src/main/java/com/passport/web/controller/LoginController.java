@@ -45,7 +45,7 @@ public class LoginController extends AbstractClientController {
             @Override
             public Object getData() {
                 getRequest().getSession().removeAttribute("userDto");
-                UserDTO login = loginService.login(getIP(), getDomain().getId(), dto.getAccount(), dto.getPass());
+                UserDTO login = loginService.login(getIP(), getDomain().getSeqId(), dto.getAccount(), dto.getPass());
                 putCookie("cToken", login.getToken(), response);
                 return login;
             }
@@ -57,7 +57,7 @@ public class LoginController extends AbstractClientController {
     @ApiOperation(value = "手机号登陆获取验证码")
     public Map<String, Object> buildLoginMobileCode(@RequestBody LoginByCodeDto dto) {
         return buildMessage(() -> {
-            loginService.loginCodeBuild(getDomain().getId(), dto.getAccount());
+            loginService.loginCodeBuild(getDomain().getSeqId(), dto.getAccount());
             return null;
         });
     }
@@ -70,7 +70,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return loginService.loginCodeBuildVerification(getIP(), getDomain().getId(), dto.getAccount(), dto.getCode());
+                return loginService.loginCodeBuildVerification(getIP(), getDomain().getSeqId(), dto.getAccount(), dto.getCode());
             }
         });
     }
@@ -80,7 +80,7 @@ public class LoginController extends AbstractClientController {
     @ApiOperation(value = "手机号注册获取验证码")
     public Map<String, Object> register(@RequestBody RegisterDto dto) {
         return buildMessage(() -> {
-            loginService.regist(getDomain().getId(), dto.getAccount());
+            loginService.regist(getDomain().getSeqId(), dto.getAccount(), "");
             return null;
         });
     }
@@ -92,7 +92,7 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return loginService.registVerification(getDomain(), dto.getAccount(), dto.getCode(), dto.getPass(), getIP());
+                return loginService.registVerification(getDomain().getSeqId(), dto.getAccount(), dto.getCode(), dto.getPass());
             }
         });
     }
@@ -138,7 +138,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> changeMobile(@RequestBody ChangeMobileDto dto) {
         return buildMessage(() -> {
-            loginService.changeMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile());
+            loginService.changeMobile(getDomain().getSeqId(), getUserDto().getPin(), dto.getMobile());
             return null;
         });
     }
@@ -148,7 +148,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> changeMobileVer(@RequestBody ChangeMobileVerDto dto) {
         return buildMessage(() -> {
-            loginService.changeMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
+            loginService.changeMobile(getDomain().getSeqId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
             return null;
         });
     }
@@ -158,7 +158,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> bindMobile(@RequestBody BindMobileDto dto) {
         return buildMessage(() -> {
-            loginService.bindMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile());
+            loginService.bindMobile(getDomain().getSeqId(), getUserDto().getPin(), dto.getMobile());
             return null;
         });
     }
@@ -168,7 +168,7 @@ public class LoginController extends AbstractClientController {
     @ApiOperation(value = "绑定手机号校验")
     public Map<String, Object> bindMobileVer(@RequestBody BindMobileVerDto dto) {
         return buildMessage(() -> {
-            loginService.bindMobile(getDomain().getId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
+            loginService.bindMobile(getDomain().getSeqId(), getUserDto().getPin(), dto.getMobile(), dto.getCode());
             return null;
         });
     }
@@ -178,7 +178,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> changePass(@RequestBody ChangePassDto dto) {
         return buildMessage(() -> {
-            loginService.changePass(getDomain().getId(), getUserDto().getPin(), dto.getOldPass(), dto.getNewPass());
+            loginService.changePass(getDomain().getSeqId(), getUserDto().getPin(), dto.getOldPass(), dto.getNewPass());
             return null;
         });
     }
@@ -188,7 +188,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> changeNick(@RequestBody ChangeNickDto dto) {
         return buildMessage(() -> {
-            loginService.changeNickName(getDomain().getId(), getUserDto().getPin(), dto.getNick());
+            loginService.changeNickName(getDomain().getSeqId(), getUserDto().getPin(), dto.getNick());
             return null;
         });
     }
@@ -198,7 +198,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> changeSex(@RequestBody ChangeSexDto dto) {
         return buildMessage(() -> {
-            loginService.changeSex(getDomain().getId(), getUserDto().getPin(), dto.getSex());
+            loginService.changeSex(getDomain().getSeqId(), getUserDto().getPin(), dto.getSex());
             return null;
         });
     }
@@ -208,7 +208,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> changeBirthday(@RequestBody String birthday) {
         return buildMessage(() -> {
-            loginService.changeBirthday(getDomain().getId(), getUserDto().getPin(), JSONObject.fromObject(birthday).getString("birthday"));
+            loginService.changeBirthday(getDomain().getSeqId(), getUserDto().getPin(), JSONObject.fromObject(birthday).getString("birthday"));
             return null;
         });
     }
@@ -218,7 +218,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> forgetPass(@RequestBody String account) {
         return buildMessage(() -> {
-            loginService.forgetPass(getDomain().getId(), JSONObject.fromObject(account).getString("account"));
+            loginService.forgetPass(getDomain().getSeqId(), JSONObject.fromObject(account).getString("account"));
             return null;
         });
     }
@@ -228,7 +228,7 @@ public class LoginController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> forgetPassVer(@RequestBody ForgetPassVerDto dto) {
         return buildMessage(() -> {
-            loginService.forgetPassCodeVerification(getDomain().getId(), dto.getAccount(), dto.getCode(), dto.getPass());
+            loginService.forgetPassCodeVerification(getDomain().getSeqId(), dto.getAccount(), dto.getCode(), dto.getPass());
             return null;
         });
     }
@@ -240,23 +240,23 @@ public class LoginController extends AbstractClientController {
         model.addAttribute("recommendId", q);
         String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
         String[] domains = getDomain().getDomain();
-        if(isWechat()){
-            model.addAttribute("url","http://passport." + domains[0] + "/login/reg?q=" + q);
+        if (isWechat()) {
+            model.addAttribute("url", "http://passport." + domains[0] + "/login/reg?q=" + q);
             return "/intercept";
         }
         if (domains.length >= 2 && domains[0].equals(domain)) {
-            model.addAttribute("url","http://passport." + domains[1] + "/login/reg?q=" + q);
+            model.addAttribute("url", "http://passport." + domains[1] + "/login/reg?q=" + q);
             return "/redirectUrl";
         }
         AgentTypeEnum agentType = getAgentType();
         if (agentType == AgentTypeEnum.Android || agentType == AgentTypeEnum.Other) {
-            model.addAttribute("url", softWareService.findLastInfo(getDomain().getId(), AgentTypeEnum.Android).getUrl());
+            model.addAttribute("url", softWareService.findLastInfo(getDomain().getSeqId(), AgentTypeEnum.Android).getUrl());
         }
         model.addAttribute("agentType", agentType.getValue());
         return "/register";
     }
 
-    public  boolean isWechat() {
+    public boolean isWechat() {
         String ua = getRequest().getHeader("User-Agent").toLowerCase();
         if (ua.indexOf("micromessenger") > -1) {
             return true;

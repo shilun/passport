@@ -7,7 +7,8 @@ import com.passport.domain.module.AgentTypeEnum;
 import com.passport.service.SoftWareService;
 import com.passport.web.AbstractClientController;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,7 +40,7 @@ public class AppDownloadController extends AbstractClientController {
         } else {
             type = getAgentType();
         }
-        return "redirect:" + softWareService.findLastInfo(getDomain().getId(), type).getUrl();
+        return "redirect:" + softWareService.findLastInfo(getDomain().getSeqId(), type).getUrl();
     }
 
     @RequestMapping(value = "/download")
@@ -55,7 +56,7 @@ public class AppDownloadController extends AbstractClientController {
                 } else {
                     type = getAgentType();
                 }
-                return softWareService.findLastInfo(getDomain().getId(), type).getUrl();
+                return softWareService.findLastInfo(getDomain().getSeqId(), type).getUrl();
             }
         });
     }
@@ -66,7 +67,7 @@ public class AppDownloadController extends AbstractClientController {
         response.setContentType("text/plain");
         response.setHeader("Content-type", "text/plain;charset=UTF-8");
         AgentTypeEnum type = AgentTypeEnum.IOS;
-        SoftWare lastInfo = softWareService.findLastInfo(getDomain().getId(), type);
+        SoftWare lastInfo = softWareService.findLastInfo(getDomain().getSeqId(), type);
         return getContentBody(lastInfo.getUrl(), lastInfo.getVersion(), lastInfo.getName());
     }
 

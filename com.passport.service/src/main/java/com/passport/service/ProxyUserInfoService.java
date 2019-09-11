@@ -8,6 +8,7 @@ import com.passport.domain.ProxyUserInfo;
  */
 public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
 
+    ProxyUserInfo findByPin(String pin);
     /**
      * 登录
      *
@@ -19,20 +20,15 @@ public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
     ProxyUserInfo login(Long proxyId, String account, String pass);
 
     /**
-     * @param id
-     * @param password
-     * @param vpassword
+     * 修改密码
+     * @param pin
+     * @param oldPass
+     * @param newPass
      */
-    void changePass(Long id, String password, String vpassword);
+    void changePass(String pin, String oldPass, String newPass);
 
-    /**
-     *
-     * @param proxyId
-     * @param id
-     * @param newpass
-     */
-    void changePass(Long proxyId, long id, String newpass);
 
+    void changePass(String pin,String newPass);
 
     /**
      * 修改用户角色
@@ -42,45 +38,31 @@ public interface ProxyUserInfoService extends MongoService<ProxyUserInfo> {
      * @param roles
      * @return
      */
-    void changeRole(Long proxyId, Long id, Long roles[]);
+    void changeRole(Long proxyId, String id, String roles[]);
 
 
-    /**
-     * 修改用户信息
-     *
-     * @param proxyId
-     * @param id
-     * @param phone
-     * @param desc
-     * @param status
-     */
-    void upUser(Long proxyId, Long id, String phone, String desc, Integer status);
-
-    /**
-     * 修改用户信息
-     * @param proxyId
-     * @param id
-     * @param phone
-     * @param desc
-     * @param status
-     * @param roles
-     */
-    void upUser(Long proxyId, Long id, String phone, String desc, Integer status,Long[]roles);
+    void upUser(String pin, String phone, String desc, Integer status,String[]roles);
 
     /**
      * 添加用户
-     *
-     * @param proxyId 代理商
+     *  @param proxyId 代理商
      * @param phone   电话
      * @param pass    密码
      * @param desc    备注
      */
-    Long addUser(Long proxyId, String phone, String pass, String desc);
+    String addUser(Long proxyId, String phone, String pass, String desc);
 
     /**
      * 删除用户
      * @param proxyId
      * @param id
      */
-    void delById(Long proxyId, Long id);
+    void delById(Long proxyId, String id);
+
+    /**
+     * 查询用户
+     * @param userId
+     * @return
+     */
+    ProxyUserInfo findBySeqId(Long userId);
 }

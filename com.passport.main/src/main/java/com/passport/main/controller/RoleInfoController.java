@@ -40,14 +40,14 @@ public class RoleInfoController extends AbstractClientController {
     /**
      * 查询
      *
-     * @param content
+     * @param params
      * @return
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/role/view")
     @RoleResource(resource = "passport")
-    public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(() -> roleInfoService.findById(getIdByJson(content)));
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
+        return buildMessage(() -> roleInfoService.findById(params.get("id")));
     }
 
     /**
@@ -63,7 +63,8 @@ public class RoleInfoController extends AbstractClientController {
         return buildMessage(() -> {
             RoleInfo entity = new RoleInfo();
             BeanCoper.copyProperties(entity, info);
-            return roleInfoService.save(entity);
-    });
-}
+            roleInfoService.save(entity);
+            return null;
+        });
+    }
 }

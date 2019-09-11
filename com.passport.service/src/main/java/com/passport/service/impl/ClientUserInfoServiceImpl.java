@@ -2,33 +2,26 @@ package com.passport.service.impl;
 
 import com.common.exception.ApplicationException;
 import com.common.exception.BizException;
-import com.common.httpclient.HttpClientUtil;
 import com.common.mongo.AbstractMongoService;
 import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
-import com.common.util.DateUtil;
-import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.common.util.model.SexEnum;
 import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.ClientUserInfo;
-import com.passport.domain.LimitInfo;
 import com.passport.domain.SMSInfo;
 import com.passport.domain.module.UserStatusEnum;
-import com.passport.rpc.dto.LimitType;
-import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.UserDTO;
-import com.passport.service.*;
+import com.passport.service.ClientUserInfoService;
+import com.passport.service.ProxyInfoService;
+import com.passport.service.SMSInfoService;
 import com.passport.service.constant.ChangeType;
-import com.passport.service.constant.HttpStatusCode;
 import com.passport.service.constant.MessageConstant;
 import com.passport.service.constant.SysContant;
 import com.passport.service.util.AliyunMnsUtil;
-import com.passport.service.util.OldPackageMapUtil;
-import com.passport.service.util.Tool;
-import net.sf.json.JSONObject;
-import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +33,6 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -83,10 +74,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Resource
     private SMSInfoService smsInfoService;
     @Resource
-    private LogLoginService logLoginService;
-    @Resource
-    private LimitInfoService limitInfoService;
-    @Resource
     private ProxyInfoService proxyInfoService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -97,11 +84,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
 
     public ClientUserInfo login(Long proxyId, String loginName, String passwd, String ip) {
-        //查询此ip是否被限制登陆
-        if (isLoginLimit(ip, null, null)) {
-            throw new BizException("login.error", "当前ip被限制登陆");
-        }
-
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(passwd) || proxyId == null) {
             return null;
         }
@@ -126,11 +108,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if (query == null) {
             return null;
         }
-        //查询此用户是否被限制登陆
-        if (isLoginLimit(null, proxyId, query.getPin())) {
-            throw new BizException("login.error", "当前用户被限制登陆");
-        }
-        logLoginService.addLoginLog(query.getPin(), proxyId, query.getCreateTime(), ip, query.getId());
         return query;
     }
 
@@ -159,13 +136,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         return this.findByOne(clientUserInfo);
     }
 
-    public ClientUserInfo findByUserCode(Long proxyId, Integer userCode) {
-        ClientUserInfo clientUserInfo = new ClientUserInfo();
-        clientUserInfo.setProxyId(proxyId);
-        clientUserInfo.setId(userCode.longValue());
-        return this.findByOne(clientUserInfo);
-    }
-
     @Override
     public Page<ClientUserInfo> queryByNick(Long proxyId, String nickName, Pageable pageable) {
         ClientUserInfo clientUserInfo = new ClientUserInfo();
@@ -176,7 +146,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     public void changePass(Long proxyId, String pin, String pwd) {
         ClientUserInfo byPin = findByPin(proxyId, pin);
-        Long id = byPin.getId();
+        String id = byPin.getId();
         ClientUserInfo info = new ClientUserInfo();
         info.setPasswd(MD5.MD5Str(pwd, passKey));
         info.setId(id);
@@ -190,7 +160,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void regist(Long proxyId, String account) {
+    public void regist(Long proxyId, String account, String refPin) {
         if (StringUtils.isBlank(account)) {
             throw new BizException("账号不能为空");
         }
@@ -207,9 +177,9 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if (redisTemplate.hasKey(key)) {
             long expire = redisTemplate.getExpire(key);
             long now = System.currentTimeMillis() / 1000;
-            if(now > expire){
+            if (now > expire) {
                 redisTemplate.delete(key);
-            }else{
+            } else {
                 count = Integer.parseInt(redisTemplate.opsForValue().get(key).toString());
                 if (count >= regSmsLimit) {
                     throw new BizException("今日获取注册验证码超过限制");
@@ -218,7 +188,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         String code = AliyunMnsUtil.randomSixCode();
         String redisKey = MessageFormat.format(PASS_USER_REG, account, proxyId);
-        sendSMSCode(account, redisKey, code, proxyInfoService.findById(proxyId).getName());
+        sendSMSCode(account, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
 
         Date expireDate = com.passport.service.util.DateUtil.getTomorrowZeroTime();
         redisTemplate.opsForValue().set(key, count + 1);
@@ -226,8 +196,8 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO registVerification(ProxyDto proxydto, String account, String vcode, String pass, String ip) {
-        String key = MessageFormat.format(PASS_USER_REG, account, proxydto.getId());
+    public UserDTO registVerification(Long proxyId, String account, String vcode, String pass) {
+        String key = MessageFormat.format(PASS_USER_REG, account, proxyId);
         if (!redisTemplate.hasKey(key)) {
             throw new BizException("验证码过期");
         }
@@ -235,7 +205,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         if (!o.equalsIgnoreCase(vcode)) {
             throw new BizException("验证码错误");
         }
-        return regist(proxydto, null, account, pass, account, null, null, SexEnum.MALE, null, ip, null, null, null, null, null);
+        return regist(proxyId, "", pass, null);
     }
 
     @Override
@@ -247,7 +217,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(LOGIN_MOBILE_CODE, account, proxyId);
-            sendSMSCode(account, redisKey, code, proxyInfoService.findById(proxyId).getName());
+            sendSMSCode(account, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
             new BizException(MessageConstant.FIND_USER_FAIL, e.getMessage());
@@ -257,10 +227,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     @Override
     public UserDTO loginCodeBuildVerification(String ip, Long proxyId, String account, String vcode) {
         try {
-            //查询此ip是否被限制登陆
-            if (isLoginLimit(ip, null, null)) {
-                throw new BizException("login.error", "当前ip被限制登陆");
-            }
 
             if (StringUtils.isBlank(vcode)) {
                 return null;
@@ -281,12 +247,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
                 return null;
             }
 
-            //查询此用户是否被限制登陆
-            if (isLoginLimit(null, proxyId, userInfo.getPin())) {
-                throw new BizException("login.error", "当前用户被限制登陆");
-            }
-
-            String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId,userInfo.getPin());
+            String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId, userInfo.getPin());
             Object o1 = redisTemplate.opsForValue().get(login_pin_key);
             String newToken = StringUtils.getUUID();
             UserDTO dto = null;
@@ -302,7 +263,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
             //删除验证码
             redisTemplate.delete(key);
-            logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip, userInfo.getId());
             return dto;
         } catch (Exception e) {
             logger.error(MessageConstant.FIND_USER_FAIL, e);
@@ -313,38 +273,31 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
     @Override
     public UserDTO login(String ip, Long proxyId, String account, String passwrd) {
-        //查询此ip是否被限制登陆
-        if (isLoginLimit(ip, null, null)) {
-            throw new BizException("login.error", "当前ip被限制登陆");
-        }
 
         if (StringUtils.isBlank(passwrd)) {
             throw new BizException("参数不能为空");
         }
 
-        if(account.indexOf("_") < 0 && !StringUtils.isMobileNO(account)){
-             throw new BizException("手机号格式不正确");
+        if (account.indexOf("_") < 0 && !StringUtils.isMobileNO(account)) {
+            throw new BizException("手机号格式不正确");
         }
 
         ClientUserInfo userInfo = findByPhone(proxyId, account);
-        if (userInfo == null || UserStatusEnum.Disable.getValue()==userInfo.getStatus().intValue()) {
+        if (userInfo == null || UserStatusEnum.Disable.getValue() == userInfo.getStatus().intValue()) {
             throw new BizException("无法找到该用户,请注册");
         }
-
-        //查询此用户是否被限制登陆
-        if (isLoginLimit(null, proxyId, userInfo.getPin())) {
-            throw new BizException("login.error", "当前用户被限制登陆");
-        }
-
 
         passwrd = MD5.MD5Str(passwrd, passKey);
         if (!passwrd.equals(userInfo.getPasswd())) {
             throw new BizException("密码错误");
         }
+        UserDTO userDTO = buildToken(proxyId, userInfo);
+        return userDTO;
+    }
 
+    private UserDTO buildToken(Long proxyId, ClientUserInfo userInfo) {
         String login_pin_key = MessageFormat.format(LOGIN_PIN, proxyId, userInfo.getPin());
         Object o = redisTemplate.opsForValue().get(login_pin_key);
-
         if (o != null) {
             String oldTokenKey = o.toString();
             oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
@@ -353,14 +306,13 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
         String newToken = StringUtils.getUUID();
         UserDTO dto = new UserDTO();
+        dto.setPin(userInfo.getPin());
         BeanCoper.copyProperties(dto, userInfo);
         dto.setToken(newToken);
         String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
         redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
 
-
-        logLoginService.addLoginLog(dto.getPin(), proxyId, userInfo.getCreateTime(), ip, userInfo.getId());
         String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
         token = DesEncrypter.cryptString(token, appTokenEncodeKey);
         dto.setToken(token);
@@ -387,7 +339,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public void delById(Long id) {
+    public void delById(String id) {
         throw new ApplicationException("删除失败，方法已禁用");
     }
 
@@ -406,7 +358,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
-            sendSMSCode(mobile, redisKey, code, proxyInfoService.findById(proxyId).getName());
+            sendSMSCode(mobile, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
@@ -428,7 +380,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_CHANGE, mobile);
-            sendSMSCode(mobile, redisKey, code, proxyInfoService.findById(proxyId).getName());
+            sendSMSCode(mobile, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
 
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
@@ -450,7 +402,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(MOBILE_USER_BIND, mobile);
 
-            sendSMSCode(mobile, redisKey, code, proxyInfoService.findById(proxyId).getName());
+            sendSMSCode(mobile, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.BIND_MOBILE_FAIL, e);
             new BizException(MessageConstant.BIND_MOBILE_FAIL, e.getMessage());
@@ -598,7 +550,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             }
             String code = AliyunMnsUtil.randomSixCode();
             String redisKey = MessageFormat.format(PASS_USER_CHANGE_BY_MOBILE, mobile);
-            sendSMSCode(mobile, redisKey, code, proxyInfoService.findById(proxyId).getName());
+            sendSMSCode(mobile, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
@@ -618,7 +570,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             String code = AliyunMnsUtil.randomSixCode();
             String mobile = userInfo.getPhone();
             String redisKey = MessageFormat.format(FORGET_PASS, phone);
-            sendSMSCode(mobile, redisKey, code, proxyInfoService.findById(proxyId).getName());
+            sendSMSCode(mobile, redisKey, code, proxyInfoService.findBySeqId(proxyId).getName());
         } catch (Exception e) {
             logger.error(MessageConstant.SEND_CODE_FAIL, e);
             new BizException(MessageConstant.SEND_CODE_FAIL, e.getMessage());
@@ -770,108 +722,67 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public UserDTO regist(ProxyDto proxydto, String recommendId, String refId, String pass, String phone, String nick, String email,
-                          SexEnum sexEnum, String birth, String ip, String headUrl, String wechat, String idCard,
-                          String realName, Long qq) {
+    public UserDTO regist(Long proxyId, String refId, String pass, String phone) {
 
-        UserDTO dto = null;
-        try {
-
-            //查询此ip是否被限制注册
-            if (isRegisterLimit(ip)) {
-                throw new BizException("regist.error", "当前ip被限制注册 phone:"+phone);
-            }
-
-            if (proxydto == null) {
-                throw new BizException("proxyId.error", "代理商id错误 "+phone);
-            }
-            if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
-                logger.error("电话号码错误 "+phone);
-                throw new BizException("phone.error", "电话号码错误 "+phone);
-            }
-            if (StringUtils.isBlank(refId)) {
-                throw new BizException("refId.error", "参考账户不能为空 ");
-            }
-            if (StringUtils.isNotBlank(email) && !StringUtils.isMobileNO(email)) {
-                logger.error("邮件地址错误 "+email);
-                throw new BizException("email.error", "邮件地址错误");
-            }
-            Date date = null;
-            if (!StringUtils.isBlank(birth)) {
-                date = DateUtil.parseDate(birth);
-            }
-            Long proxyId = proxydto.getId();
-            if (StringUtils.isNotBlank(recommendId) && !StringUtils.equals("0", recommendId)) {
-                ClientUserInfo recommendUser = findByPin(proxyId, recommendId);
-                if (recommendUser == null) {
-                    recommendId = "0";
-                }
-            } else {
-                recommendId = "0";
-            }
-            ClientUserInfo entity = findByPhone(proxyId, phone);
-            if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
-                logger.error("该账号已经注册过了 "+phone);
-                throw new BizException("该账号已经注册过");
-            }
-            if (StringUtils.isBlank(nick)) {
-                nick = "玩家" + phone.substring(7);
-            }
-            if (entity == null) {
-                entity = new ClientUserInfo();
-            }
-            entity.setProxyId(proxyId);
-            entity.setRefId(refId);
-            entity.setPhone(phone);
-            entity.setNickName(nick);
-            entity.setSexType(sexEnum.getValue());
-            entity.setPasswd(MD5.MD5Str(pass, passKey));
-            entity.setBirthDay(date);
-            entity.setEmail(email);
-            entity.setHeadUrl(headUrl);
-            entity.setWechat(wechat);
-            entity.setIdCard(idCard);
-            entity.setRealName(realName);
-            entity.setQq(qq);
-            entity.setRegisterIp(ip);
-            entity.setStatus(UserStatusEnum.Disable.getValue());
-            super.save(entity);
-
-
-            ClientUserInfo upEntity = new ClientUserInfo();
-            upEntity.setId(entity.getId());
-            upEntity.setPin(String.valueOf(entity.getId()));
-            super.up(upEntity);
-            entity.setPin(upEntity.getPin());
-
-            dto = new UserDTO();
-            BeanCoper.copyProperties(dto, entity);
-            String pin = entity.getPin();
-            limitInfoService.addIpRegisterNum(ip);
+        if (StringUtils.isNotBlank(phone) && !StringUtils.isMobileNO(phone)) {
+            logger.error("电话号码错误 " + phone);
+            throw new BizException("phone.error", "电话号码错误 " + phone);
         }
-        catch (BizException e){
-            logger.error(e.getCode()+",message:"+e.getMessage());
-            throw e;
+        if (StringUtils.isBlank(refId)) {
+            throw new BizException("refId.error", "参考账户不能为空 ");
         }
-        catch (Exception e) {
-            logger.error("推荐人初始化异常", e);
-           throw new BizException("reg.error","注册异常");
+        ClientUserInfo entity = findByPhone(proxyId, phone);
+        if (entity != null && entity.getStatus().equals(UserStatusEnum.Normal.getValue())) {
+            logger.error("该账号已经注册过了 " + phone);
+            throw new BizException("该账号已经注册过");
         }
-        return dto;
+        if (entity == null) {
+            entity = new ClientUserInfo();
+        }
+        entity.setProxyId(proxyId);
+        entity.setRefId(refId);
+        entity.setPhone(phone);
+        entity.setSexType(SexEnum.MALE.getValue());
+        entity.setPasswd(MD5.MD5Str(pass, passKey));
+        entity.setStatus(UserStatusEnum.Normal.getValue());
+        super.save(entity);
+        return buildToken(proxyId, entity);
     }
 
     @Override
-    public Long insert(ClientUserInfo entity) {
+    public UserDTO registGuest(Long proxyId, String deviceId, String refPin) {
+        ClientUserInfo entity = new ClientUserInfo();
+        entity.setDeviceUid(deviceId);
+        entity.setProxyId(proxyId);
+        entity.setStatus(YesOrNoEnum.YES.getValue());
+        entity.setRefPin(refPin);
+        insert(entity);
+        return buildToken(proxyId, entity);
+    }
+
+    @Override
+    public UserDTO loginByDeviceUid(Long proxyId, String deviceId) {
+        ClientUserInfo entity = new ClientUserInfo();
+        entity.setDeviceUid(deviceId);
+        entity.setProxyId(proxyId);
+        entity=findByOne(entity);
+        return buildToken(proxyId, entity);
+    }
+
+    @Override
+    public void insert(ClientUserInfo entity) {
         if (entity.getSexType() == null) {
             entity.setSexType(SexEnum.MALE.getValue());
         }
         if (entity.getStatus() == null) {
             entity.setStatus(UserStatusEnum.Normal.getValue());
         }
-        if (entity.getQq() == null) {
-            entity.setQq(0L);
-        }
-        return super.insert(entity);
+        super.insert(entity);
+        ClientUserInfo upEntity = new ClientUserInfo();
+        upEntity.setId(entity.getId());
+        upEntity.setPin(entity.getSeqId().toString());
+        entity.setPin(entity.getSeqId().toString());
+        up(upEntity);
     }
 
     @Override
@@ -957,94 +868,6 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
             logger.error("", e);
         }
         return null;
-    }
-
-
-    /**
-     * 是否被登陆限制
-     *
-     * @param ip
-     * @param proxyId
-     * @param pin
-     * @return
-     */
-    private Boolean isLoginLimit(String ip, Long proxyId, String pin) {
-        LimitInfo userLimitInfo = null;
-        if (!StringUtils.isBlank(ip)) {
-            userLimitInfo = limitInfoService.findByIp(ip);
-        } else if (proxyId != null && !StringUtils.isBlank(pin)) {
-            userLimitInfo = limitInfoService.findByPin(proxyId, pin);
-        } else {
-            return false;
-        }
-
-        if (userLimitInfo == null) {
-            return false;
-        }
-
-        if (userLimitInfo.getLimitType() != LimitType.Login.getValue()) {
-            return false;
-        }
-
-        //比较时间
-        Long now = new Date().getTime();
-        Long limitStartTime = userLimitInfo.getLimitStartTime().getTime();
-        Long limitEndTime = userLimitInfo.getLimitEndTime().getTime();
-        if (now < limitStartTime || now > limitEndTime) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * ip是否被限制注册
-     *
-     * @param ip
-     * @return
-     */
-    private Boolean isRegisterLimit(String ip) {
-        if (StringUtils.isBlank(ip)) {
-            return false;
-        }
-
-        //获取被限制的总数量
-        LimitInfo allNumInfo = limitInfoService.findAllLimitNum();
-        Integer allNum = null;
-        if (allNumInfo != null) {
-            allNum = allNumInfo.getAllNum();
-        }
-
-        //获取当前IP的限制信息
-        LimitInfo limitInfo = limitInfoService.findByIp(ip);
-        if (limitInfo == null) {
-            return false;
-        }
-
-        //获取当前ip已经注册的数量,比较是否超过限制
-        Integer currenNum = limitInfo.getCurrentIpRegNum();
-        if (allNum != null && currenNum != null && currenNum >= allNum) {
-            return true;
-        }
-
-        //如果没有超过，检查是否被系统限制注册
-        Integer limitType = limitInfo.getLimitType();
-        if (limitType == null || limitType != LimitType.Register.getValue()) {
-            return false;
-        }
-
-        //比较时间
-        Long now = new Date().getTime();
-        Date limitStartDate = limitInfo.getLimitStartTime();
-        Date limitEndDate = limitInfo.getLimitEndTime();
-        if (limitStartDate == null || limitEndDate == null) {
-            return false;
-        }
-        Long limitStartTime = limitStartDate.getTime();
-        Long limitEndTime = limitEndDate.getTime();
-        if (now < limitStartTime || now > limitEndTime) {
-            return false;
-        }
-        return true;
     }
 
 

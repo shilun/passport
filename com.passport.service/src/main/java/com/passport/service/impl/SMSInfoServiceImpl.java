@@ -9,7 +9,8 @@ import com.common.util.model.YesOrNoEnum;
 import com.passport.domain.SMSInfo;
 import com.passport.service.SMSInfoService;
 import com.passport.service.worker.SMSWorker;
-import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,35 +50,33 @@ public class SMSInfoServiceImpl extends AbstractMongoService<SMSInfo> implements
     private Integer smsDayCount;
 
     @Override
-    public Long insert(SMSInfo entity) {
+    public void insert(SMSInfo entity) {
         String key = MessageFormat.format(PASS_SEND_COUNT, entity.getMobile());
-        Date startDate=DateUtil.getStartDate(new Date());
+        Date startDate = DateUtil.getStartDate(new Date());
         Date endDate = DateUtil.getEndDate(new Date());
-        SMSInfo query=new SMSInfo();
+        SMSInfo query = new SMSInfo();
         query.setMobile(entity.getMobile());
         query.setStartCreateTime(startDate);
         query.setEndCreateTime(endDate);
         Integer countTotal = (Integer) redisTemplate.opsForValue().get(key);
         if (countTotal != null) {
             if (countTotal < smsDayCount) {
-                incr(key,endDate.getTime()-System.currentTimeMillis());
+                incr(key, endDate.getTime() - System.currentTimeMillis());
             } else {
                 throw new BizException("passport.sms.day.limit", "短信日限量");
             }
-        }
-        else{
-            incr(key,endDate.getTime()-System.currentTimeMillis());
+        } else {
+            incr(key, endDate.getTime() - System.currentTimeMillis());
         }
         super.insert(entity);
-        fixedThreadPool.execute(()->{
+        fixedThreadPool.execute(() -> {
             smsWorker.execute(entity);
         });
 
-        return entity.getId();
+        entity.getId();
     }
 
     /**
-     *
      * @param key
      * @param liveTime
      * @return

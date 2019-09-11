@@ -78,9 +78,9 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
         RPCResult<List<String>> result = new RPCResult<>();
         try {
             AdminUserInfo info = adminUserInfoService.findByPin(pin);
-            Long[] roles = info.getRoles();
+            String[] roles = info.getRoles();
             List<String> list = new ArrayList<>();
-            for (Long roleId : roles) {
+            for (String roleId : roles) {
                 RoleInfo roleInfo = roleInfoService.findById(roleId);
                 Collections.addAll(list, roleInfo.getResources().split(";"));
             }

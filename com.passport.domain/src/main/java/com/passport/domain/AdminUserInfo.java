@@ -1,11 +1,13 @@
 package com.passport.domain;
 
-import com.common.util.AbstractBaseEntity;
+import com.common.util.AbstractSeqEntity;
+import lombok.Data;
 
 /**
  * 管理员用户信息
  */
-public class AdminUserInfo extends AbstractBaseEntity {
+@Data
+public class AdminUserInfo extends AbstractSeqEntity {
     /**pin*/
     private String pin;
     /**妮称*/
@@ -21,69 +23,5 @@ public class AdminUserInfo extends AbstractBaseEntity {
     /**性别*/
     private Integer sexType;
     /**角色*/
-    private Long[] roles;
-
-    public Long[] getRoles() {
-        return roles;
-    }
-
-    public String getPin() {
-        return pin;
-    }
-
-    public void setPin(String pin) {
-        this.pin = pin;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPasswd() {
-        return passwd;
-    }
-
-    public void setPasswd(String passwd) {
-        this.passwd = passwd;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Integer getSexType() {
-        return sexType;
-    }
-
-    public void setSexType(Integer sexType) {
-        this.sexType = sexType;
-    }
-
-    public void setRoles(Long[] roles) {
-        this.roles = roles;
-    }
+    private String[] roles;
 }

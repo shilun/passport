@@ -12,4 +12,6 @@ public interface ProxyInfoService extends MongoService<ProxyInfo> {
 //    void changePass(Long proxyId,String loginName,String oldPass,String newPass);
 //    void changePass(Long proxyId,String newPass);
 //    String refreshToken(Long proxyId);
+
+    ProxyInfo findBySeqId(Long proxyId);
 }

@@ -27,8 +27,35 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
     @Resource
     private ProxyInfoService proxyInfoService;
 
+
     @Override
-    public Long save(ProxyUserInfo entity) {
+    public ProxyUserInfo findBySeqId(Long userId) {
+        ProxyUserInfo query = new ProxyUserInfo();
+        query.setSeqId(userId);
+        return findByOne(query);
+    }
+
+    @Override
+    public ProxyUserInfo findByPin(String pin) {
+        ProxyUserInfo query = new ProxyUserInfo();
+        query.setPin(pin);
+        return findByOne(query);
+    }
+
+
+    @Override
+    public void changePass(String pin, String newPass) {
+        ProxyUserInfo query = new ProxyUserInfo();
+        query.setPin(pin);
+        query = findByOne(query);
+        ProxyUserInfo upEntity = new ProxyUserInfo();
+        upEntity.setId(query.getId());
+        upEntity.setPass(MD5.MD5Str(newPass, passKey));
+        save(upEntity);
+    }
+
+    @Override
+    public void save(ProxyUserInfo entity) {
         if (entity.getId() == null) {
             ProxyUserInfo query = new ProxyUserInfo();
             query.setProxyId(entity.getProxyId());
@@ -48,11 +75,21 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
             }
         }
 
-        return super.save(entity);
+        super.save(entity);
+    }
+
+
+    @Override
+    public void delById(Long proxyId, String pin) {
+        ProxyUserInfo entity = findByPin(pin);
+        if (entity.getProxyId().longValue() != proxyId) {
+            throw new BizException("data.error", "数据失败");
+        }
+        delById(entity.getId());
     }
 
     @Override
-    public Long addUser(Long proxyId, String phone, String pass, String desc) {
+    public String addUser(Long proxyId, String phone, String pass, String desc) {
         ProxyUserInfo query = new ProxyUserInfo();
         query.setProxyId(proxyId);
         query.setPhone(phone);
@@ -94,9 +131,9 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
     }
 
     @Override
-    public void changePass(Long id, String password, String vpassword) {
+    public void changePass(String pin, String password, String vpassword) {
         ProxyUserInfo query = new ProxyUserInfo();
-        query.setId(id);
+        query.setPin(pin);
         query = findByOne(query);
         if (query == null) {
             throw new BizException("user.password.error", "用户不存在");
@@ -110,29 +147,13 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         save(upEntity);
     }
 
-
     @Override
-    public void changePass(Long proxyId, long id, String newpass) {
-        ProxyUserInfo query= findById(id);
-        if (query == null) {
-            throw new BizException("user.password.error", "用户不存在");
-        }
-        if (proxyId.longValue()!=query.getProxyId()) {
-            throw new BizException("user.password.error", "修改账户失败");
-        }
-        ProxyUserInfo upEntity = new ProxyUserInfo();
-        upEntity.setId(query.getId());
-        upEntity.setPass(MD5.MD5Str(newpass, passKey));
-        save(upEntity);
-    }
-
-    @Override
-    public void changeRole(Long proxyId, Long id, Long[] roles) {
+    public void changeRole(Long proxyId, String id, String[] roles) {
         ProxyUserInfo entity = findById(id);
         if (entity.getProxyId().longValue() != proxyId) {
             throw new BizException("data.error", "数据失败");
         }
-        ProxyInfo proxyInfo = proxyInfoService.findById(proxyId);
+        ProxyInfo proxyInfo = proxyInfoService.findBySeqId(proxyId);
         if (proxyInfo.getPhone().equals(entity.getPhone())) {
             throw new BizException("data.up.error", "管理员不能修改角色");
         }
@@ -144,20 +165,13 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
 
 
     @Override
-    public void upUser(Long proxyId, Long id, String phone, String desc, Integer status) {
-       upUser(proxyId,id,phone,desc,status,null);
-    }
-    @Override
-    public void upUser(Long proxyId, Long id, String phone, String desc, Integer status,Long[] roles) {
+    public void upUser(String pin, String phone, String desc, Integer status, String[] roles) {
         ProxyUserInfo query = new ProxyUserInfo();
         query.setPhone(phone);
-        ProxyUserInfo info = findByOne(query);
-        if (info != null && info.getId().longValue() != id.longValue()) {
+        ProxyUserInfo entity = findByOne(query);
+        String id = entity.getId();
+        if (entity != null && !entity.getPin().equalsIgnoreCase(pin)) {
             throw new BizException("up.user.error", "修改用户失败，手机号已存在");
-        }
-        ProxyUserInfo entity = findById(id);
-        if (entity.getProxyId().longValue() != proxyId) {
-            throw new BizException("data.error", "数据失败");
         }
         entity = new ProxyUserInfo();
         entity.setId(id);
@@ -168,13 +182,4 @@ public class ProxyUserInfoServiceImpl extends AbstractMongoService<ProxyUserInfo
         save(entity);
     }
 
-
-    @Override
-    public void delById(Long proxyId, Long id) {
-        ProxyUserInfo info = findById(id);
-        if(info.getProxyId().longValue()!=proxyId.longValue()){
-            throw new BizException("data.error", "数据失败");
-        }
-        delById(id);
-    }
 }

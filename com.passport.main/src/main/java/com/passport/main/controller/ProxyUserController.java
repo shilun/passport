@@ -51,15 +51,14 @@ public class ProxyUserController extends AbstractClientController {
     /**
      * 查询
      *
-     * @param content
      * @return
      */
     @ApiOperation(value = "保存")
     @RequestMapping("/proxyuser/view")
     @RoleResource(resource = "passport")
-    public Map<String, Object> view(@RequestBody String content) {
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
         return buildMessage(() ->
-                proxyUserInfoService.findById(getIdByJson(content))
+                proxyUserInfoService.findById(params.get("id"))
         );
     }
 
@@ -75,12 +74,11 @@ public class ProxyUserController extends AbstractClientController {
     @RoleResource(resource = "passport")
     public Map<String, Object> save(@RequestBody ProxyUserDto dto) {
         return buildMessage(() -> {
-            if(dto.getId()==null){
-                ProxyUserInfo info=BeanCoper.copyProperties(ProxyUserInfo.class, dto);
+            if (dto.getId() == null) {
+                ProxyUserInfo info = BeanCoper.copyProperties(ProxyUserInfo.class, dto);
                 proxyUserInfoService.save(info);
-            }
-            else{
-                proxyUserInfoService.upUser(dto.getProxyId(),dto.getId(),dto.getPhone(),dto.getDesc(),dto.getStatus(),dto.getRoles());
+            } else {
+                proxyUserInfoService.upUser(dto.getPin(), dto.getPhone(), dto.getDesc(), dto.getStatus(), dto.getRoles());
             }
 
             return null;
@@ -98,8 +96,7 @@ public class ProxyUserController extends AbstractClientController {
     @RoleResource(resource = "passport")
     public Map<String, Object> del(@RequestBody ProxyUserDelDto dto) {
         return buildMessage(() -> {
-                proxyUserInfoService.delById(dto.getProxyId(),dto.getId());
-
+            proxyUserInfoService.delById(dto.getProxyId(), dto.getId());
             return null;
         });
     }
@@ -109,7 +106,7 @@ public class ProxyUserController extends AbstractClientController {
     @RoleResource(resource = "passport")
     public Map<String, Object> changePass(@RequestBody ProxyUserPasswordChangeDto dto) {
         return buildMessage(() -> {
-            proxyUserInfoService.changePass(dto.getId(),dto.getPassword(),dto.getVpassword());
+            proxyUserInfoService.changePass(dto.getPin(), dto.getVpassword(), dto.getPassword());
             return null;
         });
     }

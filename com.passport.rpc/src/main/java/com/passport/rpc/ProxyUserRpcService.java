@@ -20,6 +20,7 @@ public interface ProxyUserRpcService extends StatusRpcService {
 
     /**
      * 添加用户
+     *
      * @param proxyId
      * @param phone
      * @param pass
@@ -27,7 +28,7 @@ public interface ProxyUserRpcService extends StatusRpcService {
      * @param roles
      * @return
      */
-    RPCResult addUser(Long proxyId, String phone, String pass,String desc,Long roles[]);
+    RPCResult addUser(Long proxyId, String phone, String pass, String desc, String roles[]);
 
     /**
      * 登出
@@ -46,57 +47,56 @@ public interface ProxyUserRpcService extends StatusRpcService {
     RPCResult<ProxyUserDto> verfiyToken(String loginToken);
 
     /**
-     * 登录密码
+     * 用户自已修改密码
      *
-     * @param id
+     * @param pin
      * @param oldPass
      * @param newPass
      * @return
      */
-    RPCResult<Boolean> changePass(Long proxyId, Long id, String oldPass, String newPass);
+    RPCResult<Boolean> changePass(String pin, String oldPass, String newPass);
 
 
     /**
      * 管理员修改密码
-     * @param proxyId
-     * @param id
+     *
+     * @param pin
      * @param newPass
      * @return
      */
-    RPCResult<Boolean> changePass(Long proxyId,Long id,String newPass);
+    RPCResult<Boolean> changePass(String pin, String newPass);
 
     /**
      * 修改用户角色
      *
      * @param proxyId
-     * @param id
+     * @param pin
      * @param roles
      * @return
      */
-    RPCResult<Boolean> changeRole(Long proxyId, Long id, Long roles[]);
+    RPCResult<Boolean> changeRole(Long proxyId, Long pin, String roles[]);
 
     /**
-     * 修改用户信息
-     * @param proxyId
-     * @param id
+     * @param pin
      * @param phone
      * @param desc
      * @param status
      * @param roles
      * @return
      */
-    RPCResult<Boolean> upUser(Long proxyId, Long id, String phone, String desc, Integer status,Long roles[]);
+    RPCResult<Boolean> upUser(String pin, String phone, String desc, Integer status, String roles[]);
 
     /**
      * 查看单个用户
-     * @param proxyId
-     * @param id
+     *
+     * @param pin
      * @return
      */
-    RPCResult<ProxyUserDto> find(Long proxyId,Long id);
+    RPCResult<ProxyUserDto> find(String pin);
 
     /**
      * 查找代理商下所有用户
+     *
      * @param proxyId
      * @return
      */

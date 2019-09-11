@@ -37,26 +37,13 @@ public class MailInfoController extends AbstractClientController {
     /**
      * 查询
      *
-     * @param content
+     * @param params
      * @return
      */
     @RoleResource(resource = "passport")
     @ApiOperation(value = "保存")
     @RequestMapping("/mail/view")
-    public Map<String, Object> view(@RequestBody String content) {
-        return buildMessage(() -> mailInfoService.findById(getIdByJson(content)));
-    }
-
-    /**
-     * 保存
-     *
-     * @param info
-     * @return
-     */
-    @RoleResource(resource = "passport")
-    @ApiOperation(value = "保存")
-    @RequestMapping("/mail/save")
-    public Map<String, Object> save(@RequestBody MailInfo info) {
-        return buildMessage(() -> mailInfoService.save(info));
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
+        return buildMessage(() -> mailInfoService.findById(params.get("id")));
     }
 }

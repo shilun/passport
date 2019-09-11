@@ -10,7 +10,8 @@ import com.common.web.IExecute;
 import com.passport.domain.SoftWare;
 import com.passport.main.controller.dto.SoftWareDto;
 import com.passport.service.SoftWareService;
-import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -59,8 +60,8 @@ public class SoftworeController extends AbstractController {
                 SoftWare query = BeanCoper.copyProperties(SoftWare.class, dto);
                 Page<SoftWare> softWares = softWareService.queryByPage(query, dto.getPageinfo().getPage());
                 String domain = StringUtils.getDomain(getRequest().getRequestURL().toString());
-                for(SoftWare soft:softWares.getContent()){
-                    soft.setUrl("http://image."+domain+soft.getUrl());
+                for (SoftWare soft : softWares.getContent()) {
+                    soft.setUrl("http://image." + domain + soft.getUrl());
                 }
                 return softWares;
             }
@@ -70,11 +71,11 @@ public class SoftworeController extends AbstractController {
     @RoleResource(resource = "passport")
     @RequestMapping(value = "/view")
     @ResponseBody
-    public Map<String, Object> view(@RequestBody String content) {
+    public Map<String, Object> view(@RequestBody Map<String, String> params) {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                return softWareService.findById(getIdByJson(content));
+                return softWareService.findById(params.get("id"));
             }
         });
     }
