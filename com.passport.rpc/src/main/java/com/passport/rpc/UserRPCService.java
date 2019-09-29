@@ -14,58 +14,46 @@ import java.util.List;
 public interface UserRPCService extends StatusRpcService {
 
     /**
-     * @param proxyId
-     * @param deviceId
-     * @param agentType
+     * 用户登录
+     *
+     * @param phone
+     * @param pass
      * @return
      */
-    RPCResult<UserDTO> registerByDeviceId(Long proxyId, String deviceId, String agentType);
+    RPCResult<UserDTO> login(String phone, String pass);
 
     /**
      * 根据用户pin查找用户
      *
-     * @param proxyId
      * @param pin
      * @return
      */
-    RPCResult<UserDTO> findByPin(Long proxyId, String pin);
+    RPCResult<UserDTO> findByPin(String pin);
 
     /**
-     * 根据电话查找用户
+     * 强制修改密码
      *
-     * @param proxyId
-     * @param mobile
+     * @param pin
+     * @param pass
      * @return
      */
-    RPCResult<UserDTO> findByMobile(Long proxyId, String mobile);
+
+    RPCResult<Boolean> changePass(String pin, String pass);
+
 
     /**
      * 验证用户token
-     *
      * @param token
      * @return
      */
-    RPCResult<UserDTO> verfiyToken(String token);
-
-    RPCResult<List<UserDTO>> query(UserDTO dto);
-
+    RPCResult<UserDTO> verdifyToken(String token);
 
     /**
-     * 修改基本信息
-     *
-     * @param dto
+     * @param pin
+     * @param oldPass
+     * @param newPass
      * @return
      */
-    RPCResult<Boolean> changeInfo(UserDTO dto);
 
-    /**
-     * 根据条件查询人数
-     *
-     * @param dto
-     * @return
-     */
-    RPCResult<Long> queryUsersCount(UserDTO dto);
-
-
-    RPCResult<Boolean> resetPass(String pin, String pass);
+    RPCResult<Boolean> changePass(String pin, String oldPass, String newPass);
 }

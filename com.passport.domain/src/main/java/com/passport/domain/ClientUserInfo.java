@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 客户用户信息
@@ -16,27 +17,22 @@ import java.util.Date;
 @Document(collection = "clientUserInfo")
 @CompoundIndexes(
         {
-                @CompoundIndex(name = "deviceId", def = "{'deviceUid':1,'proxyId':1}", unique = true)
+                @CompoundIndex(name = "uniqueIndex", def = "{'phone':1}", unique = true)
         })
-public class ClientUserInfo extends AbstractSeqEntity implements IUserEntity {
+public class ClientUserInfo extends AbstractSeqEntity {
     /**
-     * 用户pin
+     * 用户pin(用户电话)
      */
     private String pin;
 
     /**
-     * 第三方账户
+     * 上级用户
      */
-    private String refId;
-
+    private String upPin;
     /**
-     * 推荐人
+     * 代理人列表
      */
-    private String refPin;
-    /**
-     * 代理商id
-     */
-    private Long proxyId;
+    private List<String> pins;
     /**
      * 昵称
      */
@@ -45,10 +41,6 @@ public class ClientUserInfo extends AbstractSeqEntity implements IUserEntity {
      * 电话
      */
     private String phone;
-    /**
-     * 邮件
-     */
-    private String email;
     /**
      * 密码
      */
@@ -61,18 +53,26 @@ public class ClientUserInfo extends AbstractSeqEntity implements IUserEntity {
      * 用户状态
      */
     private Integer status;
-
-
-    private Date birthDay;
-
-    /***
-     * 设备唯一id
+    /**
+     * 签名
      */
-    private String deviceUid;
-
-    // 头像URL
-    private String headUrl;
-
-    //签名
     private String sign;
+
+    public String getPin() {
+        return phone;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+        this.phone = pin;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+        this.pin = phone;
+    }
 }

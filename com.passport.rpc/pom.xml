@@ -16,9 +16,9 @@
     </dependencies>
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <name>releases</name>
-            <url>http://maven.movie.com/repository/maven-releases/</url>
+            <id>snapshots</id>
+            <name>snapshots</name>
+            <url>http://localhost:8081/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
