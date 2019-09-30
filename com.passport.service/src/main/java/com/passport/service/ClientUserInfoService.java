@@ -1,16 +1,7 @@
 package com.passport.service;
 
 import com.common.mongo.MongoService;
-import com.common.util.model.SexEnum;
 import com.passport.domain.ClientUserInfo;
-import com.passport.rpc.dto.ProxyDto;
-import com.passport.rpc.dto.UserDTO;
-import com.passport.service.constant.ChangeType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.Date;
-import java.util.Map;
 
 /**
  * 客户用户接口

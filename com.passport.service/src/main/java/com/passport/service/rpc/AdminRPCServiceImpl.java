@@ -42,7 +42,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     private RedisTemplate<String, Object> redisTemplate;
 
     private final String ADMIN_LOGIN = "pass.admin.login.{0}";
-    private final Integer ADMIN_LOGIN_TIME = 60 * 60 * 30;
+    private final Integer ADMIN_LOGIN_TIME = 60 * 30;
 
     @Override
     public RPCResult<UserDTO> login(String loginName, String password) {
@@ -67,10 +67,6 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
             result.setCode("admin.login.error");
         }
         return result;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(StringUtils.getUUID());
     }
 
     @Override
