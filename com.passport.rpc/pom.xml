@@ -18,7 +18,7 @@
         <repository>
             <id>snapshots</id>
             <name>snapshots</name>
-            <url>http://localhost:8081/repository/maven-releases/</url>
+            <url>http://192.168.31.103:8082/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 

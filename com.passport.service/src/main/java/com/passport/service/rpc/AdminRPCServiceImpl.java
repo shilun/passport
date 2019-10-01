@@ -1,16 +1,22 @@
 package com.passport.service.rpc;
 
+import com.common.exception.BizException;
 import com.common.rpc.StatusRpcServiceImpl;
+import com.common.security.DesEncrypter;
 import com.common.security.MD5;
+import com.common.util.BeanCoper;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
 import com.passport.domain.AdminUserInfo;
+import com.passport.domain.ClientUserInfo;
 import com.passport.domain.RoleInfo;
 import com.passport.rpc.AdminRPCService;
 import com.passport.rpc.dto.UserDTO;
 import com.passport.service.AdminUserInfoService;
 import com.passport.service.RoleInfoService;
-import org.slf4j.Logger; import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -25,13 +31,16 @@ import java.util.concurrent.TimeUnit;
 
 @org.apache.dubbo.config.annotation.Service
 @org.springframework.stereotype.Service
+@Slf4j
 public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRPCService {
 
-
-    private Logger logger = LoggerFactory.getLogger(AdminRPCServiceImpl.class);
+    private final String LOGIN_TOKEN = "passport.adminLogin.token.{0}";
+    private final String LOGIN_PIN = "passport.adminLogin.{1}";
 
     @Value("${app.passKey}")
     private String passKey;
+    @Value("${app.token.encode.key}")
+    private String appTokenEncodeKey;
     @Resource
     private AdminUserInfoService adminUserInfoService;
 
@@ -41,32 +50,62 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-    private final String ADMIN_LOGIN = "pass.admin.login.{0}";
-    private final Integer ADMIN_LOGIN_TIME = 60 * 30;
-
     @Override
     public RPCResult<UserDTO> login(String loginName, String password) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             AdminUserInfo login = adminUserInfoService.login(loginName, password);
-            if(login==null){
+            if (login == null) {
                 return result;
             }
-            UserDTO dto = new UserDTO();
-            dto.setToken(StringUtils.getUUID());
-            dto.setPin(login.getPin());
-            dto.setEmail(login.getEmail());
-            dto.setNickName(login.getName());
-            String key = MessageFormat.format(ADMIN_LOGIN, dto.getToken());
-            redisTemplate.opsForValue().set(key, dto, ADMIN_LOGIN_TIME, TimeUnit.MINUTES);
+            UserDTO dto = buildToken(login);
             result.setData(dto);
             result.setSuccess(true);
         } catch (Exception e) {
-            logger.error("管理员登录失败", e);
+            log.error("管理员登录失败", e);
             result.setSuccess(false);
             result.setCode("admin.login.error");
         }
         return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> logOut(String token) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            String key = MessageFormat.format(LOGIN_TOKEN, token);
+            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
+            if (o != null) {
+                redisTemplate.delete(key);
+                redisTemplate.delete(MessageFormat.format(LOGIN_PIN, o.getPin()));
+            }
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error("admin.logOut.error", e);
+            throw new BizException("admin.logOut.error", "用户登出失败");
+        }
+        return result;
+    }
+
+    @SuppressWarnings("Duplicates")
+    private UserDTO buildToken(AdminUserInfo userInfo) {
+        String loginPinKey = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+        Object o = redisTemplate.opsForValue().get(loginPinKey);
+        if (o != null) {
+            String oldTokenKey = o.toString();
+            oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
+            redisTemplate.delete(oldTokenKey);
+            redisTemplate.delete(loginPinKey);
+        }
+        String newToken = StringUtils.getUUID();
+        UserDTO dto = new UserDTO();
+        dto.setPin(userInfo.getPin());
+        BeanCoper.copyProperties(dto, userInfo);
+        dto.setToken(newToken);
+        String tokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
+        redisTemplate.opsForValue().set(loginPinKey, newToken, 30, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(tokenKey, dto, 30, TimeUnit.MINUTES);
+        return dto;
     }
 
     @Override
@@ -84,7 +123,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
             result.setData(list);
             return result;
         } catch (Exception e) {
-            logger.error("查询角色失败", e);
+            log.error("查询角色失败", e);
             result.setSuccess(false);
             result.setCode("queryAdminRoles.error");
             result.setMessage("查询角色失败");
@@ -96,7 +135,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     public RPCResult<Boolean> changePass(String token, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         result.setSuccess(false);
-        String key = MessageFormat.format(ADMIN_LOGIN, token);
+        String key = MessageFormat.format(LOGIN_PIN, token);
         try {
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o == null) {
@@ -115,10 +154,11 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
             upEntity.setId(admin.getId());
             upEntity.setPasswd(MD5.MD5Str(newPass, passKey));
             adminUserInfoService.save(upEntity);
+            loginOut(token);
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
-            logger.error("修改密码失败", e);
+            log.error("修改密码失败", e);
         }
         result.setCode("passport.changePass.error");
         result.setMessage("修改用户密码失败");
@@ -128,17 +168,18 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     @Override
     public RPCResult<UserDTO> verificationToken(String token) {
         RPCResult<UserDTO> result = new RPCResult<>();
-        String key = MessageFormat.format(ADMIN_LOGIN, token);
+        String key = MessageFormat.format(LOGIN_TOKEN, token);
         try {
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o != null) {
-                redisTemplate.opsForValue().set(key, o, ADMIN_LOGIN_TIME);
+                redisTemplate.expire(key, 1, TimeUnit.HOURS);
+                redisTemplate.expire(MessageFormat.format(LOGIN_PIN, o.getPin()), 1, TimeUnit.HOURS);
                 result.setData(o);
                 result.setSuccess(true);
                 return result;
             }
         } catch (Exception e) {
-            logger.error("验证管理员用户失败", e);
+            log.error("验证管理员用户失败", e);
         }
         result.setSuccess(false);
         result.setMessage("验证管理员失败");
@@ -150,12 +191,14 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     public RPCResult<UserDTO> loginOut(String token) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
-            String key = MessageFormat.format(ADMIN_LOGIN, token);
+            String key = MessageFormat.format(LOGIN_TOKEN, token);
+            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
+            redisTemplate.delete(MessageFormat.format(LOGIN_PIN, o.getPin()));
             redisTemplate.delete(key);
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
-            logger.error("登出失败", e);
+            log.error("登出失败", e);
         }
         result.setSuccess(false);
         result.setCode("passport.login.out.error");

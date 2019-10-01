@@ -2,6 +2,7 @@ package com.passport.service.rpc;
 
 import com.common.exception.BizException;
 import com.common.rpc.StatusRpcServiceImpl;
+import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
@@ -67,6 +68,26 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         return result;
     }
 
+    @SuppressWarnings("Duplicates")
+    @Override
+    public RPCResult<UserDTO> loginOut(String token) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        try {
+            String key = MessageFormat.format(LOGIN_TOKEN, token);
+            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
+            redisTemplate.delete(MessageFormat.format(LOGIN_PIN, o.getPin()));
+            redisTemplate.delete(key);
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            log.error("登出失败", e);
+        }
+        result.setSuccess(false);
+        result.setCode("passport.login.out.error");
+        result.setMessage("登出失败");
+        return result;
+    }
+
     @Override
     public RPCResult<UserDTO> findByPin(String pin) {
         RPCResult<UserDTO> result = new RPCResult<>();
@@ -88,6 +109,11 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
     public RPCResult<Boolean> changePass(String pin, String pass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
+            String loginPinKey = MessageFormat.format(LOGIN_PIN, pin);
+            String token = (String) redisTemplate.opsForValue().get(loginPinKey);
+            String tokenKey = MessageFormat.format(LOGIN_TOKEN, token);
+            redisTemplate.delete(loginPinKey);
+            redisTemplate.delete(tokenKey);
             clientUserInfoService.changePass(pin, pass);
             result.setSuccess(true);
             return result;
@@ -100,32 +126,57 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
     }
 
     @Override
-    public RPCResult<Boolean> changePass(String pin, String oldPass, String newPass) {
+    public RPCResult<Boolean> changePass(String token, String oldPass, String newPass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
-            clientUserInfoService.changePass(pin, oldPass,newPass);
+            String tokenData = DesDecrypter.decryptString(token, appTokenEncodeKey);
+            String[] data = tokenData.split(":");
+            String redisTokenKey = MessageFormat.format(LOGIN_TOKEN, data[2]);
+            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(redisTokenKey);
+            if (o != null) {
+                redisTemplate.delete(redisTokenKey);
+                redisTemplate.delete(MessageFormat.format(LOGIN_PIN, o.getPin()));
+            }
+            clientUserInfoService.changePass(token, oldPass, newPass);
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
             result.setCode("userrpc.changePass.error");
             result.setMessage("修改用户密码失败");
-            log.error("userrpc.changePass.error.%s.%s", new Object[]{pin, oldPass});
+            log.error("userrpc.changePass.error.%s.%s", new Object[]{token, oldPass});
         }
         return result;
     }
 
     @Override
-    public RPCResult<UserDTO> verdifyToken(String token) {
-        return null;    }
+    public RPCResult<UserDTO> verificationToken(String token) {
+        String tokenData = DesDecrypter.decryptString(token, appTokenEncodeKey);
+        RPCResult<UserDTO> result = new RPCResult<>();
+        String[] data = tokenData.split(":");
+        String redisTokenKey = MessageFormat.format(LOGIN_TOKEN, data[2]);
+        UserDTO userDTO = (UserDTO) redisTemplate.opsForValue().get(redisTokenKey);
+        if (userDTO != null) {
+            redisTemplate.expire(redisTokenKey, 1, TimeUnit.HOURS);
+            redisTemplate.expire(MessageFormat.format(LOGIN_PIN, userDTO.getPin()), 1, TimeUnit.HOURS);
+            result.setData(userDTO);
+            (userDTO).setToken(token);
+            result.setSuccess(true);
+            return result;
+        }
+        result.setCode("token.error");
+        result.setMessage("token失效");
+        return result;
+    }
 
+    @SuppressWarnings("Duplicates")
     private UserDTO buildToken(ClientUserInfo userInfo) {
-        String login_pin_key = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
-        Object o = redisTemplate.opsForValue().get(login_pin_key);
+        String loginPinKey = MessageFormat.format(LOGIN_PIN, userInfo.getPin());
+        Object o = redisTemplate.opsForValue().get(loginPinKey);
         if (o != null) {
             String oldTokenKey = o.toString();
             oldTokenKey = MessageFormat.format(LOGIN_TOKEN, oldTokenKey);
             redisTemplate.delete(oldTokenKey);
-            redisTemplate.delete(login_pin_key);
+            redisTemplate.delete(loginPinKey);
         }
         String newToken = StringUtils.getUUID();
         UserDTO dto = new UserDTO();
@@ -133,8 +184,8 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         BeanCoper.copyProperties(dto, userInfo);
         dto.setToken(newToken);
         String newTokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
-        redisTemplate.opsForValue().set(login_pin_key, newToken, 7, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(newTokenKey, dto, 7, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(loginPinKey, newToken, 1, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(newTokenKey, dto, 1, TimeUnit.HOURS);
 
         String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
         token = DesEncrypter.cryptString(token, appTokenEncodeKey);

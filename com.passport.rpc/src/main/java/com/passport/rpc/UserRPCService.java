@@ -23,6 +23,13 @@ public interface UserRPCService extends StatusRpcService {
     RPCResult<UserDTO> login(String phone, String pass);
 
     /**
+     * 用户登录
+     * @param token
+     * @return
+     */
+    public RPCResult<UserDTO> loginOut(String token);
+
+    /**
      * 根据用户pin查找用户
      *
      * @param pin
@@ -46,14 +53,14 @@ public interface UserRPCService extends StatusRpcService {
      * @param token
      * @return
      */
-    RPCResult<UserDTO> verdifyToken(String token);
+    RPCResult<UserDTO> verificationToken(String token);
 
     /**
-     * @param pin
+     * @param token
      * @param oldPass
      * @param newPass
      * @return
      */
 
-    RPCResult<Boolean> changePass(String pin, String oldPass, String newPass);
+    RPCResult<Boolean> changePass(String token, String oldPass, String newPass);
 }
