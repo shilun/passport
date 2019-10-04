@@ -19,7 +19,7 @@ public interface UserRPCService extends StatusRpcService {
      * @param pass
      * @return
      */
-    public RPCResult<UserDTO> regist(String upPin, String pin, String pass);
+    public RPCResult<UserDTO> regist(String upPin, String pin, String pass,String phone);
     /**
      * 用户登录
      *

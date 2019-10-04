@@ -15,6 +15,7 @@ import com.passport.rpc.dto.UserDTO;
 import com.passport.service.ClientUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -42,14 +43,20 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
 
 
     @Override
-    public RPCResult<UserDTO> regist(String upPin, String pin, String pass) {
+    public RPCResult<UserDTO> regist(String upPin, String pin, String pass,String phone) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
-            ClientUserInfo info = clientUserInfoService.regist(upPin, pin, pass);
+            ClientUserInfo info = clientUserInfoService.regist(upPin, pin, pass,phone);
             UserDTO dto = BeanCoper.copyProperties(UserDTO.class, info);
             result.setData(dto);
             result.setSuccess(true);
-        } catch (Exception e) {
+        }
+        catch (DuplicateKeyException e){
+            log.error("client.regist.duplicate.error", e);
+            result.setCode("client.regist.duplicate.error");
+            result.setMessage("注册失败,数据重复");
+        }
+        catch (Exception e) {
             log.error("client.regist.error", e);
             result.setCode("client.regist.error");
             result.setMessage("注册失败");

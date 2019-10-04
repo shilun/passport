@@ -36,7 +36,7 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @param
      * @return
      */
-    ClientUserInfo regist(String upPin, String phone, String pass);
+    ClientUserInfo regist(String upPin, String pin, String pass,String phone);
 
 
     /**

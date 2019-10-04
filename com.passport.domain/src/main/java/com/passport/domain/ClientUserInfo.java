@@ -63,22 +63,4 @@ public class ClientUserInfo extends AbstractSeqEntity {
      */
     private String sign;
 
-    public String getPin() {
-        return phone;
-    }
-
-    public void setPin(String pin) {
-        this.pin = pin;
-        if (StringUtils.isMobileNO(pin)) {
-            this.phone = pin;
-        }
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 }

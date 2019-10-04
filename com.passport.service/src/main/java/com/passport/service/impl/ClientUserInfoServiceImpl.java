@@ -109,7 +109,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public ClientUserInfo regist(String upPin, String pin, String pass) {
+    public ClientUserInfo regist(String upPin, String pin, String pass,String phone) {
         if (StringUtils.isNotBlank(upPin)) {
             ClientUserInfo info = new ClientUserInfo();
             info.setPin(upPin);
@@ -122,6 +122,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
 
             info = new ClientUserInfo();
             info.setPin(pin);
+            info.setPhone(phone);
             info.setStatus(YesOrNoEnum.YES.getValue());
             info.setPasswd(MD5.MD5Str(pass, passKey));
             info.setUpPin(upPin);
@@ -130,6 +131,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         } else {
             ClientUserInfo info = new ClientUserInfo();
             info.setPin(pin);
+            info.setPhone(phone);
             info.setPasswd(MD5.MD5Str(pass, passKey));
             info.setStatus(YesOrNoEnum.YES.getValue());
             insert(info);
