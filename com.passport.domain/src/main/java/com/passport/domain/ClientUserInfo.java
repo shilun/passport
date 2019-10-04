@@ -18,7 +18,8 @@ import java.util.List;
 @Document(collection = "clientUserInfo")
 @CompoundIndexes(
         {
-                @CompoundIndex(name = "uniqueIndex", def = "{'phone':1}", unique = true)
+                @CompoundIndex(name = "uniqueIndex", def = "{'phone':1}", unique = true),
+                @CompoundIndex(name = "uniquePinIndex", def = "{'pin':1}", unique = true)
         })
 public class ClientUserInfo extends AbstractSeqEntity {
     /**
