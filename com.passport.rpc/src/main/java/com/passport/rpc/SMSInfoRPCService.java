@@ -10,11 +10,12 @@ public interface SMSInfoRPCService extends StatusRpcService {
 
     /**
      * 发送短信
+     *
      * @param mobile
      * @param content
-     * @param source 
-     * @param sign 签名
+     * @param source
+     * @param sign    签名
      * @return
      */
-    RPCResult<Boolean> buildSMSCode(String mobile,String content, String source,String sign);
+    RPCResult<Boolean> buildSMSCode(String mobile, String content, String source, String sign);
 }

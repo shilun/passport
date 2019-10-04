@@ -12,15 +12,22 @@ import java.util.List;
  * Created by shilun on 16-12-5.
  */
 public interface UserRPCService extends StatusRpcService {
-
     /**
-     * 用户登录
-     *
-     * @param phone
+     * 注册用户
+     * @param upPin
+     * @param pin
      * @param pass
      * @return
      */
-    RPCResult<UserDTO> login(String phone, String pass);
+    public RPCResult<UserDTO> regist(String upPin, String pin, String pass);
+    /**
+     * 用户登录
+     *
+     * @param account
+     * @param pass
+     * @return
+     */
+    RPCResult<UserDTO> login(String account, String pass);
 
     /**
      * 用户登录

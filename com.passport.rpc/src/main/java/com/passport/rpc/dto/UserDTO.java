@@ -2,9 +2,11 @@ package com.passport.rpc.dto;
 
 import com.common.util.AbstractDTO;
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by shilun on 16-12-5.
@@ -12,47 +14,42 @@ import java.util.Date;
 @Data
 public class UserDTO extends AbstractDTO implements Serializable {
     private static final long serialVersionUID = 8642175623513171274L;
-    private Long seqId;
-    private String email;
+    /**
+     * 用户pin(用户电话)
+     */
     private String pin;
-    private String nickName;
-    private String phone;
-    private String birthday;
-    private Integer sexType;
-    private String deviceId;
-    private String agentType;
-    private Boolean initPass;
-    private String token;
-    private Long proxyId;
-    private Date birthDay;
-    private String realName;
-    private String registerIp;
+    /**
+     * 上级用户
+     */
     private String upPin;
-
-    // 头像URL
-    private String headUrl;
-
-    //微信
-    private String wechat;
-    //身份证号
-    private String idCard;
-    //qq
-    private Long qq;
+    /**
+     * 下级人员列表
+     */
+    private List<String> pins;
+    /**
+     * 昵称
+     */
+    private String nickName;
+    /**
+     * 电话
+     */
+    private String phone;
+    /**
+     * 性别
+     */
+    private Integer sexType;
     /**
      * 用户状态
      */
     private Integer status;
-    //二维码图片地址
-    private String qrName;
-
-    private Date createTime;
-    //是否机器人  1.否  2.是
-    private Integer robot;
-    //签名
-    private String sign;
     /**
-     * 是否推广用户 1是  2否
+     * 签名
      */
-    private Integer popularize;
+    private String sign;
+
+    /**
+     * 用户token
+     */
+    private String token;
 
 }

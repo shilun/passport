@@ -2,6 +2,7 @@ package com.passport.domain;
 
 import com.common.util.AbstractSeqEntity;
 import com.common.util.IUserEntity;
+import com.common.util.StringUtils;
 import lombok.Data;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -26,11 +27,18 @@ public class ClientUserInfo extends AbstractSeqEntity {
     private String pin;
 
     /**
+     * 用户类型
+     * 1 盘口代理人
+     * 2 收款代理人
+     * 3 收款人
+     */
+    private Integer userType;
+    /**
      * 上级用户
      */
     private String upPin;
     /**
-     * 代理人列表
+     * 下级人员列表
      */
     private List<String> pins;
     /**
@@ -46,10 +54,6 @@ public class ClientUserInfo extends AbstractSeqEntity {
      */
     private String passwd;
     /**
-     * 性别
-     */
-    private Integer sexType;
-    /**
      * 用户状态
      */
     private Integer status;
@@ -64,7 +68,9 @@ public class ClientUserInfo extends AbstractSeqEntity {
 
     public void setPin(String pin) {
         this.pin = pin;
-        this.phone = pin;
+        if (StringUtils.isMobileNO(pin)) {
+            this.phone = pin;
+        }
     }
 
     public String getPhone() {
@@ -73,6 +79,5 @@ public class ClientUserInfo extends AbstractSeqEntity {
 
     public void setPhone(String phone) {
         this.phone = phone;
-        this.pin = phone;
     }
 }

@@ -34,20 +34,38 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
 
     private final String LOGIN_TOKEN = "passport.login.token.{0}";
     private final String LOGIN_PIN = "passport.login.{1}";
+
     @Value("${app.token.encode.key}")
     private String appTokenEncodeKey;
     @Value("${app.passKey}")
     private String passKey;
+
+
+    @Override
+    public RPCResult<UserDTO> regist(String upPin, String pin, String pass) {
+        RPCResult<UserDTO> result = new RPCResult<>();
+        try {
+            ClientUserInfo info = clientUserInfoService.regist(upPin, pin, pass);
+            UserDTO dto = BeanCoper.copyProperties(UserDTO.class, info);
+            result.setData(dto);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error("client.regist.error", e);
+            result.setCode("client.regist.error");
+            result.setMessage("注册失败");
+        }
+        return result;
+    }
 
     @Override
     public RPCResult<UserDTO> login(String pin, String pass) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             if (StringUtils.isBlank(pass)) {
-                throw new BizException("参数不能为空");
+                throw new BizException("密码不能为空");
             }
-            if (!StringUtils.isMobileNO(pin)) {
-                throw new BizException("手机号格式不正确");
+            if (!StringUtils.isBlank(pin)) {
+                throw new BizException("账户不能为空");
             }
             ClientUserInfo userInfo = clientUserInfoService.findByPin(pin);
             if (userInfo == null || userInfo.getStatus().intValue() == YesOrNoEnum.NO.getValue()) {
@@ -131,13 +149,13 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         try {
             String tokenData = DesDecrypter.decryptString(token, appTokenEncodeKey);
             String[] data = tokenData.split(":");
-            String redisTokenKey = MessageFormat.format(LOGIN_TOKEN, data[2]);
-            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(redisTokenKey);
-            if (o != null) {
-                redisTemplate.delete(redisTokenKey);
-                redisTemplate.delete(MessageFormat.format(LOGIN_PIN, o.getPin()));
+            String redisTokenKey = MessageFormat.format(LOGIN_TOKEN, data[1]);
+            if (!redisTemplate.persist(redisTokenKey)) {
+                throw new BizException("token.error", "token错误");
             }
             clientUserInfoService.changePass(token, oldPass, newPass);
+            redisTemplate.delete(redisTokenKey);
+            redisTemplate.delete(MessageFormat.format(LOGIN_PIN, data[0]));
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
@@ -153,7 +171,7 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         String tokenData = DesDecrypter.decryptString(token, appTokenEncodeKey);
         RPCResult<UserDTO> result = new RPCResult<>();
         String[] data = tokenData.split(":");
-        String redisTokenKey = MessageFormat.format(LOGIN_TOKEN, data[2]);
+        String redisTokenKey = MessageFormat.format(LOGIN_TOKEN, data[1]);
         UserDTO userDTO = (UserDTO) redisTemplate.opsForValue().get(redisTokenKey);
         if (userDTO != null) {
             redisTemplate.expire(redisTokenKey, 1, TimeUnit.HOURS);
@@ -187,7 +205,7 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         redisTemplate.opsForValue().set(loginPinKey, newToken, 1, TimeUnit.HOURS);
         redisTemplate.opsForValue().set(newTokenKey, dto, 1, TimeUnit.HOURS);
 
-        String token = dto.getProxyId() + ":" + dto.getPin() + ":" + dto.getToken();
+        String token = dto.getPin() + ":" + dto.getToken();
         token = DesEncrypter.cryptString(token, appTokenEncodeKey);
         dto.setToken(token);
         return dto;
