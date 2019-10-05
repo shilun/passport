@@ -43,20 +43,18 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
 
 
     @Override
-    public RPCResult<UserDTO> regist(String upPin, String pin, String pass,String phone) {
+    public RPCResult<UserDTO> regist(String upPin, String pin, String pass, String phone) {
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
-            ClientUserInfo info = clientUserInfoService.regist(upPin, pin, pass,phone);
+            ClientUserInfo info = clientUserInfoService.regist(upPin, pin, pass, phone);
             UserDTO dto = BeanCoper.copyProperties(UserDTO.class, info);
             result.setData(dto);
             result.setSuccess(true);
-        }
-        catch (DuplicateKeyException e){
+        } catch (DuplicateKeyException e) {
             log.error("client.regist.duplicate.error", e);
             result.setCode("client.regist.duplicate.error");
             result.setMessage("注册失败,数据重复");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("client.regist.error", e);
             result.setCode("client.regist.error");
             result.setMessage("注册失败");
@@ -218,4 +216,81 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
         return dto;
     }
 
+
+    @Override
+    public RPCResult<Boolean> changePhone(String pin, String phone) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            ClientUserInfo info = clientUserInfoService.findByPin(pin);
+            ClientUserInfo upInfo = new ClientUserInfo();
+            upInfo.setId(info.getId());
+            upInfo.setPhone(phone);
+            clientUserInfoService.save(upInfo);
+            result.setSuccess(true);
+        }
+        catch (DuplicateKeyException e) {
+            log.error("change.phone.duplicate.error", e);
+            result.setCode("change.phone.duplicate.error");
+            result.setMessage("修改电话号码失败,重复");
+        } catch (Exception e) {
+            log.error("change.phone.error", e);
+            result.setCode("change.phone.error");
+            result.setMessage("修改电话号码失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> changeSexType(String pin, Integer sexType) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            ClientUserInfo info = clientUserInfoService.findByPin(pin);
+            ClientUserInfo upInfo = new ClientUserInfo();
+            upInfo.setId(info.getId());
+            upInfo.setSexType(sexType);
+            clientUserInfoService.save(upInfo);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error("changeSexType.error", e);
+            result.setCode("change.sextype.error");
+            result.setMessage("修改性别失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> changeNickName(String pin, String nickName) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            ClientUserInfo info = clientUserInfoService.findByPin(pin);
+            ClientUserInfo upInfo = new ClientUserInfo();
+            upInfo.setId(info.getId());
+            upInfo.setNickName(nickName);
+            clientUserInfoService.save(upInfo);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error("change.nickName.error", e);
+            result.setCode("change.sextype.error");
+            result.setMessage("修改别名失败");
+        }
+        return result;
+    }
+
+    @Override
+    public RPCResult<Boolean> changeSign(String pin, String sign) {
+        RPCResult<Boolean> result = new RPCResult<>();
+        try {
+            ClientUserInfo info = clientUserInfoService.findByPin(pin);
+            ClientUserInfo upInfo = new ClientUserInfo();
+            upInfo.setId(info.getId());
+            upInfo.setSign(sign);
+            clientUserInfoService.save(upInfo);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error("change.sign.error", e);
+            result.setCode("change.sign.error");
+            result.setMessage("修改签名失败");
+        }
+        return result;
+    }
 }

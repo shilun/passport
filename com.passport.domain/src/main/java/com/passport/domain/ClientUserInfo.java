@@ -26,14 +26,6 @@ public class ClientUserInfo extends AbstractSeqEntity {
      * 用户pin(用户电话)
      */
     private String pin;
-
-    /**
-     * 用户类型
-     * 1 盘口代理人
-     * 2 收款代理人
-     * 3 收款人
-     */
-    private Integer userType;
     /**
      * 上级用户
      */
@@ -58,6 +50,11 @@ public class ClientUserInfo extends AbstractSeqEntity {
      * 用户状态
      */
     private Integer status;
+
+    /**
+     * 男女 1 男 2女
+     */
+    private Integer sexType;
     /**
      * 签名
      */

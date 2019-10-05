@@ -70,4 +70,34 @@ public interface UserRPCService extends StatusRpcService {
      */
 
     RPCResult<Boolean> changePass(String token, String oldPass, String newPass);
+
+    /**
+     * 修改电话号码
+     * @param pin
+     * @param phone
+     * @return
+     */
+    RPCResult<Boolean> changePhone(String pin,String phone);
+
+    /**
+     * 修改电话号码
+     * @param pin
+     * @param sexType 1 boy 2 girl
+     * @return
+     */
+    RPCResult<Boolean> changeSexType(String pin,Integer sexType);
+    /**
+     * 修改电话号码
+     * @param pin
+     * @param nickName
+     * @return
+     */
+    RPCResult<Boolean> changeNickName(String pin,String nickName);
+    /**
+     * 修改电话号码
+     * @param pin
+     * @param sign
+     * @return
+     */
+    RPCResult<Boolean> changeSign(String pin,String sign);
 }
