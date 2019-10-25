@@ -172,7 +172,7 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
     }
 
     @Override
-    public RPCResult<UserDTO> verificationToken(String token) {
+    public RPCResult<UserDTO> verfiyToken(String token) {
         String tokenData = DesDecrypter.decryptString(token, appTokenEncodeKey);
         RPCResult<UserDTO> result = new RPCResult<>();
         String[] data = tokenData.split(":");

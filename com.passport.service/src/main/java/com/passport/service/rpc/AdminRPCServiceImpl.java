@@ -166,7 +166,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     }
 
     @Override
-    public RPCResult<UserDTO> verificationToken(String token) {
+    public RPCResult<UserDTO> verfiyToken(String token) {
         RPCResult<UserDTO> result = new RPCResult<>();
         String key = MessageFormat.format(LOGIN_TOKEN, token);
         try {

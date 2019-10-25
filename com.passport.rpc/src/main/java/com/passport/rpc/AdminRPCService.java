@@ -49,7 +49,7 @@ public interface AdminRPCService extends StatusRpcService {
      * @param token
      * @return
      */
-    RPCResult<UserDTO> verificationToken(String token);
+    RPCResult<UserDTO> verfiyToken(String token);
 
     /**
      * 登出
