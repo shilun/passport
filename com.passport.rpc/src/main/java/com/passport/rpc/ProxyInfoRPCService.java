@@ -4,6 +4,8 @@ import com.common.util.RPCResult;
 import com.passport.rpc.dto.ProxyDto;
 import com.passport.rpc.dto.ProxyUserDto;
 
+import java.util.List;
+
 public interface ProxyInfoRPCService {
     /**
      * 登录
@@ -15,19 +17,7 @@ public interface ProxyInfoRPCService {
     RPCResult<ProxyUserDto> login(String domain, String account, String pass);
 
     /**
-     * 添加用户
-     *
-     * @param proxyId
-     * @param phone
-     * @param pass
-     * @param desc
-     * @param resources
-     * @return
-     */
-    RPCResult<Boolean> addUser(String proxyId, String phone, String pass, String desc, String resources[]);
-
-    /**
-     * 登出
+     * 用户登出
      *
      * @param token
      * @return
@@ -35,12 +25,26 @@ public interface ProxyInfoRPCService {
     RPCResult logOut(String token);
 
     /**
-     * 验证token
+     * 验证用户token
      *
-     * @param loginToken
+     * @param token
      * @return
      */
-    RPCResult<ProxyUserDto> verfiyToken(String loginToken);
+    RPCResult<ProxyUserDto> verfiyToken(String token);
+
+    /**
+     * 添加用户
+     *
+     * @param proxyId
+     * @param pin
+     * @param phone
+     * @param pass
+     * @param desc
+     * @param resources
+     * @return
+     */
+    RPCResult<Boolean> addUser(String proxyId, String pin, String phone, String pass, String desc, String resources[]);
+
 
     /**
      * 管理员修改登录密码
@@ -64,6 +68,7 @@ public interface ProxyInfoRPCService {
 
     /**
      * 修改用户
+     *
      * @param proxyId
      * @param pin
      * @param phone
@@ -72,7 +77,7 @@ public interface ProxyInfoRPCService {
      * @param status
      * @return
      */
-    RPCResult<Boolean> upUser(String proxyId,String pin, String phone, String desc, String[] resources, Integer status);
+    RPCResult<Boolean> upUser(String proxyId, String pin, String phone, String desc, String[] resources, Integer status);
 
     /**
      * 根据域名找查代理
@@ -89,5 +94,12 @@ public interface ProxyInfoRPCService {
      * @return
      */
     RPCResult<ProxyDto> findById(String proxyId);
+
+    /**
+     * 查找所有代理商
+     *
+     * @return
+     */
+    RPCResult<List<ProxyDto>> queryAll();
 
 }

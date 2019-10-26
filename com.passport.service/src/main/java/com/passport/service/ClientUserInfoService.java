@@ -23,22 +23,12 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
     ClientUserInfo findByPin(String pin);
 
     /**
-     * 修改用户密码
+     * 初始化用户密码
      *
      * @param pin
      * @param pwd
      */
-    void changePass(String pin, String pwd);
-
-
-    /***
-     * 注册
-     * @param
-     * @return
-     */
-    ClientUserInfo regist(String upPin, String pin, String pass,String phone);
-
-
+    void initPass(String pin, String pwd);
     /**
      * 密码修改
      *
@@ -48,5 +38,15 @@ public interface ClientUserInfoService extends MongoService<ClientUserInfo> {
      * @return
      */
     void changePass(String pin, String oldPass, String newPass);
+
+    /***
+     * 注册
+     * @param
+     * @return
+     */
+    ClientUserInfo regist(String upPin, String pin, String pass,String phone);
+
+
+
 
 }

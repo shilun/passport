@@ -80,7 +80,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         }
     }
 
-    public void changePass(String pin, String pwd) {
+    public void initPass(String pin, String pwd) {
         ClientUserInfo byPin = findByPin(pin);
         String id = byPin.getId();
         ClientUserInfo info = new ClientUserInfo();
@@ -109,7 +109,7 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
     }
 
     @Override
-    public ClientUserInfo regist(String upPin, String pin, String pass,String phone) {
+    public ClientUserInfo regist(String upPin, String pin, String pass, String phone) {
         if (StringUtils.isNotBlank(upPin)) {
             ClientUserInfo info = new ClientUserInfo();
             info.setPin(upPin);
@@ -145,15 +145,14 @@ public class ClientUserInfoServiceImpl extends AbstractMongoService<ClientUserIn
         info.setPin(pin);
         info = findByOne(info);
         if (info != null) {
-            String id=info.getId();
-            if(info.getPasswd().equals(MD5.MD5Str(oldPass,passKey))){
+            String id = info.getId();
+            if (info.getPasswd().equals(MD5.MD5Str(oldPass, passKey))) {
                 info = new ClientUserInfo();
                 info.setId(id);
-                info.setPasswd(MD5.MD5Str(newPass,passKey));
+                info.setPasswd(MD5.MD5Str(newPass, passKey));
                 up(info);
-            }
-            else{
-                throw new BizException("changePass.error.oldPass.error");
+            } else {
+                throw new BizException("oldPass.error");
             }
         }
     }

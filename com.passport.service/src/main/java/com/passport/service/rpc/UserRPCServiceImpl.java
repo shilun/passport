@@ -129,7 +129,7 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
 
 
     @Override
-    public RPCResult<Boolean> changePass(String pin, String pass) {
+    public RPCResult<Boolean> initPass(String pin, String pass) {
         RPCResult<Boolean> result = new RPCResult<>();
         try {
             String loginPinKey = MessageFormat.format(LOGIN_PIN, pin);
@@ -137,7 +137,7 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
             String tokenKey = MessageFormat.format(LOGIN_TOKEN, token);
             redisTemplate.delete(loginPinKey);
             redisTemplate.delete(tokenKey);
-            clientUserInfoService.changePass(pin, pass);
+            clientUserInfoService.initPass(pin, pass);
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
@@ -227,8 +227,7 @@ public class UserRPCServiceImpl extends StatusRpcServiceImpl implements UserRPCS
             upInfo.setPhone(phone);
             clientUserInfoService.save(upInfo);
             result.setSuccess(true);
-        }
-        catch (DuplicateKeyException e) {
+        } catch (DuplicateKeyException e) {
             log.error("change.phone.duplicate.error", e);
             result.setCode("change.phone.duplicate.error");
             result.setMessage("修改电话号码失败,重复");

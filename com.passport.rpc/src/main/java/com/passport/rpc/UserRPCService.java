@@ -52,15 +52,7 @@ public interface UserRPCService extends StatusRpcService {
      * @return
      */
 
-    RPCResult<Boolean> changePass(String pin, String pass);
-
-
-    /**
-     * 验证用户token
-     * @param token
-     * @return
-     */
-    RPCResult<UserDTO> verfiyToken(String token);
+    RPCResult<Boolean> initPass(String pin, String pass);
 
     /**
      * @param token
@@ -70,6 +62,14 @@ public interface UserRPCService extends StatusRpcService {
      */
 
     RPCResult<Boolean> changePass(String token, String oldPass, String newPass);
+    /**
+     * 验证用户token
+     * @param token
+     * @return
+     */
+    RPCResult<UserDTO> verfiyToken(String token);
+
+
 
     /**
      * 修改电话号码
