@@ -11,6 +11,7 @@ import com.passport.service.AdminUserInfoService;
 import com.passport.main.AbstractClientController;
 import com.passport.main.controller.dto.LoginDto;
 import com.passport.main.controller.dto.PasswordChangeDto;
+import com.passport.service.OperatorLogService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,9 @@ public class LoginController extends AbstractClientController {
     @Resource
     private AdminRPCService adminRPCService;
 
+    @Resource
+    private OperatorLogService operatorLogService;
+
     @RequestMapping("in")
     @ResponseBody
     @ApiOperation(value = "密码登录")
@@ -45,7 +49,8 @@ public class LoginController extends AbstractClientController {
                 if (!login.getSuccess()) {
                     throw new BizException("loginError", "登录失败，登录账户或密码错误");
                 }
-               putCookie("token", login.getData().getToken(), response);
+                putCookie("m_token", login.getData().getToken(), response);
+                operatorLogService.logInfo("passport",login.getData().getPin(),"login",null);
                 return login.getData();
             }
         });
@@ -88,7 +93,9 @@ public class LoginController extends AbstractClientController {
         return buildMessage(new IExecute() {
             @Override
             public Object getData() {
-                adminUserInfoService.changePass(getPin(), dto.getOldPassword(), dto.getNewPassword());
+                String pin = getPin();
+                operatorLogService.logInfo("passport",pin,"login",null);
+                adminUserInfoService.changePass(pin, dto.getOldPassword(), dto.getNewPassword());
                 return null;
             }
         });

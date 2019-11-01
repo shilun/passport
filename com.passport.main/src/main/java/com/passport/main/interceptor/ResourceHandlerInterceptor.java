@@ -61,10 +61,10 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
 
     protected String getPin(HttpServletRequest request, HttpServletResponse response) {
         Cookie tokenCookie = null;
-        String token = request.getHeader("token");
+        String token = request.getHeader("m_token");
         if (StringUtils.isBlank(token)) {
             for (Cookie item : request.getCookies()) {
-                if (StringUtils.equals(item.getName(), "token")) {
+                if (StringUtils.equals(item.getName(), "m_token")) {
                     tokenCookie = item;
                     break;
                 }

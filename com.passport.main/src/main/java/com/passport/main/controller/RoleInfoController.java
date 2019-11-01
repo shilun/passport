@@ -3,11 +3,13 @@ package com.passport.main.controller;
 import com.common.annotation.RoleResource;
 import com.common.util.BeanCoper;
 import com.passport.domain.RoleInfo;
+import com.passport.service.OperatorLogService;
 import com.passport.service.RoleInfoService;
 import com.passport.main.AbstractClientController;
 import com.passport.main.controller.dto.RoleDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -19,6 +21,8 @@ import java.util.Map;
 public class RoleInfoController extends AbstractClientController {
     @Resource
     private RoleInfoService roleInfoService;
+    @Resource
+    private OperatorLogService operatorLogService;
 
     /**
      * 查询
@@ -61,6 +65,7 @@ public class RoleInfoController extends AbstractClientController {
     @RoleResource(resource = "passport")
     public Map<String, Object> save(@RequestBody RoleDto info) {
         return buildMessage(() -> {
+            operatorLogService.logInfo("passport",getPin(),"/role/save", JSONObject.fromObject(info).toString());
             RoleInfo entity = new RoleInfo();
             BeanCoper.copyProperties(entity, info);
             roleInfoService.save(entity);
