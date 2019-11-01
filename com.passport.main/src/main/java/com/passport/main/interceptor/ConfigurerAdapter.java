@@ -14,6 +14,6 @@ public class ConfigurerAdapter extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(resourceHandlerInterceptor).addPathPatterns("/**").excludePathPatterns(new String[]{
-                "/login/*", "/webjars/**", "/status", "/global/*"});
+                "/login/*", "/webjars/**", "/status", "/global/*","/swagg*"});
     }
 }
