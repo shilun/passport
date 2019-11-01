@@ -2,6 +2,7 @@ package com.passport.service.rpc;
 
 import com.common.exception.BizException;
 import com.common.rpc.StatusRpcServiceImpl;
+import com.common.security.DesDecrypter;
 import com.common.security.DesEncrypter;
 import com.common.security.MD5;
 import com.common.util.BeanCoper;
@@ -105,6 +106,9 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
         String tokenKey = MessageFormat.format(LOGIN_TOKEN, newToken);
         redisTemplate.opsForValue().set(loginPinKey, newToken, 30, TimeUnit.MINUTES);
         redisTemplate.opsForValue().set(tokenKey, dto, 30, TimeUnit.MINUTES);
+        String token = dto.getPin() + ":" + dto.getToken();
+        token = DesEncrypter.cryptString(token, appTokenEncodeKey);
+        dto.setToken(token);
         return dto;
     }
 
@@ -133,9 +137,13 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
 
     @Override
     public RPCResult<Boolean> changePass(String token, String oldPass, String newPass) {
+        String oldToken=token;
+        String[] tokenParmas = DesDecrypter.decryptString(token, appTokenEncodeKey).split(":");
+        token = tokenParmas[1];
+        String pin = tokenParmas[0];
         RPCResult<Boolean> result = new RPCResult<>();
         result.setSuccess(false);
-        String key = MessageFormat.format(LOGIN_PIN, token);
+        String key = MessageFormat.format(LOGIN_TOKEN, token);
         try {
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o == null) {
@@ -143,7 +151,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
                 result.setMessage("token失效，修改用户密码失败");
                 return result;
             }
-            AdminUserInfo admin = adminUserInfoService.findByPin(o.getPin());
+            AdminUserInfo admin = adminUserInfoService.findByPin(pin);
             oldPass = MD5.MD5Str(oldPass, passKey);
             if (!admin.getPasswd().equals(oldPass)) {
                 result.setCode("passport.changePass.password.error");
@@ -154,7 +162,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
             upEntity.setId(admin.getId());
             upEntity.setPasswd(MD5.MD5Str(newPass, passKey));
             adminUserInfoService.save(upEntity);
-            loginOut(token);
+            loginOut(oldToken);
             result.setSuccess(true);
             return result;
         } catch (Exception e) {
@@ -167,13 +175,16 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
 
     @Override
     public RPCResult<UserDTO> verificationToken(String token) {
+        String[] tokenParmas = DesDecrypter.decryptString(token, appTokenEncodeKey).split(":");
+        token = tokenParmas[1];
+        String pin = tokenParmas[0];
         RPCResult<UserDTO> result = new RPCResult<>();
         String key = MessageFormat.format(LOGIN_TOKEN, token);
         try {
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o != null) {
                 redisTemplate.expire(key, 1, TimeUnit.HOURS);
-                redisTemplate.expire(MessageFormat.format(LOGIN_PIN, o.getPin()), 1, TimeUnit.HOURS);
+                redisTemplate.expire(MessageFormat.format(LOGIN_PIN, pin), 1, TimeUnit.HOURS);
                 result.setData(o);
                 result.setSuccess(true);
                 return result;
@@ -189,6 +200,8 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
 
     @Override
     public RPCResult<UserDTO> loginOut(String token) {
+        String[] tokenParmas = DesDecrypter.decryptString(token, appTokenEncodeKey).split(":");
+        token = tokenParmas[1];
         RPCResult<UserDTO> result = new RPCResult<>();
         try {
             String key = MessageFormat.format(LOGIN_TOKEN, token);
