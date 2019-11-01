@@ -9,6 +9,8 @@ import com.passport.domain.AdminUserInfo;
 import com.passport.service.AdminUserInfoService;
 import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Service
