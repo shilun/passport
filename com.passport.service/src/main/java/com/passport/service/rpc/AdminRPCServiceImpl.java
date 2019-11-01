@@ -53,7 +53,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
 
     @Override
     public RPCResult<UserDTO> login(String loginName, String password) {
-        RPCResult<UserDTO> result = new RPCResult<>();
+        RPCResult<UserDTO> result = new RPCResult();
         try {
             AdminUserInfo login = adminUserInfoService.login(loginName, password);
             if (login == null) {
