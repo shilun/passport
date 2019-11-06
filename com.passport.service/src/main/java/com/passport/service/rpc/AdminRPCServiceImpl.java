@@ -70,23 +70,6 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
         return result;
     }
 
-    @Override
-    public RPCResult<Boolean> logOut(String token) {
-        RPCResult<Boolean> result = new RPCResult<>();
-        try {
-            String key = MessageFormat.format(LOGIN_TOKEN, token);
-            UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
-            if (o != null) {
-                redisTemplate.delete(key);
-                redisTemplate.delete(MessageFormat.format(LOGIN_PIN, o.getPin()));
-            }
-            result.setSuccess(true);
-        } catch (Exception e) {
-            log.error("admin.logOut.error", e);
-            throw new BizException("admin.logOut.error", "用户登出失败");
-        }
-        return result;
-    }
 
     @SuppressWarnings("Duplicates")
     private UserDTO buildToken(AdminUserInfo userInfo) {
@@ -138,13 +121,12 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     @Override
     public RPCResult<Boolean> changePass(String token, String oldPass, String newPass) {
         String oldToken=token;
-        String[] tokenParmas = DesDecrypter.decryptString(token, appTokenEncodeKey).split(":");
-        token = tokenParmas[1];
-        String pin = tokenParmas[0];
         RPCResult<Boolean> result = new RPCResult<>();
-        result.setSuccess(false);
         String key = MessageFormat.format(LOGIN_TOKEN, token);
         try {
+            String[] tokenParmas = DesDecrypter.decryptString(token, appTokenEncodeKey).split(":");
+            token = tokenParmas[1];
+            String pin = tokenParmas[0];
             UserDTO o = (UserDTO) redisTemplate.opsForValue().get(key);
             if (o == null) {
                 result.setCode("passport.changePass.token.error");

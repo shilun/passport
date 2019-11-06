@@ -21,13 +21,6 @@ public interface AdminRPCService extends StatusRpcService {
     RPCResult<UserDTO> login(String loginName, String password);
 
     /**
-     * 用户登录
-     * @param token
-     * @return
-     */
-    RPCResult<Boolean> logOut(String token);
-
-    /**
      * 修改密码
      * @param token
      * @param oldPass
