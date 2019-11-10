@@ -7,8 +7,10 @@ import com.passport.main.AbstractClientController;
 import com.passport.main.controller.dto.AdminDto;
 import com.passport.main.controller.dto.IdChangePassDto;
 import com.passport.service.AdminUserInfoService;
+import com.passport.service.OperatorLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,6 +24,8 @@ public class AdminUserInfoController extends AbstractClientController {
     @Resource
     private AdminUserInfoService adminUserInfoService;
 
+    @Resource
+    private OperatorLogService operatorLogService;
     /**
      * 查询
      *
@@ -57,6 +61,7 @@ public class AdminUserInfoController extends AbstractClientController {
     @RequestMapping("/admin/changePass")
     public Map<String, Object> changePass(@RequestBody IdChangePassDto dto) {
         return buildMessage(() -> {
+            operatorLogService.logInfo("passport",getPin(),"/admin/changePass", null);
             adminUserInfoService.changePass(dto.getId(), dto.getPassword());
             return null;
         });
@@ -74,6 +79,7 @@ public class AdminUserInfoController extends AbstractClientController {
     @ResponseBody
     public Map<String, Object> save(@RequestBody AdminDto info) {
         return buildMessage(() -> {
+            operatorLogService.logInfo("passport",getPin(),"/admin/save", JSONObject.fromObject(info).toString());
             AdminUserInfo entity = new AdminUserInfo();
             BeanCoper.copyProperties(entity, info);
             adminUserInfoService.save(entity);

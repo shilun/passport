@@ -19,5 +19,5 @@ public class AdminDto extends AbstractDTO implements Serializable {
     /**性别*/
     private Integer sexType;
     /**角色*/
-    private Long[] roles;
+    private String[] roles;
 }

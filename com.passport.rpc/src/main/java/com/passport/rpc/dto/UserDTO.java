@@ -2,10 +2,8 @@ package com.passport.rpc.dto;
 
 import com.common.util.AbstractDTO;
 import lombok.Data;
-import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**

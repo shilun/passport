@@ -1,22 +1,16 @@
 package com.passport.main.controller.dto;
 
+import lombok.Data;
+
+@Data
 public class IdChangePassDto {
-    private Long id;
+    /**
+     * 用户id
+     */
+    private String id;
+
+    /**
+     * 密码
+     */
     private String password;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

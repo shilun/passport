@@ -9,6 +9,8 @@ import com.passport.domain.AdminUserInfo;
 import com.passport.service.AdminUserInfoService;
 import org.slf4j.Logger; import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -88,9 +90,9 @@ public class AdminUserInfoServiceImpl extends AbstractMongoService<AdminUserInfo
     }
 
     @Override
-    public void changePass(Long id, String password) {
+    public void changePass(String id, String password) {
         AdminUserInfo upEntity = new AdminUserInfo();
-        upEntity.setSeqId(id);
+        upEntity.setId(id);
         upEntity.setPasswd(MD5.MD5Str(password, passKey));
         up(upEntity);
     }

@@ -27,15 +27,15 @@ public abstract class AbstractClientController extends AbstractController {
             return userDTOResult.getData();
         }
         LOGGER.error("token.error:" + token);
-        throw new BizException("token.error", "获取token失败");
+        throw new BizException("login.error", "获取token失败");
     }
 
     protected String getToken() {
-        String token = getRequest().getHeader("token");
+        String token = getRequest().getHeader("m_token");
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = null;
             for (Cookie item : getRequest().getCookies()) {
-                if (StringUtils.equals(item.getName(), "token")) {
+                if (StringUtils.equals(item.getName(), "m_token")) {
                     tokenCookie = item;
                     break;
                 }
@@ -52,7 +52,7 @@ public abstract class AbstractClientController extends AbstractController {
             return userDTOResult.getData().getPin();
         }
         LOGGER.error("token.error:" + token);
-        throw new BizException("pin.error", "获取pin失败");
+        throw new BizException("login.error", "用户登录失效");
     }
 
     protected String getVer() {
