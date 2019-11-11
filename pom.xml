@@ -13,6 +13,7 @@
         <module>com.passport.service</module>
         <module>com.passport.main</module>
         <module>com.passport.rpc</module>
+        <module>com.passport.api</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

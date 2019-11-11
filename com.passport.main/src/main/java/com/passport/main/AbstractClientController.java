@@ -22,7 +22,7 @@ public abstract class AbstractClientController extends AbstractController {
 
     protected UserDTO getUser() {
         String token = getToken();
-        RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
+        RPCResult<UserDTO> userDTOResult = adminRPCService.verfiyToken(token);
         if (userDTOResult.getSuccess()) {
             return userDTOResult.getData();
         }
@@ -47,7 +47,7 @@ public abstract class AbstractClientController extends AbstractController {
 
     protected String getPin() {
         String token = getToken();
-        RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
+        RPCResult<UserDTO> userDTOResult = adminRPCService.verfiyToken(token);
         if (userDTOResult.getSuccess()) {
             return userDTOResult.getData().getPin();
         }

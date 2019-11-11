@@ -80,7 +80,7 @@ public class LoginController extends AbstractClientController {
                 if (StringUtils.isBlank(token)) {
                     throw new BizException("token.error", "token error");
                 }
-                RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
+                RPCResult<UserDTO> userDTOResult = adminRPCService.verfiyToken(token);
                 return userDTOResult.getSuccess();
             }
         });
