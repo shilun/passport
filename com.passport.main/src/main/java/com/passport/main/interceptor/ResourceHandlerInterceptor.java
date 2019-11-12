@@ -72,7 +72,7 @@ public class ResourceHandlerInterceptor implements HandlerInterceptor {
 
             token = tokenCookie.getValue();
         }
-        RPCResult<UserDTO> userDTOResult = adminRPCService.verfiyToken(token);
+        RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
         if (userDTOResult.getSuccess()) {
             return userDTOResult.getData().getPin();
         } else {

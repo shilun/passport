@@ -156,7 +156,7 @@ public class AdminRPCServiceImpl extends StatusRpcServiceImpl implements AdminRP
     }
 
     @Override
-    public RPCResult<UserDTO> verfiyToken(String token) {
+    public RPCResult<UserDTO> verificationToken(String token) {
         String[] tokenParmas = DesDecrypter.decryptString(token, appTokenEncodeKey).split(":");
         token = tokenParmas[1];
         String pin = tokenParmas[0];

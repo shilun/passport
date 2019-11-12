@@ -128,7 +128,7 @@ public class ProxyInfoRPCServiceImpl extends StatusRpcServiceImpl implements Pro
 
 
     @Override
-    public RPCResult<ProxyUserDto> verfiyToken(String token) {
+    public RPCResult<ProxyUserDto> verificationToken(String token) {
         RPCResult<ProxyUserDto> result = new RPCResult<>();
         try {
             String oldToken = token;
@@ -150,7 +150,7 @@ public class ProxyInfoRPCServiceImpl extends StatusRpcServiceImpl implements Pro
         } catch (BizException e) {
             result.setException(e);
         } catch (Exception e) {
-            log.error("ProxyInfoRPCService.verfiyToken token={}", token, e);
+            log.error("ProxyInfoRPCService.verificationToken token={}", token, e);
             result.setCode("system.error");
             result.setMessage("未知错误");
         }

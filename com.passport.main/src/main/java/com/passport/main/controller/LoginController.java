@@ -1,6 +1,5 @@
 package com.passport.main.controller;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.common.exception.BizException;
 import com.common.util.RPCResult;
 import com.common.util.StringUtils;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.util.UUID;
 
 
 @Controller
@@ -80,7 +78,7 @@ public class LoginController extends AbstractClientController {
                 if (StringUtils.isBlank(token)) {
                     throw new BizException("token.error", "token error");
                 }
-                RPCResult<UserDTO> userDTOResult = adminRPCService.verfiyToken(token);
+                RPCResult<UserDTO> userDTOResult = adminRPCService.verificationToken(token);
                 return userDTOResult.getSuccess();
             }
         });

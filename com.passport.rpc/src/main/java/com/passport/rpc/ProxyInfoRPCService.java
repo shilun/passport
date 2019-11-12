@@ -30,7 +30,7 @@ public interface ProxyInfoRPCService {
      * @param token
      * @return
      */
-    RPCResult<ProxyUserDto> verfiyToken(String token);
+    RPCResult<ProxyUserDto> verificationToken(String token);
 
     /**
      * 添加用户

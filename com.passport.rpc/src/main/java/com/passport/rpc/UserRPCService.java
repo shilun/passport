@@ -67,7 +67,7 @@ public interface UserRPCService extends StatusRpcService {
      * @param token
      * @return
      */
-    RPCResult<UserDTO> verfiyToken(String token);
+    RPCResult<UserDTO> verificationToken(String token);
 
 
 
