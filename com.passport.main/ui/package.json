@@ -44,7 +44,7 @@
     "jquery-sparkline": "^2.4.0",
     "jquery.browser": "0.1.0",
     "layui-laydate": "^5.0.9",
-    "lodash": "4.17.5",
+    "lodash": "4.17.19",
     "modernizr": "3.5.0",
     "moment": "2.20.1",
     "ng2-charts": "1.6.0",
